@@ -239,6 +239,7 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
             }
             
             controller = [[HWPlexDir alloc] initWithRootContainer:contents andTabBar:tabBar];
+            [tabBar release];
             break;
         }
         case kATVPlexViewTypeGrid: {
