@@ -348,7 +348,7 @@ void checkNil(NSObject *ctrl)
 	
     BRPhotoDataStoreProvider* provider = [BRPhotoDataStoreProvider providerWithDataStore:store 
 																		  controlFactory:controlFactory];
-
+    [controlFactory release];
     [store release];
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"getProviderForGrid_end");
@@ -365,7 +365,7 @@ void checkNil(NSObject *ctrl)
 	if (remoteAction==kBREventRemoteActionPlay && action.value==1)
 	{
 		int index;
-		NSArray *mediaObjects;
+		NSArray *mediaObjects = nil;
 		
 		if ([_shelfControl isFocused]) {
             DLog(@"focusedIndex: %@", [_shelfControl focusedIndexCompat]);
@@ -394,8 +394,7 @@ void checkNil(NSObject *ctrl)
 #if LOCAL_DEBUG_ENABLED
 			DLog(@"brEventaction. have %d mediaObjects and index %d, showing movie preview ctrl",[mediaObjects count], index);
 #endif      
-			
-            [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:[[mediaObjects objectAtIndex:index] retain]];
+            [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:[mediaObjects objectAtIndex:index]];
 		}
 		else {
 			DLog(@"error: no selected mediaObject");
