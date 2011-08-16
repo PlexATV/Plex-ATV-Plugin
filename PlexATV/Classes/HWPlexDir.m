@@ -296,6 +296,7 @@
         //creating parade in bg, once done this will set self.previewControlData and refresh the preview control
         [self performSelectorInBackground:@selector(createParadeForData:) withObject:data];
         
+        [data release];
     } else {
         //single coverart
         preview = pmo.previewControl; //already autoreleased
