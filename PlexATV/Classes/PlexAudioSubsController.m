@@ -89,7 +89,6 @@
 {
 	//DLog(@"deallocing PlexAudioSubsController");
 	[playbackItem release];
-    [self.items release];
 	
 	[super dealloc];
 }
