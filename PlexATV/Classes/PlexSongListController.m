@@ -81,7 +81,6 @@
 
 - (void)dealloc {
     DLog(@"releasing %@", self.rootContainer)
-	[self.rootContainer release];
 	[super dealloc];
 }
 
