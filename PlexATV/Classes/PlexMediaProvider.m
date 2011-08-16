@@ -43,15 +43,14 @@ enum
 @implementation PlexMediaProvider
 #pragma mark -
 #pragma mark Object/Class Lifecycle
-- (id) init
-{
-  if ( [super init] == nil )
-    return ( nil );
-	
-  prov = [[BRBaseMediaProvider alloc] init];
-  [self load];
-	
-  return ( self );
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        prov = [[BRBaseMediaProvider alloc] init];
+        [self load];
+    }
+    return self;
 }
 
 - (void) dealloc
