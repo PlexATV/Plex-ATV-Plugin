@@ -220,13 +220,8 @@ void checkNil(NSObject *ctrl)
 	[_gridControl setAcceptsFocus:YES];
 	[_gridControl setProviderRequester:_gridControl];
     
-	CGRect gridFrame;
-	gridFrame.origin.y = dividerFrame.origin.y-25;
-	gridFrame.size.height = [_gridControl _totalHeight] + 50.f;
+	CGRect gridFrame = CGRectMake(0, dividerFrame.origin.y - 25, 0, [_gridControl _totalHeight] + 50.f);
 	[_gridControl setFrame:masterFrame];
-	
-	CGRect gridBoxFrame;
-	gridBoxFrame.origin.x = 0;
 	
 	BRBoxControl *gridBox = [[BRBoxControl alloc] init];
 	[gridBox setAcceptsFocus:YES];
@@ -245,10 +240,7 @@ void checkNil(NSObject *ctrl)
     
 	
 	BRSpacerControl *spacerBottom=[BRSpacerControl spacerWithPixels:44.f];
-	CGRect spacerFrame;
-	spacerFrame.origin.x=0;
-	spacerFrame.origin.y = 0;
-	spacerFrame.size.height = 44.f;
+	CGRect spacerFrame = CGRectMake(0, 0, 0, 44.f);
 	[spacerBottom setFrame:spacerFrame];
 	
 	[_panelControl addControl:spacerBottom];
