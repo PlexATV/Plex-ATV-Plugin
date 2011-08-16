@@ -292,6 +292,7 @@ void checkNil(NSObject *ctrl)
 	BRPhotoDataStoreProvider* provider = [BRPhotoDataStoreProvider providerWithDataStore:store 
 																		  controlFactory:controlFactory];
 	
+    [controlFactory release];
 	
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"getProviderForShelf_end");
