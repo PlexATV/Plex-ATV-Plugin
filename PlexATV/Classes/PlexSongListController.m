@@ -74,7 +74,6 @@
 	if ((self = [self init]) != nil) {
         [self setListTitle:title];
         self.rootContainer = container;
-        [container retain];
         [self convertDirToSongAssets:container.directories];
     }
     return self;
