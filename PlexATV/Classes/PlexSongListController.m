@@ -71,16 +71,17 @@
 }
 - (id)initWithPlexContainer:(PlexMediaContainer *)container title:(NSString *)title {
 	
-	self = [self init];
-	[self setListTitle:title];
-	self.rootContainer = container;
- 	[container retain];
-	[self convertDirToSongAssets:container.directories];
-	return self;
+	if ((self = [self init]) != nil) {
+        [self setListTitle:title];
+        self.rootContainer = container;
+        [container retain];
+        [self convertDirToSongAssets:container.directories];
+    }
+    return self;
 }
 
 - (void)dealloc {
-  DLog(@"releasing %@", self.rootContainer)
+    DLog(@"releasing %@", self.rootContainer)
 	[self.songs release];
 	[self.rootContainer release];
 	[super dealloc];
@@ -110,7 +111,7 @@
 
 - (void)convertDirToSongAssets:(NSArray*)plexDirectories {
 	DLog(@"convertDirToSongAssets %@", plexDirectories);
-	self.songs = [[NSMutableArray alloc] initWithCapacity:5];
+    NSMutableArray *mySongs = [[NSMutableArray alloc] initWithCapacity:5];
 	
 	for (int i=0; i < [rootContainer.directories count]; i++) {
 		PlexMediaObject *track = [rootContainer.directories objectAtIndex:i];
@@ -130,8 +131,11 @@
 		NSURL* mediaURL = [NSURL URLWithString:key];
 		PlexSongAsset *song = [[[PlexSongAsset alloc] initWithURL:mediaURL mediaProvider:nil mediaObject:track] autorelease];
 		
-		[self.songs addObject:song];
+		[mySongs addObject:song];
 	}
+
+    self.songs = mySongs;
+    [mySongs release];
 	
 }
 
