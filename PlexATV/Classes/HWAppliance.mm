@@ -231,12 +231,16 @@ NSString * const MachineNameKey = @"PlexMachineName";
 #if LOCAL_DEBUG_ENABLED
 			DLog(@"Machine [%@] is included in the server exclusion list, skipping", machineID);
 #endif
+            [machineID release];
+            [machineName release];
 			continue;
 		} else if (!machine.canConnect) {
 			//machine is not connectable
 #if LOCAL_DEBUG_ENABLED
 			DLog(@"Cannot connect to machine [%@], skipping", machine);
 #endif
+            [machineID release];
+            [machineName release];
 			continue;
 		}
 		
