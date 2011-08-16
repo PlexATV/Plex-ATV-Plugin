@@ -400,8 +400,8 @@
 			self.mediaSummary, @"mediaSummary",
 			self.mediaDescription, @"mediaDescription",
 			self.rating, @"rating",
-			self.starRating, @"starRating",
-            self.dolbyDigital, @"dolbyDigital",
+			[NSNumber numberWithDouble:self.starRating], @"starRating",
+            [NSNumber numberWithBool:self.dolbyDigital], @"dolbyDigital",
 			nil];
 }
 
