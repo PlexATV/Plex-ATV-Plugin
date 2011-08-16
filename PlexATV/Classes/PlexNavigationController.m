@@ -46,6 +46,11 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     return self;
 }
 
+- (void)dealloc {
+    [self.waitControl release];
+    [super dealloc];
+}
+
 #pragma mark -
 #pragma mark Controller Lifecycle behaviour
 - (void)wasPushed {
