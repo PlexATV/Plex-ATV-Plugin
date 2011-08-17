@@ -82,6 +82,7 @@
 }
 
 -(void)dealloc {
+    DLog(@"Dealloc of HWPlexDir");
 	[playbackItem release];
 	[rootContainer release];
     [tabBar release];

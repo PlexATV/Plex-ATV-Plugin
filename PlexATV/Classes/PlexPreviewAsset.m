@@ -563,14 +563,15 @@
 #pragma mark Additional Metadata Methods
 - (NSURL *)coverArtRealURL {
     PlexImage *image = nil;
+    DLog(@"coverArtRealURL");
     if (pmo.thumb.hasImage) {
         image = pmo.thumb;
     } else if (pmo.art.hasImage) {
         image = pmo.art;
-    } else if (pmo.parentObject.thumb.hasImage){
+    }/* else if (pmo.parentObject.thumb.hasImage){
         //no damn thumb nor art on the item, go for the parent then
         image = pmo.parentObject.thumb;
-    }
+    }*/
     
     
     NSURL *imageURL = nil;
