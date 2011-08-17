@@ -11,10 +11,10 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 72B85E561331BD8B00FCD4AE /* Build configuration list for PBXAggregateTarget "All" */;
 			buildPhases = (
-				72B85E551331BD8B00FCD4AE /* ShellScript */,
 			);
 			dependencies = (
 				663DBDC61332B06C0007BB74 /* PBXTargetDependency */,
+				619DA9E813FC4D6000F1DBB4 /* PBXTargetDependency */,
 			);
 			name = All;
 			productName = Install;
@@ -87,6 +87,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		619DA9E713FC4D6000F1DBB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DD02DEB712FCACEC0019FBEE;
+			remoteInfo = Install;
+		};
 		61C1BD8313FA48FC0083E8AC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 61C1BD7A13FA48FC0083E8AC /* SMFramework.xcodeproj */;
@@ -568,19 +575,6 @@
 			shellPath = /bin/sh;
 			shellScript = "KEYWORDS=\"TODO:|FIXME:|\\?\\?\\?:|\\!\\!\\!:\"\nfind \"${SRCROOT}\" \\( -name \"*.h\" -or -name \"*.m\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | perl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"";
 		};
-		72B85E551331BD8B00FCD4AE /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\n\n#copy local (in order to build the .deb\ncp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" \"${BUILD_DIR}/../_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/\"\n\n\n#copy to the ATV\nscp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@apple-tv.local:${TARGET_DIR}\nscp \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@apple-tv.local:${TARGET_DIR}\n\n#restart UI\nssh root@apple-tv.local 'killall AppleTV'\n#ssh root@apple-tv.local 'killall Lowtide'\n";
-		};
 		DD02DEB612FCACEC0019FBEE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -640,6 +634,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		619DA9E813FC4D6000F1DBB4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DD02DEB712FCACEC0019FBEE /* Install */;
+			targetProxy = 619DA9E713FC4D6000F1DBB4 /* PBXContainerItemProxy */;
+		};
 		61C1BD8613FA49040083E8AC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SMFramework;
