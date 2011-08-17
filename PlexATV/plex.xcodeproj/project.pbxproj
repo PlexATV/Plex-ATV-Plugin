@@ -26,6 +26,7 @@
 				DD02DEB612FCACEC0019FBEE /* ShellScript */,
 			);
 			dependencies = (
+				61D706B713FC542F00CDABBE /* PBXTargetDependency */,
 			);
 			name = Install;
 			productName = Install;
@@ -107,6 +108,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
 			remoteInfo = SMFramework;
+		};
+		61D706B613FC542F00CDABBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
+			remoteInfo = plex;
 		};
 		663DBDC51332B06C0007BB74 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -555,7 +563,6 @@
 			inputPaths = (
 			);
 			outputPaths = (
-				"$(SRCROOT)/Classes/gitversion.h",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -586,7 +593,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\n\n#copy local (in order to build the .deb\ncp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" \"${BUILD_DIR}/../_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/\"\n\n\n#copy to the ATV\nscp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@plexatv.local:${TARGET_DIR}\nscp \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@plexatv.local:${TARGET_DIR}\n\n#restart UI\nssh root@plexatv.local 'killall AppleTV'\n#ssh root@apple-tv.local 'killall Lowtide'\n";
+			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\n\n#copy local (in order to build the .deb\ncp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/\"\n\n\n#copy to the ATV\nscp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@plexatv.local:${TARGET_DIR}\nscp \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@plexatv.local:${TARGET_DIR}\n\n#restart UI\nssh root@plexatv.local 'killall AppleTV'\n#ssh root@apple-tv.local 'killall Lowtide'\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -643,6 +650,11 @@
 			isa = PBXTargetDependency;
 			name = SMFramework;
 			targetProxy = 61C1BD8513FA49040083E8AC /* PBXContainerItemProxy */;
+		};
+		61D706B713FC542F00CDABBE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D5B49AC048680CD000E48DA /* plex */;
+			targetProxy = 61D706B613FC542F00CDABBE /* PBXContainerItemProxy */;
 		};
 		663DBDC61332B06C0007BB74 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
