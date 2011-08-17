@@ -20,6 +20,7 @@
 #import "PlexSecuritySettingsController.h"
 #import "HWUserDefaults.h"
 #import "Constants.h"
+#import "gitversion.h"
 
 @implementation HWSettingsController
 @synthesize topLevelController;
@@ -109,7 +110,7 @@
 	SMFMenuItem *pluginVersionNumberMenuItem = [SMFMenuItem menuItem];
 
 	[pluginVersionNumberMenuItem setTitle:@"Version"];
-	[pluginVersionNumberMenuItem setRightText:kPlexPluginVersion];
+	[pluginVersionNumberMenuItem setRightText:[NSString stringWithFormat:@"%@-%@", kPlexPluginVersion, PLEX_GIT_VERSION]];
     [_items addObject:pluginVersionNumberMenuItem];
 
 
