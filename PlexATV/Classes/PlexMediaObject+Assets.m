@@ -109,7 +109,7 @@
     [preview setShowsMetadataImmediately:![[HWUserDefaults preferences] boolForKey:PreferencesViewListPosterZoomingEnabled]];
     [preview setAsset:self.previewAsset];
     
-    return preview;
+    return [preview autorelease];
 }
 
 @end
