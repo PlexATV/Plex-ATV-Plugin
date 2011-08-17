@@ -95,7 +95,7 @@
 	HWPlexDir* menuController = [[HWPlexDir alloc] initWithRootContainer:channel andTabBar:nil];
 	[[[BRApplicationStackManager singleton] stack] pushController:menuController];
     
-    [menuController autorelease];
+    [menuController release];
 }
 
 
