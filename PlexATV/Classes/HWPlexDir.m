@@ -404,7 +404,7 @@
 		[optionDialogBox addOptionText:@"Go back"];
 		[optionDialogBox setActionSelector:@selector(optionSelected:) target:self];
 		[[self stack] pushController:optionDialogBox];
-		[optionDialogBox autorelease];
+		[optionDialogBox release];
 	}
 }
 
