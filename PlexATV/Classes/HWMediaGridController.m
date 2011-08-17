@@ -203,9 +203,7 @@ void checkNil(NSObject *ctrl)
     NSString *gridLabel = [NSString stringWithFormat:@"All %@", self.gridMediaContainer.name];
 	[div2 setLabel:gridLabel];
 	
-	CGRect dividerFrame;
-	dividerFrame.origin.x = 0;
-	dividerFrame.origin.y = boxFrame.size.height+10.f;
+	CGRect dividerFrame = CGRectMake(0, boxFrame.size.height+10.f, 0, 0);
 	[div2 setFrame:dividerFrame];
 	
 	
