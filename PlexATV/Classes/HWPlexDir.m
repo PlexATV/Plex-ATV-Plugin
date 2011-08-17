@@ -323,7 +323,7 @@
         [imageProxies addObject:[previewAsset imageProxy]];
     }   
     
-    id preview = [[[BRMediaParadeControl alloc] init] autorelease];
+    id preview = [[BRMediaParadeControl alloc] init];
     [preview setImageProxies:imageProxies];
     
 #if LOCAL_DEBUG_ENABLED
@@ -331,6 +331,8 @@
 #endif
     
     [data setObject:preview forKey:kParadeControl];
+    [preview release];
+
     [self performSelectorOnMainThread:@selector(finishedCreatingParade:) withObject:data waitUntilDone:NO];
     
     [pool drain];
