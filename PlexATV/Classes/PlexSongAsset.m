@@ -279,8 +279,10 @@
 	return nil;
 };
 - (id)dateCreated {
-	NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];  
-	return [dateFormatter dateFromString:[pmo.attributes valueForKey:@"originallyAvailableAt"]];
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSDate *date = [dateFormatter dateFromString:[pmo.attributes valueForKey:@"originallyAvailableAt"]];
+    [dateFormatter release];
+    return date;
 };
 - (id)dateCreatedString {
 	return [pmo.attributes valueForKey:@"originallyAvailableAt"];
