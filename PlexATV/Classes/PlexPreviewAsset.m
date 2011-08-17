@@ -54,6 +54,8 @@
 		//PlexRequest *req = pmo.request;
 		//DLog(@"PMO request attrs: %@", req);
 		//DLog(@"Ref = %x", [self mediaItemRef]);
+        shortDateFormatter = [[NSDateFormatter alloc] init];
+        [shortDateFormatter setDateStyle:NSDateFormatterShortStyle];
 	}
 	return self;
 }
@@ -62,6 +64,7 @@
 {
 	[pmo release];
 	[url release];
+    [shortDateFormatter release];
 	[super dealloc];
 }
 
@@ -70,9 +73,12 @@
 #pragma mark Helper Methods
 - (NSDate *)dateFromPlexDateString:(NSString *)dateString {
 	//format is 2001-11-06
-	NSDateFormatter *dateFormat = [[[NSDateFormatter alloc] init] autorelease];
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
-	return [dateFormat dateFromString:dateString];
+    NSDate *date = [dateFormat dateFromString:dateString];
+    [dateFormat release];
+
+	return date;
 }
 
 #pragma mark -
@@ -176,9 +182,7 @@
 }
 
 - (id)dateAcquiredString {
-    NSDateFormatter *dateFormat = [[[NSDateFormatter alloc] init] autorelease];
-    [dateFormat setDateStyle:NSDateFormatterShortStyle];
-    return [dateFormat stringFromDate:[self dateAcquired]];
+    return [shortDateFormatter stringFromDate:[self dateAcquired]];
 }
 
 - (id)dateCreated {
@@ -186,9 +190,7 @@
 }
 
 - (id)dateCreatedString {
-    NSDateFormatter *dateFormat = [[[NSDateFormatter alloc] init] autorelease];
-    [dateFormat setDateStyle:NSDateFormatterShortStyle];
-    return [dateFormat stringFromDate:[self dateCreated]];
+    return [shortDateFormatter stringFromDate:[self dateCreated]];
 }
 
 - (id)datePublished {
@@ -196,9 +198,7 @@
 }
 
 - (id)datePublishedString {
-    NSDateFormatter *dateFormat = [[[NSDateFormatter alloc] init] autorelease];
-    [dateFormat setDateStyle:NSDateFormatterShortStyle];
-    return [dateFormat stringFromDate:[self datePublished]];
+    return [shortDateFormatter stringFromDate:[self datePublished]];
 }
 
 - (id)directors {

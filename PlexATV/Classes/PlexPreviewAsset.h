@@ -34,6 +34,7 @@
 @interface PlexPreviewAsset : BRPhotoMediaAsset<BRMediaAsset> {
 	NSURL* url;
 	PlexMediaObject* pmo;
+    NSDateFormatter *shortDateFormatter;
 }
 @property (nonatomic, retain) PlexMediaObject* pmo;
 
