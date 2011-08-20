@@ -163,9 +163,14 @@
 }
 
 - (id)seasonCoverArt {
-    return [BRImage imageWithURL:self.seasonCoverArtRealURL];
-}
+    BRImage *coverImg = [BRImage imageWithURL:self.seasonCoverArtRealURL];
+    if (coverImg) {
+        return coverImg;
+    }
+    else
+        return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 
+}
 - (id)coverArt {
     DLog();
     BRImage *coverImg = [BRImage imageWithURL:self.coverArtRealURL];
@@ -580,8 +585,6 @@
         //no damn thumb nor art on the item, go for the parent then
         image = pmo.parentObject.thumb;
     }*/
-    
-    
     NSURL *imageURL = nil;
     if (image) {
         imageURL = [pmo.request pathForScaledImage:[image.imageURL absoluteString] ofSize:CGSizeMake(512, 512)];
@@ -595,7 +598,7 @@
     if (pmo.parentObject.thumb.hasImage) {
         image = pmo.parentObject.thumb;
     } else {
-        image = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+        image = pmo.thumb;
     }
 
     NSURL *imageURL = nil;
