@@ -383,17 +383,19 @@ typedef enum {
 	return [self.selectedMediaObject.previewAsset rating];
 }
 
--(BRImage *)coverArt {
-	BRImage *coverArt = nil;
-	if ([self.selectedMediaObject.previewAsset hasCoverArt]) {
-		coverArt = [self.selectedMediaObject.previewAsset coverArt];
-	} else {
-        coverArt = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+-(BRImage *)coverArt{
+    BRImage *coverArt = nil;
+    if ([self.selectedMediaObject.previewAsset hasCoverArt] && self.selectedMediaObject.isMovie) {
+        coverArt = [self.selectedMediaObject.previewAsset coverArt];
+    } 
+    else {
+        //TODO: Why does this say seasoncCoverArt not found??
+        coverArt = [self.selectedMediaObject.previewAsset seasonCoverArt];
     }
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"coverArt: %@", coverArt);
 #endif
-	return coverArt;
+    return coverArt;
 }
 
 - (NSURL *)backgroundImageUrl {

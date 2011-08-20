@@ -162,6 +162,10 @@
 	return nil;
 }
 
+- (id)seasonCoverArt {
+    return [BRImage imageWithURL:self.seasonCoverArtRealURL];
+}
+
 - (id)coverArt {
     BRImage *coverImg = [BRImage imageWithURL:self.coverArtRealURL];
     if (coverImg) {
@@ -170,6 +174,10 @@
     else
         return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 
+}
+
+- (NSString *)seasonCoverArtURL {
+    return [self.seasonCoverArtRealURL description];
 }
 
 - (NSString *)coverArtURL {
@@ -578,6 +586,22 @@
         imageURL = [pmo.request pathForScaledImage:[image.imageURL absoluteString] ofSize:CGSizeMake(512, 512)];
     }
     DLog("imageURL %@", imageURL);
+    return imageURL;
+}
+
+- (NSURL *)seasonCoverArtRealURL {
+    PlexImage *image = nil;
+    if (pmo.parentObject.thumb.hasImage) {
+        image = pmo.parentObject.thumb;
+    } else {
+        image = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+    }
+    
+    NSURL *imageURL = nil;
+    if (image) {
+        imageURL = [pmo.request pathForScaledImage:[image.imageURL absoluteString] ofSize:CGSizeMake(512, 512)];
+    }
+    DLog("imageURL %@", imageURL); //Do we really need this unless debugging?
     return imageURL;
 }
 
