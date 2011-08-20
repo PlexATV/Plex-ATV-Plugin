@@ -287,10 +287,16 @@ typedef enum {
 	DLog(@"subtitle: %@", [self.selectedMediaObject.previewAsset broadcaster]);
 #endif
     
-    if ([self.selectedMediaObject.previewAsset broadcaster])
-        return [self.selectedMediaObject.previewAsset broadcaster];
-    else
+    //If we selected a Movie show studio underneath title, if we selected a TVShow then display the season/episode information.
+    if (self.selectedMediaObject.isMovie && [self.selectedMediaObject.previewAsset broadcaster]!=nil) {
+        return ([self.selectedMediaObject.previewAsset broadcaster]);
+    }
+    else if ([self.selectedMediaObject.previewAsset season]) {
+        return [NSString stringWithFormat:@"Season %d - Episode %d", [self.selectedMediaObject.previewAsset season], [self.selectedMediaObject.previewAsset episode]];
+    }
+    else {
         return @"";
+    }
 }
 
 -(NSString *)summary {
