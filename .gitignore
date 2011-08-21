@@ -10,3 +10,4 @@ base64.js
 PlexATV/_deb/PLEX.frapplication/Applications/Lowtide.app/Appliances/PLEX.frappliance/plex
 PlexATV/_deb/Packages
 .DS_Store
+/PlexATV/Classes/gitversion.h
