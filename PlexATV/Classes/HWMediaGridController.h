@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Backrow/BRMediaShelfControl.h"
+#import "PlexMediaShelfView.h"
 
 @class PlexMediaContainer;
 
