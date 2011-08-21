@@ -132,9 +132,7 @@ void checkNil(NSObject *ctrl)
 	_scroller=[[BRScrollControl alloc] init];
 	
 	_gridControl=[[BRGridControl alloc] init];
-	
-	_shelfControl = [[BRMediaShelfControl alloc]init];
-	
+		
 	_panelControl = [[BRPanelControl alloc]init];
 	
 	
@@ -170,7 +168,7 @@ void checkNil(NSObject *ctrl)
 	 * Shelf
 	 */
 	DLog(@"shelf");
-	_shelfControl = [[BRMediaShelfControl alloc] init];
+	_shelfControl = [[PlexMediaShelfView alloc] init];
 	[_shelfControl setProvider:[self getProviderForShelf]];
 	[_shelfControl setColumnCount:7];
 	[_shelfControl setCentered:NO];
@@ -340,7 +338,7 @@ void checkNil(NSObject *ctrl)
 		NSArray *mediaObjects = nil;
 		
 		if ([_shelfControl isFocused]) {
-            index = [_shelfControl focusedIndex];
+            index = [_shelfControl focusedIndexCompat];
 			mediaObjects = self.shelfMediaObjects;
 #if LOCAL_DEBUG_ENABLED
 			DLog(@"item in shelf selected. mediaObjects: %d, index:%d",[mediaObjects count], index);
