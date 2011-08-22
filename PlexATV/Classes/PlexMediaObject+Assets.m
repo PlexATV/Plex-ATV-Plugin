@@ -69,15 +69,16 @@
         PlexPreviewAsset *previewAsset = [self previewAsset];
         
 		if ([self.type isEqualToString:PlexMediaObjectTypeEpisode]) {
-            NSString *detailedText = [NSString stringWithFormat:@"Season %d, Episode %d (%@)", [previewAsset season], [previewAsset episode], [previewAsset seriesName]];
-			[menuItem setDetailedText:detailedText withAttributes:nil];
-                
+            NSString *setText = [NSString stringWithFormat:@"%@. %@",[previewAsset episodeNumber],[self name]];
+            [menuItem setText:setText withAttributes:[[BRThemeInfo sharedTheme] metadataTitleAttributes]];
+            [menuItem setRightJustifiedText:[previewAsset datePublishedString] withAttributes:nil];
 		} else {
             NSString *detailedText = previewAsset.year ? previewAsset.year : @" ";
-			[menuItem setDetailedText:detailedText withAttributes:nil];
             if ([previewAsset isHD]) {
                 [menuItem addAccessoryOfType:11];
+			[menuItem setDetailedText:detailedText withAttributes:nil];
             }
+            [menuItem setText:[self name] withAttributes:nil];
 		}
         
     } else {
