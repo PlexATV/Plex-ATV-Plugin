@@ -279,9 +279,12 @@ typedef enum {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"title: %@", [self.selectedMediaObject.previewAsset title]);
 #endif
-	return [self.selectedMediaObject.previewAsset title];
+    if (self.selectedMediaObject.isEpisode){
+        return [NSString stringWithFormat:@"%d. %@", [self.selectedMediaObject.previewAsset episode], [self.selectedMediaObject.previewAsset title]];
+    } else {
+        return [self.selectedMediaObject.previewAsset title];
+    }
 }
-
 -(NSString *)subtitle {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"subtitle: %@", [self.selectedMediaObject.previewAsset broadcaster]);
@@ -292,7 +295,7 @@ typedef enum {
         return ([self.selectedMediaObject.previewAsset broadcaster]);
     }
     else if ([self.selectedMediaObject.previewAsset season]) {
-        return [NSString stringWithFormat:@"Season %d - Episode %d", [self.selectedMediaObject.previewAsset season], [self.selectedMediaObject.previewAsset episode]];
+       return [NSString stringWithFormat:@"%@, Season %d", [self.selectedMediaObject.previewAsset seriesName], [self.selectedMediaObject.previewAsset season]];
     }
     else {
         return @"";
