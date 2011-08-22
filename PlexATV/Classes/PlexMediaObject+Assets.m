@@ -63,8 +63,6 @@
 		}
         [menuItem setImageAspectRatio:0.5];
 		
-        [menuItem setText:[self name] withAttributes:nil];
-		
         //used to get details about the show, instead of gettings attrs here manually
         PlexPreviewAsset *previewAsset = [self previewAsset];
         
@@ -76,8 +74,8 @@
             NSString *detailedText = previewAsset.year ? previewAsset.year : @" ";
             if ([previewAsset isHD]) {
                 [menuItem addAccessoryOfType:11];
-			[menuItem setDetailedText:detailedText withAttributes:nil];
             }
+            [menuItem setDetailedText:detailedText withAttributes:nil];
             [menuItem setText:[self name] withAttributes:nil];
 		}
         
