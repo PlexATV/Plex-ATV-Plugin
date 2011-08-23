@@ -422,13 +422,16 @@ typedef enum {
     // deleteActionImage, menuActionUnfocusedImage, playActionImage,
     // previewActionImage, queueActionImage, rateActionImage
 	NSMutableArray *buttons = [NSMutableArray array];
-	
-	BRButtonControl* b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]playActionImage] 
-                                                       subtitle:@"Play"
-                                                          badge:nil];
-	[b setIdentifier:[NSNumber numberWithInt:kPlayButton]];	
-	[buttons addObject:b];
-	
+	BRButtonControl* b = nil;
+    BRImage *playActionHighlighted = [[BRThemeInfo sharedTheme]playActionHighlightedImage];
+    BRImage *moreActionHighlighted = [[BRThemeInfo sharedTheme]moreActionHighlightedImage]; 
+    BRImage *audioSubOFF =[BRImage imageWithPath: [[NSBundle bundleForClass:[self class]] pathForResource:@"PlexAudioSubsON" ofType:@"png"]];
+    BRImage *audioSubON =[BRImage imageWithPath: [[NSBundle bundleForClass:[self class]] pathForResource:@"PlexAudioSubsON" ofType:@"png"]];
+    
+    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]playActionImage] subtitle:@"Play" badge:nil];
+        [b setIdentifier:[NSNumber numberWithInt:kPlayButton]];
+        [b setHighlightedImage:playActionHighlighted];
+        [buttons addObject:b];
     /*
      b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]previewActionImage] 
      subtitle:@"Preview" 
@@ -436,18 +439,15 @@ typedef enum {
      [b setIdentifier:[NSNumber numberWithInt:kPreviewButton]];
      [buttons addObject:b];
      */
-    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]queueActionImage] 
-                                      subtitle:@"Audio/Subs" 
-                                         badge:nil];
-    [b setIdentifier:[NSNumber numberWithInt:kAudioSubsButton]];
-    [buttons addObject:b];
-    
-    
-    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]moreActionImage] 
-                                      subtitle:@"More" 
-                                         badge:nil];
-    [b setIdentifier:[NSNumber numberWithInt:kMoreButton]];
-    [buttons addObject:b];
+    b = [BRButtonControl actionButtonWithImage:audioSubOFF subtitle:@"Audio/Subs" badge:nil];
+        [b setIdentifier:[NSNumber numberWithInt:kAudioSubsButton]];
+        [b setHighlightedImage:audioSubON];
+        [buttons addObject:b];
+
+    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]moreActionImage] subtitle:@"More" badge:nil];
+        [b setHighlightedImage:moreActionHighlighted];
+        [b setIdentifier:[NSNumber numberWithInt:kMoreButton]];
+        [buttons addObject:b];
     
     
     return buttons;
