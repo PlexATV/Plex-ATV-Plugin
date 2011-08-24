@@ -423,7 +423,7 @@ typedef enum {
     // previewActionImage, queueActionImage, rateActionImage
 	NSMutableArray *buttons = [NSMutableArray array];
 	BRButtonControl* b = nil;
-    BRImage *audioSubOFF =[BRImage imageWithPath: [[NSBundle bundleForClass:[self class]] pathForResource:@"PlexAudioSubsON" ofType:@"png"]];
+    BRImage *audioSubOFF =[BRImage imageWithPath: [[NSBundle bundleForClass:[self class]] pathForResource:@"PlexAudioSubsOFF" ofType:@"png"]];
     BRImage *audioSubON =[BRImage imageWithPath: [[NSBundle bundleForClass:[self class]] pathForResource:@"PlexAudioSubsON" ofType:@"png"]];
     
     b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]playActionImage] subtitle:@"Play" badge:nil];
