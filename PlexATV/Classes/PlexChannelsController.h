@@ -11,14 +11,14 @@
 @class PlexMediaObject;
 
 @interface PlexChannelsController : SMFMediaMenuController {
-	PlexMediaContainer* rootContainer;
-	PlexMediaObject* playbackItem;
+    PlexMediaContainer *rootContainer;
+    PlexMediaObject *playbackItem;
 }
 
-@property (readwrite, retain) PlexMediaContainer* rootContainer;
-- (void)log:(NSNotificationCenter *)note;
+@property (readwrite, retain) PlexMediaContainer *rootContainer;
+- (void)log:(NSNotificationCenter*)note;
 
-- (id) initWithRootContainer:(PlexMediaContainer*)container;
+- (id)initWithRootContainer:(PlexMediaContainer*)container;
 //list provider
 - (float)heightForRow:(long)row;
 - (long)itemCount;

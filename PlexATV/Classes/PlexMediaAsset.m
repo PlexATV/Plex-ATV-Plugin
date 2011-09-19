@@ -9,10 +9,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in
 //  all copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
-//  
+//
 #import "PlexMediaAsset.h"
 #import <plex-oss/PlexMediaObject.h>
 #import <plex-oss/PlexMediaContainer.h>
@@ -38,405 +38,405 @@
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
-- (id) initWithURL:(NSURL*)u mediaProvider:(id)mediaProvider  mediaObject:(PlexMediaObject*)o {
+- (id)initWithURL:(NSURL*)u mediaProvider:(id)mediaProvider mediaObject:(PlexMediaObject*)o {
     //self = [super initWithMediaProvider:mediaProvider];
     //self = [super streamingMediaAssetWithMediaItem:o];
-	self = [super initWithMediaProvider:mediaProvider];
-	if (self != nil) {
-		pmo = [o retain];
-		url = [u retain];
-		ppa = [[PlexPreviewAsset alloc] initWithURL:url mediaProvider:mediaProvider mediaObject:pmo];
-		
-		//DLog(@"PMO attrs: %@", pmo.attributes);
-		//PlexRequest *req = pmo.request;
-		//DLog(@"PMO request attrs: %@", req);
-		//DLog(@"Ref = %x", [self mediaItemRef]);
-	}
-	return self;
+    self = [super initWithMediaProvider:mediaProvider];
+    if (self != nil) {
+        pmo = [o retain];
+        url = [u retain];
+        ppa = [[PlexPreviewAsset alloc] initWithURL:url mediaProvider:mediaProvider mediaObject:pmo];
+
+        //DLog(@"PMO attrs: %@", pmo.attributes);
+        //PlexRequest *req = pmo.request;
+        //DLog(@"PMO request attrs: %@", req);
+        //DLog(@"Ref = %x", [self mediaItemRef]);
+    }
+    return self;
 }
 
-- (void) dealloc {
-	DLog(@"deallocing media asset for %@", pmo.name);
-	[pmo release];
-	[url release];
-	[ppa release];
-	[super dealloc];
+- (void)dealloc {
+    DLog(@"deallocing media asset for %@", pmo.name);
+    [pmo release];
+    [url release];
+    [ppa release];
+    [super dealloc];
 }
 
 
 #pragma mark -
 #pragma mark BRMediaAsset
 //- (void *)createMovieWithProperties:(void *)properties count:(long)count {
-//	
+//
 //}
 
 - (id)artistCollection {
-	return [ppa artistCollection];
+    return [ppa artistCollection];
 }
 
 - (id)artistForSorting {
-	return [ppa artistForSorting];
+    return [ppa artistForSorting];
 }
 
 - (id)assetID {
-	return [ppa assetID];
+    return [ppa assetID];
 }
 
 - (id)authorName {
-	return [ppa authorName];;
+    return [ppa authorName];;
 }
 
 - (unsigned int)bookmarkTimeInSeconds {
-	return [ppa bookmarkTimeInSeconds];
+    return [ppa bookmarkTimeInSeconds];
 }
 
 - (void)setBookmarkTimeInSeconds:(unsigned int)fp8 {
-	[ppa setBookmarkTimeInSeconds:fp8];
+    [ppa setBookmarkTimeInSeconds:fp8];
 }
 
 - (unsigned int)bookmarkTimeInMS {
-	return [ppa bookmarkTimeInMS];
+    return [ppa bookmarkTimeInMS];
 }
 
 - (void)setBookmarkTimeInMS:(unsigned int)fp8 {
-	[ppa setBookmarkTimeInMS:fp8];
+    [ppa setBookmarkTimeInMS:fp8];
 }
 
 - (id)broadcaster {
-	return [ppa broadcaster];
+    return [ppa broadcaster];
 }
 
 - (BOOL)canBePlayedInShuffle {
-	return [ppa canBePlayedInShuffle];
+    return [ppa canBePlayedInShuffle];
 }
 
 - (id)cast {
-	return [ppa cast];
+    return [ppa cast];
 }
 
 - (id)category {
-	return [ppa category];
+    return [ppa category];
 }
 
 - (void)cleanUpPlaybackContext {
-	[ppa cleanUpPlaybackContext];
+    [ppa cleanUpPlaybackContext];
 }
 
 - (BOOL)closedCaptioned {
-	return [ppa closedCaptioned];
+    return [ppa closedCaptioned];
 }
 
 - (id)collections {
-	return [ppa collections];
+    return [ppa collections];
 }
 
 - (id)composer {
-	return [ppa authorName];
+    return [ppa authorName];
 }
 
 - (id)composerForSorting {
-	return [ppa authorName];
+    return [ppa authorName];
 }
 
 - (id)copyright {
-	return [ppa copyright];
+    return [ppa copyright];
 }
 
 - (id)dateAcquired {
-	return [ppa dateAcquired];
+    return [ppa dateAcquired];
 }
 
 - (id)dateAcquiredString {
-	return [ppa dateAcquiredString];
+    return [ppa dateAcquiredString];
 }
 
 - (id)dateCreated {
-	return [ppa dateCreated];
+    return [ppa dateCreated];
 }
 
 - (id)dateCreatedString {
-	return [ppa dateCreatedString];
+    return [ppa dateCreatedString];
 }
 
 - (id)datePublished {
-	return [ppa datePublished];
+    return [ppa datePublished];
 }
 
 - (id)datePublishedString {
-	return [ppa datePublishedString];
+    return [ppa datePublishedString];
 }
 
 - (id)directors {
-	return [ppa directors];
+    return [ppa directors];
 }
 
 - (BOOL)dolbyDigital {
-	return [ppa dolbyDigital];
+    return [ppa dolbyDigital];
 }
 
--(long int)duration {
-	return [ppa duration];
+- (long int)duration {
+    return [ppa duration];
 }
 
 - (unsigned)episode {
-	return [ppa episode];
+    return [ppa episode];
 }
 
 - (id)episodeNumber {
-	return [ppa episodeNumber];
+    return [ppa episodeNumber];
 }
 
 - (id)genres {
-	return [ppa genres];
+    return [ppa genres];
 }
 
 - (int)grFormat {
-	return [ppa grFormat];
+    return [ppa grFormat];
 }
 
 - (BOOL)hasBeenPlayed {
-	return [ppa hasBeenPlayed];
+    return [ppa hasBeenPlayed];
 }
 
 - (void)setHasBeenPlayed:(BOOL)fp8 {
-	[ppa setHasBeenPlayed:fp8];
+    [ppa setHasBeenPlayed:fp8];
 }
 
 - (BOOL)hasCoverArt {
-	return [ppa hasCoverArt];
+    return [ppa hasCoverArt];
 }
 
 - (BOOL)hasVideoContent {
-	return [ppa hasVideoContent];
+    return [ppa hasVideoContent];
 }
 
 - (id)imageProxy {
-	return [ppa imageProxy];
+    return [ppa imageProxy];
 }
 
 - (id)imageProxyWithBookMarkTimeInMS:(unsigned int)fp8 {
-	return [ppa imageProxyWithBookMarkTimeInMS:fp8];
+    return [ppa imageProxyWithBookMarkTimeInMS:fp8];
 }
 
 - (void)incrementPerformanceCount {
-	[ppa incrementPerformanceCount];
+    [ppa incrementPerformanceCount];
 }
 
 - (void)incrementPerformanceOrSkipCount:(unsigned)count {
-	[ppa incrementPerformanceOrSkipCount:count];
+    [ppa incrementPerformanceOrSkipCount:count];
 }
 
 - (BOOL)isAvailable {
-	return [ppa isAvailable];
+    return [ppa isAvailable];
 }
 
 - (BOOL)isCheckedOut {
-	return [ppa isCheckedOut];
+    return [ppa isCheckedOut];
 }
 
 - (BOOL)isDisabled {
-	return [ppa isDisabled];
+    return [ppa isDisabled];
 }
 
 - (BOOL)isExplicit {
-	return [ppa isExplicit];
+    return [ppa isExplicit];
 }
 
-- (BOOL)isHD{
-	return [ppa isHD];
+- (BOOL)isHD {
+    return [ppa isHD];
 }
 
 - (BOOL)isInappropriate {
-	return [ppa isInappropriate];
+    return [ppa isInappropriate];
 }
 
 - (BOOL)isLocal {
-	return [ppa isLocal];
+    return [ppa isLocal];
 }
 
 - (BOOL)isPlaying {
-	return [ppa isPlaying];
+    return [ppa isPlaying];
 }
 
 - (BOOL)isPlayingOrPaused {
-	return [ppa isPlayingOrPaused];
+    return [ppa isPlayingOrPaused];
 }
 
 - (BOOL)isProtectedContent {
-	return [ppa isProtectedContent];
+    return [ppa isProtectedContent];
 }
 
 - (BOOL)isWidescreen {
-	return [ppa isWidescreen];
+    return [ppa isWidescreen];
 }
 
 - (id)keywords {
-	return [ppa keywords];
+    return [ppa keywords];
 }
 
 - (id)lastPlayed {
-	return [ppa lastPlayed];
+    return [ppa lastPlayed];
 }
 
 - (void)setLastPlayed:(id)fp8 {
-	[ppa setLastPlayed:fp8];
+    [ppa setLastPlayed:fp8];
 }
 
 - (id)mediaDescription {
-	return [ppa mediaDescription];
+    return [ppa mediaDescription];
 }
 
 - (id)mediaSummary {
-	return [ppa mediaSummary];
+    return [ppa mediaSummary];
 }
 
 - (id)mediaType {
 #pragma mark only different one
-	return [BRMediaType sedonaMovie];
+    return [BRMediaType sedonaMovie];
 }
 
-- (NSString *)mediaURL{
-	return [ppa mediaURL];
+- (NSString*)mediaURL {
+    return [ppa mediaURL];
 }
 
 - (long)parentalControlRatingRank {
-	return [ppa parentalControlRatingRank];
+    return [ppa parentalControlRatingRank];
 }
 
 - (long)parentalControlRatingSystemID {
-	return [ppa parentalControlRatingSystemID];
+    return [ppa parentalControlRatingSystemID];
 }
 
 - (long)performanceCount {
-	return [ppa performanceCount];
+    return [ppa performanceCount];
 }
 
 - (int)physicalMediaID {
-	return [ppa physicalMediaID];
+    return [ppa physicalMediaID];
 }
 
 - (BOOL)playable {
-	return [ppa playable];
+    return [ppa playable];
 }
 
--(id)playbackMetadata {
-	return [ppa playbackMetadata];
+- (id)playbackMetadata {
+    return [ppa playbackMetadata];
 }
 
 - (id)playbackRightsOwner {
-	return [ppa playbackRightsOwner];
+    return [ppa playbackRightsOwner];
 }
 
 - (void)preparePlaybackContext {
-	[ppa preparePlaybackContext];
+    [ppa preparePlaybackContext];
 }
 
 - (id)previewURL {
-	return [ppa previewURL];
+    return [ppa previewURL];
 }
 
 - (int)primaryCollectionOrder {
-	return [ppa primaryCollectionOrder];
+    return [ppa primaryCollectionOrder];
 }
 
 - (id)primaryCollectionTitle {
-	return [ppa primaryCollectionTitle];
+    return [ppa primaryCollectionTitle];
 }
 
 - (id)primaryCollectionTitleForSorting {
-	return [ppa primaryCollectionTitleForSorting];
+    return [ppa primaryCollectionTitleForSorting];
 }
 
 - (id)primaryGenre {
-	return [ppa primaryGenre];
+    return [ppa primaryGenre];
 }
 
 - (id)producers {
-	return [ppa producers];
+    return [ppa producers];
 }
 
 - (id)provider {
-	return [ppa provider];
+    return [ppa provider];
 }
 
 - (id)publisher {
-	return [ppa publisher];
+    return [ppa publisher];
 }
 
 - (id)rating {
-	return [ppa rating];
+    return [ppa rating];
 }
 
 - (id)resolution {
-	return [ppa resolution];
+    return [ppa resolution];
 }
 
 - (unsigned)season {
-	return [ppa season];
+    return [ppa season];
 }
 
 - (id)seriesName {
-	return [ppa seriesName];
+    return [ppa seriesName];
 }
 
 - (id)seriesNameForSorting {
-	return [ppa seriesNameForSorting];
+    return [ppa seriesNameForSorting];
 }
 
 - (void)skip {
-	[ppa skip];
+    [ppa skip];
 }
 
 - (id)sourceID {
-	return [ppa sourceID];
+    return [ppa sourceID];
 }
 
 - (float)starRating {
-	return [ppa starRating];
+    return [ppa starRating];
 }
 
 - (unsigned)startTimeInMS {
-	return [ppa startTimeInMS];
+    return [ppa startTimeInMS];
 }
 
 - (unsigned)startTimeInSeconds {
-	return [ppa startTimeInSeconds];
+    return [ppa startTimeInSeconds];
 }
 
 - (unsigned)stopTimeInMS {
-	return [ppa stopTimeInMS];
+    return [ppa stopTimeInMS];
 }
 
 - (unsigned)stopTimeInSeconds {
-	return [ppa stopTimeInSeconds];
+    return [ppa stopTimeInSeconds];
 }
 
--(id)title {
-	return [ppa title];
+- (id)title {
+    return [ppa title];
 }
 
 - (id)titleForSorting {
-	return [ppa titleForSorting];
+    return [ppa titleForSorting];
 }
 
 - (id)trickPlayURL {
-	return [ppa trickPlayURL];
+    return [ppa trickPlayURL];
 }
 
 - (void)setUserStarRating:(float)fp8 {
-	[ppa setUserStarRating:fp8];
+    [ppa setUserStarRating:fp8];
 }
 
 - (float)userStarRating {
-	return [ppa userStarRating];
+    return [ppa userStarRating];
 }
 
 - (id)viewCount {
-	return [ppa viewCount];
+    return [ppa viewCount];
 }
 
 - (void)willBeDeleted {
-	return [ppa willBeDeleted];
+    return [ppa willBeDeleted];
 }
 
 @end

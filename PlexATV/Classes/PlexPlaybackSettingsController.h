@@ -4,7 +4,7 @@
 //
 //  Created by bob on 10/01/2011.
 //
-//  Inspired by 
+//  Inspired by
 //
 //		MLoader.m
 //		MextLoader

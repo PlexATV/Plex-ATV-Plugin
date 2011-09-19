@@ -2,7 +2,7 @@
 #import <plex-oss/MachineManager.h>
 @interface HWBasicMenu : BRMediaMenuController<MachineManagerDelegate> {
 
-	NSMutableArray		*_names;
+    NSMutableArray      *_names;
 
 }
 //list provider

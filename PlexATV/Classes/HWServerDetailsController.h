@@ -11,34 +11,34 @@
 #import <plex-oss/MachineConnectionBase.h>
 
 @interface HWServerDetailsController : SMFMediaMenuController <TestAndConditionallyAddConnectionProtocol, MachineManagerDelegate, SMFListDropShadowDatasource,SMFListDropShadowDelegate> {
-	Machine *_machine;
-	BRWaitPromptControl *waitPromptControl;
-	SMFListDropShadowControl *listDropShadowControl; //popup
-	
-	//add new machine flags
-	BOOL isCreatingNewMachine;
-	BOOL hasCompletedAddNewMachineWithConnectionWizardStep1; //if completed proceed to step 2
-	BOOL hasCompletedAddNewMachineWithConnectionWizardStep2; //if completed proceed to step 3
-	
-	//editing machine specific flags
-	BOOL isEditingServerName;
-	BOOL isEditingUserName;
-	BOOL isEditingPassword;
-	BOOL isDeletingMachine;
-	
-	//add new connection flags
-	BOOL isCreatingNewConnection;
-	BOOL hasCompletedAddNewConnectionWizardStep1; //if completed proceed to step 2
-	
-	//editing connection specific variables
-	BOOL isDeletingConnection;
-	MachineConnectionBase *_selectedConnection;
-	
-	NSString *_serverName;
-	NSString *_userName;
-	NSString *_password;
-	NSString *_hostName;
-	uint _portNumber;
+    Machine *_machine;
+    BRWaitPromptControl *waitPromptControl;
+    SMFListDropShadowControl *listDropShadowControl; //popup
+
+    //add new machine flags
+    BOOL isCreatingNewMachine;
+    BOOL hasCompletedAddNewMachineWithConnectionWizardStep1; //if completed proceed to step 2
+    BOOL hasCompletedAddNewMachineWithConnectionWizardStep2; //if completed proceed to step 3
+
+    //editing machine specific flags
+    BOOL isEditingServerName;
+    BOOL isEditingUserName;
+    BOOL isEditingPassword;
+    BOOL isDeletingMachine;
+
+    //add new connection flags
+    BOOL isCreatingNewConnection;
+    BOOL hasCompletedAddNewConnectionWizardStep1; //if completed proceed to step 2
+
+    //editing connection specific variables
+    BOOL isDeletingConnection;
+    MachineConnectionBase *_selectedConnection;
+
+    NSString *_serverName;
+    NSString *_userName;
+    NSString *_password;
+    NSString *_hostName;
+    uint _portNumber;
 }
 @property (retain) Machine *machine;
 @property (copy) NSString *serverName;
@@ -50,26 +50,26 @@
 
 //custom methods
 - (id)initAndShowAddNewMachineWizard;
-- (id)initWithMachine:(Machine *)machine;
+- (id)initWithMachine:(Machine*)machine;
 
 - (BOOL)isExcludedFromServerList;
 
 - (void)startAddNewMachineWizard;
-- (void)addNewMachineWizardWithInput:(NSString *)input;
+- (void)addNewMachineWizardWithInput:(NSString*)input;
 - (void)startAddNewConnectionWizard;
-- (void)addNewConnectionWizardWithInput:(NSString *)input;
+- (void)addNewConnectionWizardWithInput:(NSString*)input;
 
-- (void)showEnterHostNameDialogBoxWithInitialText:(NSString *)initalText;
-- (void)showEnterPortNumberDialogBoxWithInitialText:(NSString *)initalText;
-- (void)showEnterServerNameDialogBoxWithInitialText:(NSString *)initalText;
-- (void)showEnterUsernameDialogBoxWithInitialText:(NSString *)initalText;
-- (void)showEnterPasswordDialogBoxWithInitialText:(NSString *)initalText;
+- (void)showEnterHostNameDialogBoxWithInitialText:(NSString*)initalText;
+- (void)showEnterPortNumberDialogBoxWithInitialText:(NSString*)initalText;
+- (void)showEnterServerNameDialogBoxWithInitialText:(NSString*)initalText;
+- (void)showEnterUsernameDialogBoxWithInitialText:(NSString*)initalText;
+- (void)showEnterPasswordDialogBoxWithInitialText:(NSString*)initalText;
 
-- (void)showDialogBoxWithTitle:(NSString *)title secondaryInfoText:(NSString *)infoText deviceTitle:(NSString *)deviceTitle deviceSecondaryInfoText:(NSString *)deviceInfoText textFieldLabel:(NSString *)textFieldLabel withInitialText:(NSString *)initialText usingSecureText:(BOOL)useSecureText;
+- (void)showDialogBoxWithTitle:(NSString*)title secondaryInfoText:(NSString*)infoText deviceTitle:(NSString*)deviceTitle deviceSecondaryInfoText:(NSString*)deviceInfoText textFieldLabel:(NSString*)textFieldLabel withInitialText:(NSString*)initialText usingSecureText:(BOOL)useSecureText;
 
-- (void)showEditConnectionViewForConnection:(MachineConnectionBase *)connection;
+- (void)showEditConnectionViewForConnection:(MachineConnectionBase*)connection;
 
-- (NSString *)rightTextForRow:(long)row;
+- (NSString*)rightTextForRow:(long)row;
 //list provider
 - (float)heightForRow:(long)row;
 - (long)itemCount;

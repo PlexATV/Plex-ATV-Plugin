@@ -10,14 +10,14 @@
 #import "PlexMediaShelfView.h"
 
 @protocol Plex_SMFMoviePreviewControllerDatasource <SMFMoviePreviewControllerDatasource>
-- (NSURL *)backgroundImageUrl;
-- (NSArray *)flags;
+- (NSURL*)backgroundImageUrl;
+- (NSArray*)flags;
 @end
 
 @protocol Plex_SMFMoviePreviewControllerDelegate <SMFMoviePreviewControllerDelegate>
 @optional
--(void)controller:(SMFMoviePreviewController *)c playButtonEventOnButtonAtIndex:(int)index;
--(void)controller:(SMFMoviePreviewController *)c playButtonEventInShelf:(PlexMediaShelfView *)shelfControl;
+- (void)controller:(SMFMoviePreviewController*)c playButtonEventOnButtonAtIndex:(int)index;
+- (void)controller:(SMFMoviePreviewController*)c playButtonEventInShelf:(PlexMediaShelfView*)shelfControl;
 @end
 
 @interface Plex_SMFMoviePreviewController : SMFMoviePreviewController {}

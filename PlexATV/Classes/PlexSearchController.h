@@ -30,13 +30,13 @@
 - (void)playPauseActionForRow:(long)row;
 
 //search
-- (void)finishedSearch:(NSDictionary *)data;
-- (void)performSearch:(NSMutableDictionary *)data;
+- (void)finishedSearch:(NSDictionary*)data;
+- (void)performSearch:(NSMutableDictionary*)data;
 - (void)startSearch;
 
 //custom
 @property (retain) Machine *machine;
 @property (retain) PlexMediaContainer *currentSearchMediaContainer;
-- (id)initWithMachine:(Machine *)aMachine;
+- (id)initWithMachine:(Machine*)aMachine;
 
 @end

@@ -9,10 +9,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in
 //  all copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
-//  
+//
 #import "PlexSongAsset.h"
 #import <plex-oss/PlexMediaObject.h>
 #import <plex-oss/PlexMediaContainer.h>
@@ -33,439 +33,438 @@
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
-- (id) initWithURL:(NSURL*)u mediaProvider:(id)mediaProvider  mediaObject:(PlexMediaObject*)o
-{
-	self = [super init];
-	if (self != nil) {
-		pmo = [o retain];
+- (id)initWithURL:(NSURL*)u mediaProvider:(id)mediaProvider mediaObject:(PlexMediaObject*)o {
+    self = [super init];
+    if (self != nil) {
+        pmo = [o retain];
 
-    //TODO: Frank, why is this needed? it's nil otherwise
-    [pmo.mediaContainer retain]; 
-    
-		url = [u retain];
-		DLog(@"PMO attrs: %@", pmo.attributes);
-		//PlexRequest *req = pmo.request;
-		//DLog(@"PMO request attrs: %@", req);
-		DLog(@"SongAsset-PMO MediaContainer attrs: %@", pmo.mediaContainer.attributes);
-		//DLog(@"Ref = %x", [self mediaItemRef]);
-	}
-	return self;
+        //TODO: Frank, why is this needed? it's nil otherwise
+        [pmo.mediaContainer retain];
+
+        url = [u retain];
+        DLog(@"PMO attrs: %@", pmo.attributes);
+        //PlexRequest *req = pmo.request;
+        //DLog(@"PMO request attrs: %@", req);
+        DLog(@"SongAsset-PMO MediaContainer attrs: %@", pmo.mediaContainer.attributes);
+        //DLog(@"Ref = %x", [self mediaItemRef]);
+    }
+    return self;
 }
 
-- (void) dealloc
-{
-	DLog(@"deallocing song asset");
-	[pmo release];
-	[url release];
-	[super dealloc];
+- (void)dealloc {
+    DLog(@"deallocing song asset");
+    [pmo release];
+    [url release];
+    [super dealloc];
 }
 
-- (NSString*)assetID{
+- (NSString*)assetID {
     DLog(@"Asset: %@", pmo.key);
-	return pmo.key;
+    return pmo.key;
 }
 
-- (NSString*)mediaURL{
+- (NSString*)mediaURL {
     DLog(@"track url: %@", [url description]);
     return [url description];
 }
 
--(id)playbackMetadata{
-	DLog(@"Metadata");
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithLong:self.duration], @"duration",
-			self.mediaURL, @"mediaURL",
-			self.assetID, @"id",
-			nil];
+- (id)playbackMetadata {
+    DLog(@"Metadata");
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+            [NSNumber numberWithLong:self.duration], @"duration",
+            self.mediaURL, @"mediaURL",
+            self.assetID, @"id",
+            nil];
 }
 
-- (id)mediaType{
-	return [BRMediaType song];
+- (id)mediaType {
+    return [BRMediaType song];
 }
 
--(long int)duration{
-	DLog(@"Duration: %d, Totaltime: %d",[pmo.attributes integerForKey:@"duration"]/1000, [pmo.attributes integerForKey:@"totalTime"]/1000);
-	
-	int _duration = [pmo.attributes integerForKey:@"duration"]/1000;
-	if (!(_duration > 0))
-		_duration = [pmo.attributes integerForKey:@"totalTime"]/1000;
-	
-	return _duration;
+- (long int)duration {
+    DLog(@"Duration: %d, Totaltime: %d",[pmo.attributes integerForKey:@"duration"] / 1000, [pmo.attributes integerForKey:@"totalTime"] / 1000);
+
+    int _duration = [pmo.attributes integerForKey:@"duration"] / 1000;
+    if ( !(_duration > 0) )
+        _duration = [pmo.attributes integerForKey:@"totalTime"] / 1000;
+
+    return _duration;
 }
 
 
 #pragma mark BRMediaAsset
 - (id)provider {
-	return nil;
+    return nil;
 }
 
 - (id)titleForSorting {
-	return pmo.name;
+    return pmo.name;
 };
 
--(id)title {
-	return pmo.name;  
+- (id)title {
+    return pmo.name;
 }
 
 - (id)mediaDescription {
-	return nil;
+    return nil;
 };
 
 - (id)mediaSummary {
-	return nil;
+    return nil;
 };
 
 - (id)previewURL {
-	[super previewURL];
-	DLog(@"previewURL");
-	return nil;//[[NSURL fileURLWithPath:[pmo.thumb imagePath]] absoluteString];
+    [super previewURL];
+    DLog(@"previewURL");
+    return nil; //[[NSURL fileURLWithPath:[pmo.thumb imagePath]] absoluteString];
 };
 
 
 - (id)imageProxy {
-	DLog(@"imageproxy for media obj: %@",pmo);
-	
-	NSString *thumbURL=@"";
-	
+    DLog(@"imageproxy for media obj: %@",pmo);
+
+    NSString *thumbURL = @"";
+
     //HACK: need to support both regular music and itunes plugin. thumbs are stored in different objects...
-	if ([pmo.mediaContainer.attributes valueForKey:@"thumb"] != nil){
-		thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.mediaContainer.attributes valueForKey:@"thumb"]];
-		return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
-	} 
-	else if ([pmo.attributes valueForKey:@"thumb"] != nil){
-		thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.attributes valueForKey:@"thumb"]];
-		return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
-	}   
-	else if ([pmo.mediaContainer.attributes valueForKey:@"art"] != nil){
-		thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.mediaContainer.attributes valueForKey:@"art"]];
-		return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
-	} 
-	else if ([pmo.attributes valueForKey:@"art"] != nil){
-		thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.attributes valueForKey:@"art"]];
-		return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
-	}	
-	else
-		return nil;
+    if ([pmo.mediaContainer.attributes valueForKey:@"thumb"] != nil) {
+        thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.mediaContainer.attributes valueForKey:@"thumb"]];
+        return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
+    }
+    else if ([pmo.attributes valueForKey:@"thumb"] != nil) {
+        thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.attributes valueForKey:@"thumb"]];
+        return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
+    }
+    else if ([pmo.mediaContainer.attributes valueForKey:@"art"] != nil) {
+        thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.mediaContainer.attributes valueForKey:@"art"]];
+        return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
+    }
+    else if ([pmo.attributes valueForKey:@"art"] != nil) {
+        thumbURL = [NSString stringWithFormat:@"%@%@",pmo.request.base, [pmo.attributes valueForKey:@"art"]];
+        return [BRURLImageProxy proxyWithURL:[NSURL URLWithString:thumbURL]];
+    }
+    else
+        return nil;
 };
 
 - (id)imageProxyWithBookMarkTimeInMS:(unsigned int)fp8 {
-	DLog(@"imageProxyWithBookMarkTimeInMS");
-	return [self imageProxy];
+    DLog(@"imageProxyWithBookMarkTimeInMS");
+    return [self imageProxy];
 };
 - (BOOL)hasCoverArt {
-	return YES;
+    return YES;
 };
 
 - (id)trickPlayURL {
-	return nil;
+    return nil;
 };
 
 - (id)artist {
-	DLog(@"artist");
-	if ([pmo.attributes objectForKey:@"artist"] != nil)
-		return [pmo.attributes objectForKey:@"artist"];
-	else if ([pmo.attributes objectForKey:@"grandparentTitle"] != nil)
-		return [pmo.attributes objectForKey:@"grandparentTitle"];
-	else
-		return [pmo.mediaContainer.attributes valueForKey:@"title1"];
+    DLog(@"artist");
+    if ([pmo.attributes objectForKey:@"artist"] != nil)
+        return [pmo.attributes objectForKey:@"artist"];
+    else if ([pmo.attributes objectForKey:@"grandparentTitle"] != nil)
+        return [pmo.attributes objectForKey:@"grandparentTitle"];
+    else
+        return [pmo.mediaContainer.attributes valueForKey:@"title1"];
 };
 - (id)artistForSorting {
-	return self.artist;
+    return self.artist;
 };
 
 - (id)AlbumName {
     DLog(@"AlbumNAme");
-	if ([pmo.attributes objectForKey:@"album"] != nil)
-		return [pmo.attributes objectForKey:@"album"];
-	else
-		return [pmo.mediaContainer.attributes valueForKey:@"title2"];
+    if ([pmo.attributes objectForKey:@"album"] != nil)
+        return [pmo.attributes objectForKey:@"album"];
+    else
+        return [pmo.mediaContainer.attributes valueForKey:@"title2"];
 };
 
 - (id)primaryCollectionTitle {
     DLog(@"primaryCollectionTitle");
-	if ([pmo.attributes objectForKey:@"album"] != nil)
-		return [pmo.attributes objectForKey:@"album"];
-  else if ([pmo.attributes objectForKey:@"parentTitle"] != nil)
-    return [pmo.attributes objectForKey:@"parentTitle"];
-	else
-		return [pmo.mediaContainer.attributes valueForKey:@"title2"];
+    if ([pmo.attributes objectForKey:@"album"] != nil)
+        return [pmo.attributes objectForKey:@"album"];
+    else if ([pmo.attributes objectForKey:@"parentTitle"] != nil)
+        return [pmo.attributes objectForKey:@"parentTitle"];
+    else
+        return [pmo.mediaContainer.attributes valueForKey:@"title2"];
 };
 
 - (id)AlbumID {
-	return nil;
+    return nil;
 }
 
 - (id)TrackNum {
     DLog(@"TrackNum");
-	return [pmo.attributes valueForKey:@"index"];
+    return [pmo.attributes valueForKey:@"index"];
 };
 - (id)composer {
-	return nil;
+    return nil;
 };
 - (id)composerForSorting {
-	return nil;
+    return nil;
 };
 - (id)copyright {
-	return nil;
+    return nil;
 };
 - (void)setUserStarRating:(float)fp8 {
-	
+
 };
 - (float)starRating {
-	return 4;
+    return 4;
 };
 
 - (BOOL)closedCaptioned {
-	return NO;
+    return NO;
 };
 - (BOOL)dolbyDigital {
-	return NO;
+    return NO;
 };
 - (long)performanceCount {
-	return 1;
+    return 1;
 };
 - (void)incrementPerformanceCount {
-	
+
 };
 - (void)incrementPerformanceOrSkipCount:(unsigned int)fp8 {
-	
+
 };
 - (BOOL)hasBeenPlayed {
-	return YES;
+    return YES;
 };
 - (void)setHasBeenPlayed:(BOOL)fp8 {
-	
+
 };
 
 - (id)playbackRightsOwner {
-	return nil;
+    return nil;
 };
 - (id)collections {
-	return nil;
+    return nil;
 };
 - (id)primaryCollection {
-	return nil;
+    return nil;
 };
 - (id)artistCollection {
-	return nil;
+    return nil;
 };
 
 - (id)primaryCollectionTitleForSorting {
-	return nil;
+    return nil;
 };
 - (int)primaryCollectionOrder {
-	return 0;
+    return 0;
 };
 - (int)physicalMediaID {
-	return 0;
+    return 0;
 };
 - (id)seriesName {
-	return pmo.name;
+    return pmo.name;
 };
 - (id)seriesNameForSorting {
-	return pmo.name;
+    return pmo.name;
 };
 - (id)broadcaster {
-	return [pmo.attributes valueForKey:@"studio"];
+    return [pmo.attributes valueForKey:@"studio"];
 };
 
 - (id)genres {
-	return nil;
+    return nil;
 };
 - (id)dateAcquired {
-	return nil;
+    return nil;
 };
 - (id)dateAcquiredString {
-	return nil;
+    return nil;
 };
 - (id)dateCreated {
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     NSDate *date = [dateFormatter dateFromString:[pmo.attributes valueForKey:@"originallyAvailableAt"]];
     [dateFormatter release];
     return date;
 };
 - (id)dateCreatedString {
-	return [pmo.attributes valueForKey:@"originallyAvailableAt"];
+    return [pmo.attributes valueForKey:@"originallyAvailableAt"];
 };
 - (id)datePublishedString {
-	return nil;
+    return nil;
 };
 - (void)setBookmarkTimeInMS:(unsigned int)fp8 {
-	
+
 };
 - (void)setBookmarkTimeInSeconds:(unsigned int)fp8 {
-	
+
 };
 - (unsigned int)bookmarkTimeInMS {
-	return 1;
+    return 1;
 };
 - (unsigned int)bookmarkTimeInSeconds {
-	return 1;
+    return 1;
 };
 - (id)lastPlayed {
-	return nil;
+    return nil;
 };
 - (void)setLastPlayed:(id)fp8 {
-	
+
 };
 - (id)resolution {
-	return nil;
+    return nil;
 };
 - (BOOL)canBePlayedInShuffle {
-	return YES;
+    return YES;
 };
 
 - (void)skip {
-	
+
 };
 - (id)authorName {
-	return nil;
+    return nil;
 };
 - (id)keywords {
-	return nil;
+    return nil;
 };
 - (id)viewCount {
-	return nil;
+    return nil;
 };
 - (id)category {
-	return nil;
+    return nil;
 };
 
 - (int)grFormat {
-	return 1;
+    return 1;
 };
 - (void)willBeDeleted {
-	DLog(@"willBeDeleted");
+    DLog(@"willBeDeleted");
 };
-- (void)preparePlaybackContext
-{
-	DLog(@"preparePlaybackContext");
+- (void)preparePlaybackContext {
+    DLog(@"preparePlaybackContext");
 };
 - (void)cleanUpPlaybackContext {
-	DLog(@"cleanUpPlaybackContext");
+    DLog(@"cleanUpPlaybackContext");
 };
 - (long)parentalControlRatingSystemID {
-	return 1;
+    return 1;
 };
 - (long)parentalControlRatingRank {
-	return 1;
+    return 1;
 };
 
 - (BOOL)playable {
-	return YES;
+    return YES;
 };
 
 /*
- - (void *)createMovieWithProperties:(void *)fp8 count:(long)fp12 {
- DLog(@"createMovieWithProperties");
- };
+   - (void *)createMovieWithProperties:(void *)fp8 count:(long)fp12 {
+   DLog(@"createMovieWithProperties");
+   };
  */
 
 - (id)sourceID {
-	return nil;
+    return nil;
 };
 - (id)publisher {
-	return nil;
+    return nil;
 };
 - (id)rating {
-	return nil;
+    return nil;
 };
 
 - (id)primaryGenre {
-	return nil;
+    return nil;
 };
 - (id)datePublished {
-	return nil;
+    return nil;
 };
 - (float)userStarRating {
-	return 2;
+    return 2;
 };
 - (id)cast {
-	return nil;
+    return nil;
 };
 - (id)directors {
-	return nil;
+    return nil;
 };
 - (id)producers {
-	return nil;
+    return nil;
 };
 
-- (BOOL)hasVideoContent{
+- (BOOL)hasVideoContent {
     return NO;
 }
 
-- (BOOL)isAvailable{
-	DLog(@"Avail?");
-	return YES;
+- (BOOL)isAvailable {
+    DLog(@"Avail?");
+    return YES;
 }
 
-- (BOOL)isCheckedOut{
-	DLog(@"CheckedOut?");
-	return YES;
+- (BOOL)isCheckedOut {
+    DLog(@"CheckedOut?");
+    return YES;
 }
 
-- (BOOL)isDisabled{
-	DLog(@"Disabled?");
-	return NO;
+- (BOOL)isDisabled {
+    DLog(@"Disabled?");
+    return NO;
 }
 
-- (BOOL)isExplicit{
-	DLog(@"Explicit?");
-	return NO;
+- (BOOL)isExplicit {
+    DLog(@"Explicit?");
+    return NO;
 }
 
-- (BOOL)isHD{
-	DLog(@"HD?");
-	return NO;
+- (BOOL)isHD {
+    DLog(@"HD?");
+    return NO;
 }
 
-- (BOOL)isInappropriate{
-	DLog(@"Inapprop?");
-	return NO;
+- (BOOL)isInappropriate {
+    DLog(@"Inapprop?");
+    return NO;
 }
 
-- (BOOL)isLocal{
-	DLog(@"Local?");
-	return NO;
+- (BOOL)isLocal {
+    DLog(@"Local?");
+    return NO;
 }
 
-- (BOOL)isPlaying{
-	DLog(@"Playing = %i", [super isPlaying]);
-	return [super isPlaying];
+- (BOOL)isPlaying {
+    DLog(@"Playing = %i", [super isPlaying]);
+    return [super isPlaying];
 }
 
-- (BOOL)isPlayingOrPaused{
-	DLog(@"PlayingOrPause = %i", [super isPlayingOrPaused]);
-	return [super isPlayingOrPaused];
+- (BOOL)isPlayingOrPaused {
+    DLog(@"PlayingOrPause = %i", [super isPlayingOrPaused]);
+    return [super isPlayingOrPaused];
 }
-- (BOOL)isProtectedContent{
-	DLog(@"Protected?");
-	return NO;
+- (BOOL)isProtectedContent {
+    DLog(@"Protected?");
+    return NO;
 }
 
-- (BOOL)isWidescreen{
-	DLog(@"Widescreen?");
-	return YES;
+- (BOOL)isWidescreen {
+    DLog(@"Widescreen?");
+    return YES;
 }
 
 #pragma mark BRMediaPreviewFactoryDelegate
 
-- (BOOL)mediaPreviewShouldShowMetadata{ 
-	return YES;
+- (BOOL)mediaPreviewShouldShowMetadata {
+    return YES;
 }
-- (BOOL)mediaPreviewShouldShowMetadataImmediately{ 
-	return YES;
+- (BOOL)mediaPreviewShouldShowMetadataImmediately {
+    return YES;
 }
 
 
 
 #pragma mark BRImageProvider
-- (NSString*)imageID{return nil;}
-- (void)registerAsPendingImageProvider:(BRImageLoader*)loader {
-	DLog(@"registerAsPendingImageProvider");
+- (NSString*)imageID {
+    return nil;
 }
-- (void)loadImage:(BRImageLoader*)loader{ 
-	DLog(@"load Image");
+- (void)registerAsPendingImageProvider:(BRImageLoader*)loader {
+    DLog(@"registerAsPendingImageProvider");
+}
+- (void)loadImage:(BRImageLoader*)loader {
+    DLog(@"load Image");
 }
 
 

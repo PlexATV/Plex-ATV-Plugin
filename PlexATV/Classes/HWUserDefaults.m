@@ -15,52 +15,52 @@
 @implementation HWUserDefaults
 #pragma mark -
 #pragma mark PlexPrefs Methods
--(void)removeValueForKey:(NSString *)key {
-	[[HWUserDefaults preferences] removeObjectForKey:key];
+- (void)removeValueForKey:(NSString*)key {
+    [[HWUserDefaults preferences] removeObjectForKey:key];
 }
 
 
 - (id)objectForKey:(NSString*)key {
-	return [[HWUserDefaults preferences] objectForKey:key];
+    return [[HWUserDefaults preferences] objectForKey:key];
 }
 
 - (void)setObject:(id)obj forKey:(NSString*)key {
-	[[HWUserDefaults preferences] setObject:obj forKey:key];
+    [[HWUserDefaults preferences] setObject:obj forKey:key];
 }
 
 
 - (NSInteger)integerForKey:(NSString*)key {
-	return [[HWUserDefaults preferences] integerForKey:key];
+    return [[HWUserDefaults preferences] integerForKey:key];
 }
 
 - (void)setInteger:(NSInteger)v forKey:(NSString*)key {
-	[[HWUserDefaults preferences] setInteger:v forKey:key];
+    [[HWUserDefaults preferences] setInteger:v forKey:key];
 }
 
 
--(BOOL)boolForKey:(NSString *)key {
+- (BOOL)boolForKey:(NSString*)key {
     return [[HWUserDefaults preferences] boolForKey:key];
 }
 
--(void)setBool:(BOOL)value forKey:(NSString *)key {
+- (void)setBool:(BOOL)value forKey:(NSString*)key {
     [[HWUserDefaults preferences] setBool:value forKey:key];
 }
 
 
--(double)doubleForKey:(NSString *)key {
+- (double)doubleForKey:(NSString*)key {
     return [[HWUserDefaults preferences] doubleForKey:key];
 }
 
--(void)setDouble:(double)value forKey:(NSString *)key {
+- (void)setDouble:(double)value forKey:(NSString*)key {
     [[HWUserDefaults preferences] setDouble:value forKey:key];
 }
 
 
--(float)floatForKey:(NSString *)key {
+- (float)floatForKey:(NSString*)key {
     return [[HWUserDefaults preferences] floatForKey:key];
 }
 
--(void)setFloat:(float)value forKey:(NSString *)key {
+- (void)setFloat:(float)value forKey:(NSString*)key {
     [[HWUserDefaults preferences] setFloat:value forKey:key];
 }
 
@@ -68,7 +68,7 @@
 #pragma mark -
 #pragma mark User Defaults Methods
 
-+ (NSInteger)lastTabBarSelectionForViewGroup:(NSString *)viewGroup {
++ (NSInteger)lastTabBarSelectionForViewGroup:(NSString*)viewGroup {
     NSInteger lastTabBarSelection = 0;
     NSDictionary *selections = [[[self class] preferences] objectForKey:PersistedTabBarLastSelections];
     if ([selections valueForKey:viewGroup] != nil) {
@@ -77,37 +77,38 @@
     return lastTabBarSelection;
 }
 
-+ (void)setLastTabBarSelection:(NSInteger)selectedIndex forViewGroup:(NSString *)viewGroup {
++ (void)setLastTabBarSelection:(NSInteger)selectedIndex forViewGroup:(NSString*)viewGroup {
     NSDictionary *oldSelections = [[[self class] preferences] objectForKey:PersistedTabBarLastSelections];
     NSMutableDictionary *selections = [NSMutableDictionary dictionaryWithDictionary:oldSelections];
-    
+
     [selections setObject:[NSNumber numberWithInteger:selectedIndex] forKey:viewGroup];
     [[[self class] preferences] setObject:selections forKey:PersistedTabBarLastSelections];
 }
 
 - (void)syncSettings {
-	[[HWUserDefaults preferences] synchronize];
+    [[HWUserDefaults preferences] synchronize];
 }
 
-- (void)_setDefaults {}
+- (void)_setDefaults {
+}
 
 
 + (void)setupPlexClient {
     DLog(@"registering ourselves with the PMS");
     [PlexRequest setApplicationName:@"Plex-ATV" version:kPlexPluginVersion];
-    
+
     //tell pms we like direct-stream and we will be sending caps to it
     [[PlexPrefs defaultPreferences] setAllowDirectStreaming:YES];
 
     DLog(@"direct-streaming: %@",[[PlexPrefs defaultPreferences] allowDirectStreaming] ? @"YES" : @"NO");
-    
-    DLog(@"setting up client caps");  
+
+    DLog(@"setting up client caps");
     BOOL wantsAC3 = [[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioAC3Enabled];
-    //BOOL wantsDTS = NO;//[[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];  
-    
+    //BOOL wantsDTS = NO;//[[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];
+
     //reset everything, we'll redo all that we need below
     [[PlexClientCapabilities sharedPlexClientCapabilities] resetCaps];
-    
+
     if (wantsAC3) {
         DLog(@"wants AC3");
         [[PlexClientCapabilities sharedPlexClientCapabilities] setAudioDecoderForCodec:PlexClientDecoderName_AC3 bitrate:PlexClientBitrateAny channels:PlexClientAudioChannels_7_1Surround];
@@ -115,41 +116,41 @@
         DLog(@"don't want AC3");
         [[PlexClientCapabilities sharedPlexClientCapabilities] removeAudioCodec:PlexClientDecoderName_AC3];
     }
-    
+
     //DTS doesn't work on the ATV, so remove it...
     [[PlexClientCapabilities sharedPlexClientCapabilities] removeAudioCodec:PlexClientDecoderName_DTS];
 
-    
+
     [[PlexClientCapabilities sharedPlexClientCapabilities] setAudioDecoderForCodec:PlexClientDecoderName_AAC bitrate:PlexClientBitrateAny channels:PlexClientAudioChannels_7_1Surround];
-    
-    
+
+
     [[PlexClientCapabilities sharedPlexClientCapabilities] resetCaps];
     /*
-    NSArray *machines = [[MachineManager sharedMachineManager] threadSafeMachines];
-    for (Machine *m in machines) {
+       NSArray *machines = [[MachineManager sharedMachineManager] threadSafeMachines];
+       for (Machine *m in machines) {
         DLog(@"machine caps %@", [[PlexClientCapabilities sharedPlexClientCapabilities] capStringForMachine:m]);
-    }
-    */
+       }
+     */
 }
 
-+ (NSArray *)plexStreamingQualities {
++ (NSArray*)plexStreamingQualities {
     return [NSArray arrayWithObjects:
-            [PlexStreamingQualityDescriptor quality3GLow], 
-            [PlexStreamingQualityDescriptor quality3GMed], 
-            [PlexStreamingQualityDescriptor quality3GHigh], 
-            [PlexStreamingQualityDescriptor qualityWiFiLow], 
-            [PlexStreamingQualityDescriptor qualityWiFiMed], 
-            [PlexStreamingQualityDescriptor qualityiPhoneWiFi], 
-            [PlexStreamingQualityDescriptor qualityiPadWiFi], 
-            [PlexStreamingQualityDescriptor quality720pLow], 
-            [PlexStreamingQualityDescriptor quality720pHigh], 
-            [PlexStreamingQualityDescriptor quality1080pLow], 
-            [PlexStreamingQualityDescriptor quality1080pMed], 
-            [PlexStreamingQualityDescriptor quality1080pHigh], 
+            [PlexStreamingQualityDescriptor quality3GLow],
+            [PlexStreamingQualityDescriptor quality3GMed],
+            [PlexStreamingQualityDescriptor quality3GHigh],
+            [PlexStreamingQualityDescriptor qualityWiFiLow],
+            [PlexStreamingQualityDescriptor qualityWiFiMed],
+            [PlexStreamingQualityDescriptor qualityiPhoneWiFi],
+            [PlexStreamingQualityDescriptor qualityiPadWiFi],
+            [PlexStreamingQualityDescriptor quality720pLow],
+            [PlexStreamingQualityDescriptor quality720pHigh],
+            [PlexStreamingQualityDescriptor quality1080pLow],
+            [PlexStreamingQualityDescriptor quality1080pMed],
+            [PlexStreamingQualityDescriptor quality1080pHigh],
             nil];
 }
 
-+ (NSDictionary *)defaultValues {
++ (NSDictionary*)defaultValues {
     return [NSDictionary dictionaryWithObjectsAndKeys:
             [NSArray array], PreferencesMachinesExcludedFromServerList,
             [NSNumber numberWithInt:0], PreferencesViewTypeForMovies,
@@ -168,13 +169,13 @@
             nil];
 }
 
-+ (SMFPreferences *)preferences {
-	static SMFPreferences *_preferences = nil;
++ (SMFPreferences*)preferences {
+    static SMFPreferences *_preferences = nil;
     if(!_preferences) {
-		//setup user preferences
-        _preferences = [[SMFPreferences alloc] initWithPersistentDomainName:PreferencesDomain];		
-		[_preferences registerDefaults:[HWUserDefaults defaultValues]];
-        
+        //setup user preferences
+        _preferences = [[SMFPreferences alloc] initWithPersistentDomainName:PreferencesDomain];
+        [_preferences registerDefaults:[HWUserDefaults defaultValues]];
+
     }
     return _preferences;
 }

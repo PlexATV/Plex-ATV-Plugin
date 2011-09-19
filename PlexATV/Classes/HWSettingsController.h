@@ -4,7 +4,7 @@
 //
 //  Created by ccjensen on 10/01/2011.
 //
-//  Inspired by 
+//  Inspired by
 //
 //		MLoader.m
 //		MextLoader
@@ -15,10 +15,10 @@
 
 
 @interface HWSettingsController : SMFMediaMenuController {
-  BRBaseAppliance* topLevelController;
+    BRBaseAppliance *topLevelController;
 }
 
-@property(readwrite, assign) BRBaseAppliance* topLevelController;
+@property (readwrite, assign) BRBaseAppliance *topLevelController;
 - (void)setupList;
 
 @end

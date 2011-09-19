@@ -16,23 +16,23 @@
 @property (retain) BRController *targetController;
 @property (retain) NSString *promptText;
 
-+ (PlexNavigationController *)sharedPlexNavigationController;
++ (PlexNavigationController*)sharedPlexNavigationController;
 
 //Navigation Methods
-- (void)initiatePlaybackOfMediaObject:(PlexMediaObject *)aMediaObject;
-- (void)navigateToObjectsContents:(PlexMediaObject *)aMediaObject;
-- (void)navigateToChannelsForMachine:(Machine *)aMachine;
-- (void)navigateToSearchForMachine:(Machine *)aMachine;
-- (void)navigateToSettingsWithTopLevelController:(BRBaseAppliance *)topLevelController;
+- (void)initiatePlaybackOfMediaObject:(PlexMediaObject*)aMediaObject;
+- (void)navigateToObjectsContents:(PlexMediaObject*)aMediaObject;
+- (void)navigateToChannelsForMachine:(Machine*)aMachine;
+- (void)navigateToSearchForMachine:(Machine*)aMachine;
+- (void)navigateToSettingsWithTopLevelController:(BRBaseAppliance*)topLevelController;
 - (void)navigateToServerList;
 
 //Determine View Type Methods
-- (BRController *)newControllerForObject:(PlexMediaObject *)aMediaObject;
-- (BRTabControl *)newTabBarForContents:(PlexMediaContainer *)someContents;
+- (BRController*)newControllerForObject:(PlexMediaObject*)aMediaObject;
+- (BRTabControl*)newTabBarForContents:(PlexMediaContainer*)someContents;
 
 //Container Manipulation Methods
-- (BRController *)newTVShowsController:(PlexMediaContainer *)tvShowCategory;
-- (BRController *)newGridController:(PlexMediaContainer *)movieCategory withShelfKeyString:(NSString *)shelfKey;
-- (PlexMediaContainer *)applySkipFilteringOnContainer:(PlexMediaContainer *)container;
+- (BRController*)newTVShowsController:(PlexMediaContainer*)tvShowCategory;
+- (BRController*)newGridController:(PlexMediaContainer*)movieCategory withShelfKeyString:(NSString*)shelfKey;
+- (PlexMediaContainer*)applySkipFilteringOnContainer:(PlexMediaContainer*)container;
 
 @end

@@ -51,7 +51,7 @@
 		01A0F58F12722877007A60B5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A0F58E12722877007A60B5 /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		01A0F597127228BC007A60B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A0F596127228BC007A60B5 /* Foundation.framework */; };
 		01A0F59D127228CC007A60B5 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A0F59C127228CC007A60B5 /* libz.dylib */; };
-		612B0BBA1409794B00F0FA4C /* PlexMediaShelfView.m in Sources */ = {isa = PBXBuildFile; fileRef = 612B0BB91409794B00F0FA4C /* PlexMediaShelfView.m */; };
+		612B0BBA1409794B00F0FA4C /* (null) in Sources */ = {isa = PBXBuildFile; };
 		66E5AEB11303562D00FD8EA9 /* HWServersController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66E5AEB01303562D00FD8EA9 /* HWServersController.m */; };
 		7205CCE4135A7E7C001EFC55 /* PlexChannelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7205CCE3135A7E7C001EFC55 /* PlexChannelsController.m */; };
 		720EC0811370F017009AA4F9 /* PlexMediaObject+Assets.m in Sources */ = {isa = PBXBuildFile; fileRef = 720EC0801370F017009AA4F9 /* PlexMediaObject+Assets.m */; };
@@ -76,7 +76,6 @@
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		C43F0B0612F4CD8E004D0D68 /* HWMediaGridController.m in Sources */ = {isa = PBXBuildFile; fileRef = C43F0B0512F4CD8E004D0D68 /* HWMediaGridController.m */; };
 		C440CFC11311857100015595 /* PlexPlaybackController.m in Sources */ = {isa = PBXBuildFile; fileRef = C440CFC01311857100015595 /* PlexPlaybackController.m */; };
-		C48C10F014214DF000E9ED35 /* Plex_SMFBookcaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = C48C10EF14214DF000E9ED35 /* Plex_SMFBookcaseController.m */; };
 		C48D9554137090E900715D8E /* PlexAudioSubsController.m in Sources */ = {isa = PBXBuildFile; fileRef = C48D9553137090E900715D8E /* PlexAudioSubsController.m */; };
 		C4ADAFAE12D46CA9002DA507 /* HWPlexDir.m in Sources */ = {isa = PBXBuildFile; fileRef = C4ADAFA812D46CA9002DA507 /* HWPlexDir.m */; };
 		C4ADAFAF12D46CA9002DA507 /* PlexMediaAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = C4ADAFAA12D46CA9002DA507 /* PlexMediaAsset.m */; };
@@ -641,11 +640,7 @@
 				72118C27136B800400A8F74B /* PlexSearchController.m in Sources */,
 				720EC0811370F017009AA4F9 /* PlexMediaObject+Assets.m in Sources */,
 				727D80921374B4CB00FBE23E /* PlexThemeMusicPlayer.m in Sources */,
-				612B0BBA1409794B00F0FA4C /* PlexMediaShelfView.m in Sources */,
-				7247BC7F1374C34B00170427 /* Plex_SMFBookcaseController.m in Sources */,
-				72A9024513830AA700CD0941 /* UIImage+Tint.m in Sources */,
-				72A9024F13836AE800CD0941 /* UIImage+ProportionalFill.m in Sources */,
-				6124E32A1401827B001D5F8D /* PlexMediaShelfView.m in Sources */,
+				612B0BBA1409794B00F0FA4C /* (null) in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

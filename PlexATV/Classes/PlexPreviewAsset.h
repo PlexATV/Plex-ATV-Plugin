@@ -12,10 +12,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in
 //  all copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
-//  
+//
 
 #import <Foundation/Foundation.h>
 #import <Backrow/Backrow.h>
@@ -32,14 +32,14 @@
 
 //needs to be a subclass of photo media asset to enable supercharged grid
 @interface PlexPreviewAsset : BRPhotoMediaAsset<BRMediaAsset> {
-	NSURL* url;
-	PlexMediaObject* pmo;
+    NSURL *url;
+    PlexMediaObject *pmo;
     NSDateFormatter *shortDateFormatter;
 }
-@property (nonatomic, retain) PlexMediaObject* pmo;
+@property (nonatomic, retain) PlexMediaObject *pmo;
 
 - (id)initWithURL:(NSURL*)url mediaProvider:(id)mediaProvider mediaObject:(PlexMediaObject*)pmo;
-- (NSDate *)dateFromPlexDateString:(NSString *)dateString;
+- (NSDate*)dateFromPlexDateString:(NSString*)dateString;
 
 //other metadata methods
 @property (readonly) NSURL *coverArtRealURL;

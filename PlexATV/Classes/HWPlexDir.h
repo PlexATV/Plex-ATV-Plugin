@@ -9,10 +9,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included in
 //  all copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
-//  
+//
 
 
 
@@ -30,23 +30,23 @@
 
 
 @class PlexMediaObject;
-@interface HWPlexDir: SMFMediaMenuController <BRTabControlDelegate> {
-	PlexMediaContainer* rootContainer;
-	PlexMediaObject* playbackItem;
-    NSDictionary* previewControlData;
+@interface HWPlexDir : SMFMediaMenuController <BRTabControlDelegate> {
+    PlexMediaContainer *rootContainer;
+    PlexMediaObject *playbackItem;
+    NSDictionary *previewControlData;
 }
 
 @property (retain) BRTabControl *tabBar;
-@property (retain) PlexMediaContainer* rootContainer;
+@property (retain) PlexMediaContainer *rootContainer;
 @property (retain) NSArray *items;
-@property (retain) NSDictionary* previewControlData;
+@property (retain) NSDictionary *previewControlData;
 
-- (id)initWithRootContainer:(PlexMediaContainer*)container andTabBar:(BRTabControl *)aTabBar;
+- (id)initWithRootContainer:(PlexMediaContainer*)container andTabBar:(BRTabControl*)aTabBar;
 - (void)showModifyViewedStatusViewForRow:(long)row;
 - (void)reselectCurrentTabBarItem;
 
-- (void)createParadeForData:(NSMutableDictionary *)data;
-- (void)finishedCreatingParade:(NSDictionary *)data;
+- (void)createParadeForData:(NSMutableDictionary*)data;
+- (void)finishedCreatingParade:(NSDictionary*)data;
 
 //list provider
 - (float)heightForRow:(long)row;

@@ -9,15 +9,15 @@
 #import <plex-oss/Machine.h>
 
 @interface HWServersController : SMFMediaMenuController<MachineManagerDelegate> {
-	NSMutableArray *_machines;
-	NSArray *_machineSortDescriptors;
+    NSMutableArray *_machines;
+    NSArray *_machineSortDescriptors;
 }
 
 @property (assign) NSMutableArray *machines;
 
 //custom methods
 - (void)showAddNewMachineWizard;
-- (void)showEditMachineDetailsViewForMachine:(Machine *)machine;
+- (void)showEditMachineDetailsViewForMachine:(Machine*)machine;
 
 //list provider
 - (float)heightForRow:(long)row;

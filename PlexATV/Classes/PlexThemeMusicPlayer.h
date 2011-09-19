@@ -15,10 +15,10 @@
 @property (retain) NSURL *currentlyPlayingThemeUrl;
 
 
-+ (PlexThemeMusicPlayer *)sharedPlexThemeMusicPlayer;
++ (PlexThemeMusicPlayer*)sharedPlexThemeMusicPlayer;
 
-- (void)startPlayingThemeMusicIfAppropiateForMediaObject:(PlexMediaObject *)mediaObject;
-- (void)stopPlayingThemeMusicForMediaObject:(PlexMediaObject *)pmo;
-- (AVPlayerItem *)playerItemForURL:(NSURL *)url withVolumeAt:(CGFloat)requestedVolume;
+- (void)startPlayingThemeMusicIfAppropiateForMediaObject:(PlexMediaObject*)mediaObject;
+- (void)stopPlayingThemeMusicForMediaObject:(PlexMediaObject*)pmo;
+- (AVPlayerItem*)playerItemForURL:(NSURL*)url withVolumeAt:(CGFloat)requestedVolume;
 
 @end

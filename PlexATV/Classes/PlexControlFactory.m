@@ -11,21 +11,20 @@
 @implementation PlexControlFactory
 
 //Returns the control shown on main menu
--(id)initForMainMenu:(BOOL)arg1
-{
+- (id)initForMainMenu:(BOOL)arg1 {
     self = [super initForMainMenu:arg1];
     _mainmenu = arg1;
-    self._poster=YES;
-    self.defaultImage=nil;
-    self.favorProxy=YES;
-    self._alwaysShowTitles=NO;
+    self._poster = YES;
+    self.defaultImage = nil;
+    self.favorProxy = YES;
+    self._alwaysShowTitles = NO;
     return self;
 }
 - (float)heightForControlForData:(id)data requestedBy:(id)by {
     return 206.0f;
 }
 
--(BRControl *)controlForImageProxy:(BRURLImageProxy *)imageProxy title:(NSString *)title {
+- (BRControl*)controlForImageProxy:(BRURLImageProxy*)imageProxy title:(NSString*)title {
     BRPosterControl *returnObj = [[BRPosterControl alloc] init];
     returnObj.posterStyle = 1;
 
@@ -33,17 +32,17 @@
     returnObj.title = str;
     [str release];
 
-    returnObj.imageProxy=imageProxy;
-    returnObj.defaultImage=self.defaultImage;
-    returnObj.alwaysShowTitles=self._alwaysShowTitles;
-    returnObj.posterBorderWidth=1.0f;
-    returnObj.titleWidthScale=1.0f;
-    returnObj.titleVerticalOffset=0.0f;
-    returnObj.reflectionAmount=0.14000000059604645;
+    returnObj.imageProxy = imageProxy;
+    returnObj.defaultImage = self.defaultImage;
+    returnObj.alwaysShowTitles = self._alwaysShowTitles;
+    returnObj.posterBorderWidth = 1.0f;
+    returnObj.titleWidthScale = 1.0f;
+    returnObj.titleVerticalOffset = 0.0f;
+    returnObj.reflectionAmount = 0.14000000059604645;
     if ([SMF_COMPAT usingFourPointThreePlus]) { //only needed on 4.3, seems like the method exists on 4.3 only
         [returnObj performSelector:@selector(setIgnoreLoadAndDisplayOnDemand)];
     }
-    
+
     return [returnObj autorelease];
 }
 

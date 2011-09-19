@@ -12,19 +12,18 @@
 @synthesize adapter;
 
 - (id)init {
-    
+
     if ([SMF_COMPAT usingFourPointFourPlus]) {
-        self = [super init];        
+        self = [super init];
     } else {
-        self = [[NSClassFromString(@"BRMediaShelfControl") alloc] init];
+        self = [[NSClassFromString (@"BRMediaShelfControl")alloc] init];
     }
     if (self) {
     }
     return self;
 }
 
-- (id)provider
-{
+- (id)provider {
     return nil;
 }
 
@@ -33,35 +32,32 @@
     [super dealloc];
 }
 
-- (void)setProvider:(id)provider
-{
+- (void)setProvider:(id)provider {
     if ([SMF_COMPAT usingFourPointFourPlus]) {
         DLog(@"Using 4.4 provider settings!");
-        BRProviderDataSourceAdapter *_adapter = [[NSClassFromString(@"BRProviderDataSourceAdapter") alloc] init];
+        BRProviderDataSourceAdapter *_adapter = [[NSClassFromString (@"BRProviderDataSourceAdapter")alloc] init];
         [_adapter setProviders:[NSArray arrayWithObjects:provider, nil]];
         [self setDelegate:_adapter];
         [self setDataSource:_adapter];
         self.adapter = adapter;
     } else {
-        [(id)self setProvider:provider];
-    }    
-}
-
-- (id)focusedIndexCompat
-{
-    if ([SMF_COMPAT usingFourPointFourPlus]) {
-        return [self focusedIndexPath];
-    } else {
-        return [(id)self focusedIndex];
+        [(id) self setProvider:provider];
     }
 }
 
-- (void)setFocusedIndexCompat:(id)focusedIndexCompat
-{
+- (id)focusedIndexCompat {
+    if ([SMF_COMPAT usingFourPointFourPlus]) {
+        return [self focusedIndexPath];
+    } else {
+        return [(id) self focusedIndex];
+    }
+}
+
+- (void)setFocusedIndexCompat:(id)focusedIndexCompat {
     if ([SMF_COMPAT usingFourPointFourPlus]) {
         self.focusedIndexPath = focusedIndexCompat;
     } else {
-        [(id)self setFocusedIndex:focusedIndexCompat];
+        [(id) self setFocusedIndex:focusedIndexCompat];
     }
 }
 

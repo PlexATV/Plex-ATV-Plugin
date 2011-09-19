@@ -4,7 +4,7 @@
 //
 //  Created by ccjensen on 24/04/2011.
 //
-//  Inspired by 
+//  Inspired by
 //
 //		MLoader.m
 //		MextLoader

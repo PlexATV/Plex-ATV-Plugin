@@ -20,103 +20,101 @@
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
-- (id) init
-{
-	if((self = [super init]) != nil) {
-		[self setListTitle:@"PLEX"];
-		
-		NSString *settingsPng = [[NSBundle bundleForClass:[PlexChannelsController class]] pathForResource:@"PlexIcon" ofType:@"png"];
-		BRImage *sp = [BRImage imageWithPath:settingsPng];
-		
-		[self setListIcon:sp horizontalOffset:0.0 kerningFactor:0.15];
-		
-		rootContainer = nil;
-		[[self list] setDatasource:self];
-		return ( self );
-		
-	}
-	
-	return ( self );
+- (id)init {
+    if( (self = [super init]) != nil ) {
+        [self setListTitle:@"PLEX"];
+
+        NSString *settingsPng = [[NSBundle bundleForClass:[PlexChannelsController class]] pathForResource:@"PlexIcon" ofType:@"png"];
+        BRImage *sp = [BRImage imageWithPath:settingsPng];
+
+        [self setListIcon:sp horizontalOffset:0.0 kerningFactor:0.15];
+
+        rootContainer = nil;
+        [[self list] setDatasource:self];
+        return (self);
+
+    }
+
+    return (self);
 }
 
-- (id) initWithRootContainer:(PlexMediaContainer*)container {
-	self = [self init];
-	self.rootContainer = container;
+- (id)initWithRootContainer:(PlexMediaContainer*)container {
+    self = [self init];
+    self.rootContainer = container;
     DLog(@"rootCont: %@", self.rootContainer);
-	return self;
+    return self;
 }
 
-- (void)log:(NSNotificationCenter *)note {
-	DLog(@"note = %@", note);
+- (void)log:(NSNotificationCenter*)note {
+    DLog(@"note = %@", note);
 }
 
--(void)dealloc
-{
-	DLog(@"deallocing HWPlexDir");
-	[playbackItem release];
-	[rootContainer release];
-	
-	[super dealloc];
+- (void)dealloc {
+    DLog(@"deallocing HWPlexDir");
+    [playbackItem release];
+    [rootContainer release];
+
+    [super dealloc];
 }
 
 
 #pragma mark -
 #pragma mark Controller Lifecycle behaviour
 - (void)wasPushed {
-	[[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
-	[super wasPushed];
+    [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
+    [super wasPushed];
 }
 
 - (void)wasPopped {
-	[super wasPopped];
+    [super wasPopped];
 }
 
 - (void)wasExhumed {
-	[[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
+    [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
     [self.list reload];
-	[super wasExhumed];
+    [super wasExhumed];
 }
 
 - (void)wasBuried {
-	[super wasBuried];
+    [super wasBuried];
 }
 
 - (id)previewControlForItem:(long)item {
-	PlexMediaObject* pmo = [rootContainer.directories objectAtIndex:item];
-	return pmo.previewControl;
+    PlexMediaObject *pmo = [rootContainer.directories objectAtIndex:item];
+    return pmo.previewControl;
 }
 
 #define ModifyViewStatusOptionDialog @"ModifyViewStatusOptionDialog"
 
 - (void)itemSelected:(long)selected; {
-	PlexMediaObject* pmo = [rootContainer.directories objectAtIndex:selected];
+    PlexMediaObject *pmo = [rootContainer.directories objectAtIndex:selected];
     PlexMediaContainer *channel = [pmo.request query:[pmo.attributes valueForKey:@"path"] callingObject:nil ignorePresets:YES timeout:20 cachePolicy:NSURLRequestUseProtocolCachePolicy];
-    
-	HWPlexDir* menuController = [[HWPlexDir alloc] initWithRootContainer:channel andTabBar:nil];
-	[[[BRApplicationStackManager singleton] stack] pushController:menuController];
-    
+
+    HWPlexDir *menuController = [[HWPlexDir alloc] initWithRootContainer:channel andTabBar:nil];
+    [[[BRApplicationStackManager singleton] stack] pushController:menuController];
+
     [menuController release];
 }
 
 
 - (float)heightForRow:(long)row {
-	return 0.0f;
+    return 0.0f;
 }
 
 - (long)itemCount {
-	return [rootContainer.directories count];
+    return [rootContainer.directories count];
 }
 
 - (id)itemForRow:(long)row {
-	if(row > [rootContainer.directories count])
-		return nil;
-	
-	PlexMediaObject *pmo = [rootContainer.directories objectAtIndex:row];
+    if(row > [rootContainer.directories count])
+        return nil;
+
+    PlexMediaObject *pmo = [rootContainer.directories objectAtIndex:row];
     BRMenuItem *menuItem = [[BRMenuItem alloc] init];
-    
+
     NSString *menuItemText = nil;
     NSString *path = [pmo.attributes valueForKey:@"path"];
-    
+
     if ([path hasSuffix:@"iTunes"]) {
         NSString *type = nil;
         if ([path hasPrefix:@"/video"]) {
@@ -128,19 +126,19 @@
     } else {
         menuItemText = [pmo name];
     }
-    
+
     [menuItem setText:menuItemText withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
     [menuItem addAccessoryOfType:1];
-	return [menuItem autorelease];
+    return [menuItem autorelease];
 }
 
 - (BOOL)rowSelectable:(long)selectable {
-	return TRUE;
+    return TRUE;
 }
 
 - (id)titleForRow:(long)row {
-	PlexMediaObject *pmo = [rootContainer.directories objectAtIndex:row];
-	return pmo.name;
+    PlexMediaObject *pmo = [rootContainer.directories objectAtIndex:row];
+    return pmo.name;
 }
 
 @end
