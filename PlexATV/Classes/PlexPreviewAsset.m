@@ -77,7 +77,7 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
     NSDate *date = [dateFormat dateFromString:dateString];
     [dateFormat release];
-    
+
 	return date;
 }
 
@@ -162,6 +162,15 @@
 	return nil;
 }
 
+- (id)seasonCoverArt {
+    BRImage *coverImg = [BRImage imageWithURL:self.seasonCoverArtRealURL];
+    if (coverImg) {
+        return coverImg;
+    }
+    else
+        return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+
+}
 - (id)coverArt {
     DLog();
     BRImage *coverImg = [BRImage imageWithURL:self.coverArtRealURL];
@@ -171,6 +180,10 @@
     else
         return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 
+}
+
+- (NSString *)seasonCoverArtURL {
+    return [self.seasonCoverArtRealURL description];
 }
 
 - (NSString *)coverArtURL {
@@ -572,13 +585,27 @@
         //no damn thumb nor art on the item, go for the parent then
         image = pmo.parentObject.thumb;
     }*/
-    
-    
     NSURL *imageURL = nil;
     if (image) {
         imageURL = [pmo.request pathForScaledImage:[image.imageURL absoluteString] ofSize:CGSizeMake(512, 512)];
     }
     //DLog("imageURL %@", imageURL);
+    return imageURL;
+}
+
+- (NSURL *)seasonCoverArtRealURL {
+    PlexImage *image = nil;
+    if (pmo.parentObject.thumb.hasImage) {
+        image = pmo.parentObject.thumb;
+    } else {
+        image = pmo.thumb;
+    }
+
+    NSURL *imageURL = nil;
+    if (image) {
+        imageURL = [pmo.request pathForScaledImage:[image.imageURL absoluteString] ofSize:CGSizeMake(512, 512)];
+    }
+    DLog("imageURL %@", imageURL); //Do we really need this unless debugging?
     return imageURL;
 }
 

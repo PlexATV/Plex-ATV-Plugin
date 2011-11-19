@@ -203,9 +203,7 @@ void checkNil(NSObject *ctrl)
     NSString *gridLabel = [NSString stringWithFormat:@"All %@", self.gridMediaContainer.name];
 	[div2 setLabel:gridLabel];
 	
-	CGRect dividerFrame;
-	dividerFrame.origin.x = 0;
-	dividerFrame.origin.y = boxFrame.size.height+10.f;
+	CGRect dividerFrame = CGRectMake(0, boxFrame.size.height+10.f, 0, 0);
 	[div2 setFrame:dividerFrame];
 	
 	
@@ -220,13 +218,8 @@ void checkNil(NSObject *ctrl)
 	[_gridControl setAcceptsFocus:YES];
 	[_gridControl setProviderRequester:_gridControl];
     
-	CGRect gridFrame;
-	gridFrame.origin.y = dividerFrame.origin.y-25;
-	gridFrame.size.height = [_gridControl _totalHeight] + 50.f;
+	CGRect gridFrame = CGRectMake(0, dividerFrame.origin.y - 25, 0, [_gridControl _totalHeight] + 50.f);
 	[_gridControl setFrame:masterFrame];
-	
-	CGRect gridBoxFrame;
-	gridBoxFrame.origin.x = 0;
 	
 	BRBoxControl *gridBox = [[BRBoxControl alloc] init];
 	[gridBox setAcceptsFocus:YES];
@@ -245,10 +238,7 @@ void checkNil(NSObject *ctrl)
     
 	
 	BRSpacerControl *spacerBottom=[BRSpacerControl spacerWithPixels:44.f];
-	CGRect spacerFrame;
-	spacerFrame.origin.x=0;
-	spacerFrame.origin.y = 0;
-	spacerFrame.size.height = 44.f;
+	CGRect spacerFrame = CGRectMake(0, 0, 0, 44.f);
 	[spacerBottom setFrame:spacerFrame];
 	
 	[_panelControl addControl:spacerBottom];
@@ -348,7 +338,7 @@ void checkNil(NSObject *ctrl)
 	
     BRPhotoDataStoreProvider* provider = [BRPhotoDataStoreProvider providerWithDataStore:store 
 																		  controlFactory:controlFactory];
-
+    [controlFactory release];
     [store release];
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"getProviderForGrid_end");
@@ -365,7 +355,7 @@ void checkNil(NSObject *ctrl)
 	if (remoteAction==kBREventRemoteActionPlay && action.value==1)
 	{
 		int index;
-		NSArray *mediaObjects;
+		NSArray *mediaObjects = nil;
 		
 		if ([_shelfControl isFocused]) {
             //DLog(@"focusedIndex: %@", [_shelfControl focusedIndexCompat]);
@@ -394,8 +384,7 @@ void checkNil(NSObject *ctrl)
 #if LOCAL_DEBUG_ENABLED
 			DLog(@"brEventaction. have %d mediaObjects and index %d, showing movie preview ctrl",[mediaObjects count], index);
 #endif      
-			
-            [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:[[mediaObjects objectAtIndex:index] retain]];
+            [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:[mediaObjects objectAtIndex:index]];
 		}
 		else {
 			DLog(@"error: no selected mediaObject");

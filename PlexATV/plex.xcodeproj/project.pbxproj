@@ -11,10 +11,10 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 72B85E561331BD8B00FCD4AE /* Build configuration list for PBXAggregateTarget "All" */;
 			buildPhases = (
-				72B85E551331BD8B00FCD4AE /* ShellScript */,
 			);
 			dependencies = (
 				663DBDC61332B06C0007BB74 /* PBXTargetDependency */,
+				619DA9E813FC4D6000F1DBB4 /* PBXTargetDependency */,
 			);
 			name = All;
 			productName = Install;
@@ -26,6 +26,7 @@
 				DD02DEB612FCACEC0019FBEE /* ShellScript */,
 			);
 			dependencies = (
+				61D706B713FC542F00CDABBE /* PBXTargetDependency */,
 			);
 			name = Install;
 			productName = Install;
@@ -67,6 +68,8 @@
 		72C4224E131A272200B90041 /* PlexTextLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 72C4224D131A272200B90041 /* PlexTextLogo.png */; };
 		72EA80F712DEB49B00138F7D /* PlexSettings.png in Resources */ = {isa = PBXBuildFile; fileRef = 72EA80F612DEB49B00138F7D /* PlexSettings.png */; };
 		72ECCD7A135FEE1A0025D3E2 /* PlexSecuritySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 72ECCD79135FEE1A0025D3E2 /* PlexSecuritySettingsController.m */; };
+		8490181614052C34007ACA77 /* PlexAudioSubsOFF.png in Resources */ = {isa = PBXBuildFile; fileRef = 8490181414052B8C007ACA77 /* PlexAudioSubsOFF.png */; };
+		8490181714052C34007ACA77 /* PlexAudioSubsON.png in Resources */ = {isa = PBXBuildFile; fileRef = 8490181514052B8C007ACA77 /* PlexAudioSubsON.png */; };
 		875A824D126FFF1F00ECADC2 /* HWAppliance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 875A824A126FFF1F00ECADC2 /* HWAppliance.mm */; };
 		875A824E126FFF1F00ECADC2 /* HWBasicMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 875A824C126FFF1F00ECADC2 /* HWBasicMenu.m */; };
 		875A873412704ACC00ECADC2 /* theos in Resources */ = {isa = PBXBuildFile; fileRef = 875A86EB12704ACC00ECADC2 /* theos */; };
@@ -87,6 +90,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		619DA9E713FC4D6000F1DBB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DD02DEB712FCACEC0019FBEE;
+			remoteInfo = Install;
+		};
 		61C1BD8313FA48FC0083E8AC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 61C1BD7A13FA48FC0083E8AC /* SMFramework.xcodeproj */;
@@ -100,6 +110,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
 			remoteInfo = SMFramework;
+		};
+		61D706B613FC542F00CDABBE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 089C1669FE841209C02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D5B49AC048680CD000E48DA;
+			remoteInfo = plex;
 		};
 		663DBDC51332B06C0007BB74 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -135,8 +152,8 @@
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		612B0BB81409794B00F0FA4C /* PlexMediaShelfView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexMediaShelfView.h; path = Classes/PlexMediaShelfView.h; sourceTree = "<group>"; };
-		612B0BB91409794B00F0FA4C /* PlexMediaShelfView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexMediaShelfView.m; path = Classes/PlexMediaShelfView.m; sourceTree = "<group>"; };
+		6124E32814018273001D5F8D /* PlexMediaShelfView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexMediaShelfView.h; path = Classes/PlexMediaShelfView.h; sourceTree = "<group>"; };
+		6124E32914018274001D5F8D /* PlexMediaShelfView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexMediaShelfView.m; path = Classes/PlexMediaShelfView.m; sourceTree = "<group>"; };
 		61C1BD7A13FA48FC0083E8AC /* SMFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMFramework.xcodeproj; path = ../_Contrib/SMFramework/SMFramework.xcodeproj; sourceTree = "<group>"; };
 		66629E45130C854800EDC92D /* plex_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plex_Prefix.pch; sourceTree = "<group>"; };
 		66E5AEAF1303562D00FD8EA9 /* HWServersController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HWServersController.h; path = Classes/HWServersController.h; sourceTree = "<group>"; };
@@ -171,6 +188,8 @@
 		72EA810712DEB6B500138F7D /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = Classes/Constants.h; sourceTree = "<group>"; };
 		72ECCD78135FEE1A0025D3E2 /* PlexSecuritySettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexSecuritySettingsController.h; path = Classes/PlexSecuritySettingsController.h; sourceTree = "<group>"; };
 		72ECCD79135FEE1A0025D3E2 /* PlexSecuritySettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexSecuritySettingsController.m; path = Classes/PlexSecuritySettingsController.m; sourceTree = "<group>"; };
+		8490181414052B8C007ACA77 /* PlexAudioSubsOFF.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = PlexAudioSubsOFF.png; path = Resources/PlexAudioSubsOFF.png; sourceTree = "<group>"; };
+		8490181514052B8C007ACA77 /* PlexAudioSubsON.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = PlexAudioSubsON.png; path = Resources/PlexAudioSubsON.png; sourceTree = "<group>"; };
 		875A824A126FFF1F00ECADC2 /* HWAppliance.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = HWAppliance.mm; path = Classes/HWAppliance.mm; sourceTree = "<group>"; };
 		875A824B126FFF1F00ECADC2 /* HWBasicMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HWBasicMenu.h; path = Classes/HWBasicMenu.h; sourceTree = "<group>"; };
 		875A824C126FFF1F00ECADC2 /* HWBasicMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HWBasicMenu.m; path = Classes/HWBasicMenu.m; sourceTree = "<group>"; };
@@ -262,6 +281,8 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8490181414052B8C007ACA77 /* PlexAudioSubsOFF.png */,
+				8490181514052B8C007ACA77 /* PlexAudioSubsON.png */,
 				72C4224D131A272200B90041 /* PlexTextLogo.png */,
 				0133123B127C26D70067A5FE /* PlexLogo.png */,
 				013310FC127C09FD0067A5FE /* PlexIcon.png */,
@@ -408,8 +429,8 @@
 		72B2C4FB12DBE0EE00E23F8E /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				612B0BB81409794B00F0FA4C /* PlexMediaShelfView.h */,
-				612B0BB91409794B00F0FA4C /* PlexMediaShelfView.m */,
+				6124E32814018273001D5F8D /* PlexMediaShelfView.h */,
+				6124E32914018274001D5F8D /* PlexMediaShelfView.m */,
 				727A3F4A12F7914000994193 /* Settings */,
 				C4D558A312D66BE900877755 /* PlexSongListController.h */,
 				C4D558A412D66BE900877755 /* PlexSongListController.m */,
@@ -461,6 +482,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB913A08733D840010E9CD /* Build configuration list for PBXNativeTarget "plex" */;
 			buildPhases = (
+				619DA9D913FC0E2300F1DBB4 /* ShellScript */,
 				8D5B49AF048680CD000E48DA /* Resources */,
 				8D5B49B1048680CD000E48DA /* Sources */,
 				8D5B49B3048680CD000E48DA /* Frameworks */,
@@ -527,6 +549,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8490181614052C34007ACA77 /* PlexAudioSubsOFF.png in Resources */,
+				8490181714052C34007ACA77 /* PlexAudioSubsON.png in Resources */,
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
 				875A873412704ACC00ECADC2 /* theos in Resources */,
 				013310FD127C09FD0067A5FE /* PlexIcon.png in Resources */,
@@ -539,6 +563,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		619DA9D913FC0E2300F1DBB4 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"#define PLEX_GIT_VERSION @\\\"`git rev-parse --verify HEAD --short=8`\\\"\" > $SRCROOT/Classes/gitversion.h";
+		};
 		727FA3A7137BA6C600949450 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -553,19 +590,6 @@
 			shellPath = /bin/sh;
 			shellScript = "KEYWORDS=\"TODO:|FIXME:|\\?\\?\\?:|\\!\\!\\!:\"\nfind \"${SRCROOT}\" \\( -name \"*.h\" -or -name \"*.m\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | perl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"";
 		};
-		72B85E551331BD8B00FCD4AE /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\n\n#copy local (in order to build the .deb\ncp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" \"${BUILD_DIR}/../_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/\"\n\n\n#copy to the ATV\nscp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@apple-tv.local:${TARGET_DIR}\nscp \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@apple-tv.local:${TARGET_DIR}\n\n#restart UI\nssh root@apple-tv.local 'killall AppleTV'\n#ssh root@apple-tv.local 'killall Lowtide'\n";
-		};
 		DD02DEB612FCACEC0019FBEE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -577,7 +601,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\n\n#copy local (in order to build the .deb\ncp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" \"${BUILD_DIR}/../_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/\"\n\n\n#copy to the ATV\nscp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@plexatv.local:${TARGET_DIR}\nscp \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@plexatv.local:${TARGET_DIR}\n\n#restart UI\nssh root@plexatv.local 'killall AppleTV'\n#ssh root@apple-tv.local 'killall Lowtide'\n";
+			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\n\n#copy local (in order to build the .deb\ncp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/\"\n\n\n#copy to the ATV\nscp \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@plexatv.local:${TARGET_DIR}\nscp \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@plexatv.local:${TARGET_DIR}\n\n#restart UI\nssh root@plexatv.local 'killall AppleTV'\n#ssh root@apple-tv.local 'killall Lowtide'\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -618,17 +642,30 @@
 				720EC0811370F017009AA4F9 /* PlexMediaObject+Assets.m in Sources */,
 				727D80921374B4CB00FBE23E /* PlexThemeMusicPlayer.m in Sources */,
 				612B0BBA1409794B00F0FA4C /* PlexMediaShelfView.m in Sources */,
-				C48C10F014214DF000E9ED35 /* Plex_SMFBookcaseController.m in Sources */,
+				7247BC7F1374C34B00170427 /* Plex_SMFBookcaseController.m in Sources */,
+				72A9024513830AA700CD0941 /* UIImage+Tint.m in Sources */,
+				72A9024F13836AE800CD0941 /* UIImage+ProportionalFill.m in Sources */,
+				6124E32A1401827B001D5F8D /* PlexMediaShelfView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		619DA9E813FC4D6000F1DBB4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DD02DEB712FCACEC0019FBEE /* Install */;
+			targetProxy = 619DA9E713FC4D6000F1DBB4 /* PBXContainerItemProxy */;
+		};
 		61C1BD8613FA49040083E8AC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SMFramework;
 			targetProxy = 61C1BD8513FA49040083E8AC /* PBXContainerItemProxy */;
+		};
+		61D706B713FC542F00CDABBE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D5B49AC048680CD000E48DA /* plex */;
+			targetProxy = 61D706B613FC542F00CDABBE /* PBXContainerItemProxy */;
 		};
 		663DBDC61332B06C0007BB74 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

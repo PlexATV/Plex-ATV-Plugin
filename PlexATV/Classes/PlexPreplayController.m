@@ -287,18 +287,27 @@ typedef enum {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"title: %@", [self.selectedMediaObject.previewAsset title]);
 #endif
-	return [self.selectedMediaObject.previewAsset title];
+    if (self.selectedMediaObject.isEpisode){
+        return [NSString stringWithFormat:@"%d. %@", [self.selectedMediaObject.previewAsset episode], [self.selectedMediaObject.previewAsset title]];
+    } else {
+        return [self.selectedMediaObject.previewAsset title];
+    }
 }
-
 -(NSString *)subtitle {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"subtitle: %@", [self.selectedMediaObject.previewAsset broadcaster]);
 #endif
     
-    if ([self.selectedMediaObject.previewAsset broadcaster])
-        return [self.selectedMediaObject.previewAsset broadcaster];
-    else
+    //If we selected a Movie show studio underneath title, if we selected a TVShow then display the season/episode information.
+    if (self.selectedMediaObject.isMovie && [self.selectedMediaObject.previewAsset broadcaster]!=nil) {
+        return ([self.selectedMediaObject.previewAsset broadcaster]);
+    }
+    else if ([self.selectedMediaObject.previewAsset season]) {
+       return [NSString stringWithFormat:@"%@, Season %d", [self.selectedMediaObject.previewAsset seriesName], [self.selectedMediaObject.previewAsset season]];
+    }
+    else {
         return @"";
+    }
 }
 
 -(NSString *)summary {
@@ -324,8 +333,14 @@ typedef enum {
 	BRGenre *genre = [self.selectedMediaObject.previewAsset primaryGenre];
 	[details addObject:[genre displayString]];
 	
-	NSString *released = [NSString stringWithFormat:@"Released %@", [self.selectedMediaObject.previewAsset year]];
-	[details addObject:released];
+    if ([self.selectedMediaObject.previewAsset year] !=nil) {
+        NSString *released = [NSString stringWithFormat:@"Released %@", [self.selectedMediaObject.previewAsset year]];
+        [details addObject:released];
+    }
+    else {
+        NSString *released =  @"";
+        [details addObject:released];
+    }
 	
 	NSString *duration = [NSString stringWithFormat:@"%d minutes", [self.selectedMediaObject.previewAsset duration]/60];
 	[details addObject:duration];
@@ -387,17 +402,19 @@ typedef enum {
 	return [self.selectedMediaObject.previewAsset rating];
 }
 
--(BRImage *)coverArt {
-	BRImage *coverArt = nil;
-	if ([self.selectedMediaObject.previewAsset hasCoverArt]) {
-		coverArt = [self.selectedMediaObject.previewAsset coverArt];
-	} else {
-        coverArt = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+-(BRImage *)coverArt{
+    BRImage *coverArt = nil;
+    if ([self.selectedMediaObject.previewAsset hasCoverArt] && self.selectedMediaObject.isMovie) {
+        coverArt = [self.selectedMediaObject.previewAsset coverArt];
+    }
+    else {
+        //TODO: Why does this say seasoncCoverArt not found??
+        coverArt = [self.selectedMediaObject.previewAsset seasonCoverArt];
     }
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"coverArt: %@", coverArt);
 #endif
-	return coverArt;
+    return coverArt;
 }
 
 - (NSURL *)backgroundImageUrl {
@@ -409,32 +426,30 @@ typedef enum {
     // deleteActionImage, menuActionUnfocusedImage, playActionImage,
     // previewActionImage, queueActionImage, rateActionImage
 	NSMutableArray *buttons = [NSMutableArray array];
-	
-	BRButtonControl* b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]playActionImage] 
-                                                       subtitle:@"Play"
-                                                          badge:nil];
-	[b setIdentifier:[NSNumber numberWithInt:kPlayButton]];	
-	[buttons addObject:b];
-	
+	BRButtonControl* b = nil;
+    BRImage *audioSubOFF =[BRImage imageWithPath: [[NSBundle bundleForClass:[self class]] pathForResource:@"PlexAudioSubsOFF" ofType:@"png"]];
+    BRImage *audioSubON =[BRImage imageWithPath: [[NSBundle bundleForClass:[self class]] pathForResource:@"PlexAudioSubsON" ofType:@"png"]];
+
+    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]playActionImage] subtitle:@"Play" badge:nil];
+        [b setIdentifier:[NSNumber numberWithInt:kPlayButton]];
+        [b setHighlightedImage:[[BRThemeInfo sharedTheme]playActionHighlightedImage]];
+        [buttons addObject:b];
     /*
-     b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]previewActionImage] 
+     b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]previewActionImage]
      subtitle:@"Preview" 
      badge:nil];
      [b setIdentifier:[NSNumber numberWithInt:kPreviewButton]];
      [buttons addObject:b];
      */
-    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]queueActionImage] 
-                                      subtitle:@"Audio/Subs" 
-                                         badge:nil];
-    [b setIdentifier:[NSNumber numberWithInt:kAudioSubsButton]];
-    [buttons addObject:b];
-    
-    
-    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]moreActionImage] 
-                                      subtitle:@"More" 
-                                         badge:nil];
-    [b setIdentifier:[NSNumber numberWithInt:kMoreButton]];
-    [buttons addObject:b];
+    b = [BRButtonControl actionButtonWithImage:audioSubOFF subtitle:@"Audio/Subs" badge:nil];
+        [b setIdentifier:[NSNumber numberWithInt:kAudioSubsButton]];
+        [b setHighlightedImage:audioSubON];
+        [buttons addObject:b];
+
+    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]moreActionImage] subtitle:@"More" badge:nil];
+        [b setHighlightedImage:[[BRThemeInfo sharedTheme]moreActionHighlightedImage]];
+        [b setIdentifier:[NSNumber numberWithInt:kMoreButton]];
+        [buttons addObject:b];
     
     
     return buttons;
