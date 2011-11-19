@@ -163,6 +163,7 @@
 }
 
 - (id)coverArt {
+    DLog();
     BRImage *coverImg = [BRImage imageWithURL:self.coverArtRealURL];
     if (coverImg) {
         return coverImg;
@@ -257,12 +258,12 @@
     
     NSDictionary *headerFields = [request allHTTPHeaderFields];
     BRURLImageProxy *aImageProxy = [BRURLImageProxy proxyWithURL:[request URL] headerFields:headerFields];
-    //aImageProxy.writeToDisk = YES;
+    aImageProxy.writeToDisk = YES;
 	return aImageProxy;
 }
 
 - (id)imageProxyWithBookMarkTimeInMS:(unsigned int)fp8 {
-	return nil;
+	return self.imageProxy;
 }
 
 - (void)incrementPerformanceCount {
@@ -577,7 +578,7 @@
     if (image) {
         imageURL = [pmo.request pathForScaledImage:[image.imageURL absoluteString] ofSize:CGSizeMake(512, 512)];
     }
-    DLog("imageURL %@", imageURL);
+    //DLog("imageURL %@", imageURL);
     return imageURL;
 }
 

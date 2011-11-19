@@ -10,10 +10,10 @@
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//
+//  
 //  The above copyright notice and this permission notice shall be included in
 //  all copies or substantial portions of the Software.
-//
+//  
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,9 +21,9 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
-//
+//  
 
-#define LOCAL_DEBUG_ENABLED 0
+#define LOCAL_DEBUG_ENABLED 1
 
 #import "PlexPreplayController.h"
 #import "PlexMediaProvider.h"
@@ -35,6 +35,7 @@
 #import <plex-oss/PlexMedia.h>
 #import "PlexMediaObject+Assets.h"
 #import "PlexPreviewAsset.h"
+#import "PlexControlFactory.h"
 #import "HWUserDefaults.h"
 #import "Constants.h"
 
@@ -44,7 +45,6 @@
 - (id)ccBadge;
 - (id)hdPosterBadge;
 - (id)dolbyDigitalBadge;
-- (id)storeRentalPlaceholderImage;
 - (id)moreActionImage;
 @end
 
@@ -66,7 +66,7 @@ typedef enum {
     if (self) {
         self.datasource = self;
 		self.delegate = self;
-
+        
         //create the popup
 		listDropShadowControl = [[SMFListDropShadowControl alloc] init];
 		[listDropShadowControl setCDelegate:self];
@@ -91,7 +91,7 @@ typedef enum {
 -(void)dealloc {
     self.selectedMediaObject = nil;
 	self.relatedMediaContainer = nil;
-
+    
     [listDropShadowControl release];
 	[super dealloc];
 }
@@ -102,11 +102,10 @@ typedef enum {
         //set both focused and selected to the new index
 		currentSelectedIndex = newIndex;
         lastFocusedIndex = newIndex;
-        PlexMediaShelfView *ctrl = self._shelfControl;
-		ctrl.focusedIndexCompat = newIndex;
+		shelfCtrl.focusedIndexCompat = newIndex;
 		self.selectedMediaObject = [self.relatedMediaContainer.directories objectAtIndex:currentSelectedIndex];
         //move the shelf if needed to show the new item
-        [self._shelfControl _scrollIndexToVisible:currentSelectedIndex];
+        [shelfCtrl _scrollIndexToVisible:currentSelectedIndex];
         //refresh metadata, but don't touch the shelf
 		[self reload];
 	}
@@ -130,7 +129,7 @@ typedef enum {
 - (void)wasExhumed {
 	[[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
 	[super wasExhumed];
-    [self._shelfControl _scrollIndexToVisible:currentSelectedIndex];
+    [shelfCtrl _scrollIndexToVisible:currentSelectedIndex];
 }
 
 - (void)wasBuried {
@@ -149,7 +148,7 @@ typedef enum {
 -(void)controllerSwitchToPrevious:(SMFMoviePreviewController *)ctrl {
 	[ctrl switchPreviousArrowOn];
 	[ctrl performSelector:@selector(switchPreviousArrowOff) withObject:nil afterDelay:ArrowSwitchDelay];
-
+	
 	[[SMFThemeInfo sharedTheme] playNavigateSound];
 	int newIndex;
 	if (currentSelectedIndex - 1 < 0) {
@@ -174,7 +173,7 @@ typedef enum {
 -(void)controllerSwitchToNext:(SMFMoviePreviewController *)ctrl {
 	[ctrl switchNextArrowOn];
 	[ctrl performSelector:@selector(switchNextArrowOff) withObject:nil afterDelay:ArrowSwitchDelay];
-
+	
 	[[SMFThemeInfo sharedTheme] playNavigateSound];
 	int newIndex;
 	if (currentSelectedIndex + 1 < [self.relatedMediaContainer.directories count]) {
@@ -190,21 +189,21 @@ typedef enum {
 	lastFocusedIndex = newIndex;
 	[self changeMetadataViewToShowDataForIndex:lastFocusedIndex];
 	[self setFocusedControl:[self._buttons lastObject]];
-
+	
 }
 
 -(void)controller:(SMFMoviePreviewController *)c selectedControl:(BRControl *)ctrl {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"controller selected %@", ctrl);
 #endif
-
+    
 	if ([ctrl isKindOfClass:[BRButtonControl class]]) {
         //one of the buttons have been pushed
 		BRButtonControl *buttonControl = (BRButtonControl *)ctrl;
 #if LOCAL_DEBUG_ENABLED
 		DLog(@"button chosen: %@", buttonControl.identifier);
 #endif
-
+        
 		int buttonId = [buttonControl.identifier intValue];
 		switch (buttonId) {
 			case kPlayButton: {
@@ -224,30 +223,35 @@ typedef enum {
 			default:
 				break;
 		}
-
+		
         //none of the buttons do anything, make error sound for now
 		[[SMFThemeInfo sharedTheme] playErrorSound];
-
-	} else if (ctrl == self._shelfControl) {
+		
+	} else if (ctrl == self.shelfControl) {
         //user has selected a media item
 		[[SMFThemeInfo sharedTheme] playSelectSound];
-        PlexMediaShelfView *ctrl = self._shelfControl;
-
-        [self changeMetadataViewToShowDataForIndex:ctrl.focusedIndexCompat];
+        int focusedIndexCompat;
+        if ([SMF_COMPAT usingFourPointFourPlus]) {
+            focusedIndexCompat =  [[self.shelfControl focusedIndexPath] indexAtPosition:1];
+            DLog(@"using 4.4 index for shelf. %d", focusedIndexCompat);
+        } else {
+            focusedIndexCompat = [(id)self.shelfControl focusedIndex];
+            DLog(@"using 4.2 index for shelf. %d", focusedIndexCompat);
+        }
+        [self changeMetadataViewToShowDataForIndex:focusedIndexCompat];        
 	}
 }
 
 -(void)controller:(SMFMoviePreviewController *)c switchedFocusTo:(BRControl *)newControl {
-	if ([newControl isKindOfClass:[BRButtonControl class]]) {
+	if ([newControl isKindOfClass:[BRButtonControl class]]) {		
         //one of the buttons is now focused
 		if (shelfIsSelected) {
 			shelfIsSelected = NO; //shelf was focused, and now one of the buttons are.
         }
-	} else if (newControl == self._shelfControl) {
+	} else if (newControl == shelfCtrl) {
         //the shelf is now re-focused, load previous focused element
 		shelfIsSelected = YES;
-        PlexMediaShelfView *ctrl = self._shelfControl;
-		ctrl.focusedIndexCompat = lastFocusedIndex;
+        shelfCtrl.focusedIndexCompat = lastFocusedIndex;
 	}
 }
 
@@ -290,7 +294,7 @@ typedef enum {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"subtitle: %@", [self.selectedMediaObject.previewAsset broadcaster]);
 #endif
-
+    
     if ([self.selectedMediaObject.previewAsset broadcaster])
         return [self.selectedMediaObject.previewAsset broadcaster];
     else
@@ -303,7 +307,7 @@ typedef enum {
 #endif
 
     return self.selectedMediaObject.previewAsset.mediaSummary;
-
+    
 }
 
 -(NSArray *)headers {
@@ -313,40 +317,40 @@ typedef enum {
 -(NSArray *)columns {
     //the table will hold all the columns
 	NSMutableArray *table = [NSMutableArray array];
-
+	
     // ======= details column ======
 	NSMutableArray *details = [NSMutableArray array];
-
+	
 	BRGenre *genre = [self.selectedMediaObject.previewAsset primaryGenre];
 	[details addObject:[genre displayString]];
-
+	
 	NSString *released = [NSString stringWithFormat:@"Released %@", [self.selectedMediaObject.previewAsset year]];
 	[details addObject:released];
-
+	
 	NSString *duration = [NSString stringWithFormat:@"%d minutes", [self.selectedMediaObject.previewAsset duration]/60];
 	[details addObject:duration];
-
+    
 	[table addObject:details];
-
-
+	
+	
     // ======= actors column ======
     if ([self.selectedMediaObject.previewAsset cast]) {
         NSArray *actors = [self.selectedMediaObject.previewAsset cast];
         [table addObject:actors];
 	}
-
+	
     // ======= directors column ======
     if ([self.selectedMediaObject.previewAsset directors]) {
         NSArray *directors = [self.selectedMediaObject.previewAsset directors];
         [table addObject:directors];
 	}
-
+    
     // ======= writers column ======
     if ([self.selectedMediaObject.previewAsset writers]) {
         NSArray *writers = [self.selectedMediaObject.previewAsset writers];
         [table addObject:writers];
 	}
-
+	
     // ======= done building table ======
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"table: %@", table);
@@ -356,10 +360,10 @@ typedef enum {
 
 - (NSArray *)flags {
     NSMutableArray *flags = [NSMutableArray array];
-
+    
     if ([self.selectedMediaObject.previewAsset starRatingImage])
         [flags addObject:[self.selectedMediaObject.previewAsset starRatingImage]];
-
+    
     NSDictionary *mediaAttributes = self.selectedMediaObject.mediaResource.attributes;
 
     NSArray *flagAttributes = [NSArray arrayWithObjects:PlexFlagTypeContentVideoResolution, PlexFlagTypeContentVideoCodec, PlexFlagTypeContentAudioCodec, PlexFlagTypeContentAudioChannels, nil];
@@ -369,10 +373,10 @@ typedef enum {
             [flags addObject:[BRImage imageWithURL:flagImage.imageURL]];
         }
     }
-
+    
 	if ([self.selectedMediaObject.previewAsset hasClosedCaptioning])
 		[flags addObject:[[BRThemeInfo sharedTheme] ccBadge]];
-
+    
     return flags;
 }
 
@@ -405,34 +409,34 @@ typedef enum {
     // deleteActionImage, menuActionUnfocusedImage, playActionImage,
     // previewActionImage, queueActionImage, rateActionImage
 	NSMutableArray *buttons = [NSMutableArray array];
-
-	BRButtonControl* b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]playActionImage]
+	
+	BRButtonControl* b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]playActionImage] 
                                                        subtitle:@"Play"
                                                           badge:nil];
-	[b setIdentifier:[NSNumber numberWithInt:kPlayButton]];
+	[b setIdentifier:[NSNumber numberWithInt:kPlayButton]];	
 	[buttons addObject:b];
-
+	
     /*
-     b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]previewActionImage]
-     subtitle:@"Preview"
+     b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]previewActionImage] 
+     subtitle:@"Preview" 
      badge:nil];
      [b setIdentifier:[NSNumber numberWithInt:kPreviewButton]];
      [buttons addObject:b];
      */
-    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]queueActionImage]
-                                      subtitle:@"Audio/Subs"
+    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]queueActionImage] 
+                                      subtitle:@"Audio/Subs" 
                                          badge:nil];
     [b setIdentifier:[NSNumber numberWithInt:kAudioSubsButton]];
     [buttons addObject:b];
-
-
-    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]moreActionImage]
-                                      subtitle:@"More"
+    
+    
+    b = [BRButtonControl actionButtonWithImage:[[BRThemeInfo sharedTheme]moreActionImage] 
+                                      subtitle:@"More" 
                                          badge:nil];
     [b setIdentifier:[NSNumber numberWithInt:kMoreButton]];
     [buttons addObject:b];
-
-
+    
+    
     return buttons;
 }
 
@@ -444,20 +448,23 @@ typedef enum {
 	NSSet *_set = [NSSet setWithObject:[BRMediaType photo]];
 	NSPredicate *_pred = [NSPredicate predicateWithFormat:@"mediaType == %@",[BRMediaType photo]];
 	BRDataStore *store = [[BRDataStore alloc] initWithEntityName:@"Hello" predicate:_pred mediaTypes:_set];
-
+	
 	for (PlexMediaObject *pmo in self.relatedMediaContainer.directories) {
 		[store addObject:pmo.previewAsset];
 	}
-
-	BRPosterControlFactory *tcControlFactory = [BRPosterControlFactory factory];
-	[tcControlFactory setDefaultImage:[[BRThemeInfo sharedTheme] storeRentalPlaceholderImage]];
-
-	id provider = [BRPhotoDataStoreProvider providerWithDataStore:store controlFactory:tcControlFactory];
+	
+    PlexControlFactory *controlFactory = [[PlexControlFactory alloc] initForMainMenu:NO];
+	controlFactory.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+	id provider = [BRPhotoDataStoreProvider providerWithDataStore:store controlFactory:controlFactory];
 	[store release];
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"providerForShelf: %@", provider);
 #endif
 	return provider;
+}
+
+-(BRImage *)placeHolderImageForShelf {
+    return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 }
 
 #pragma mark -
@@ -466,19 +473,19 @@ typedef enum {
 #define MarkAsWatchedOption 0
 #define MarkAsUnwatchedOption 1
 
-- (float)popupHeightForRow:(long)row {
+- (float)popupHeightForRow:(long)row { 
 	return 0.0f;
 }
 
-- (BOOL)popupRowSelectable:(long)row {
+- (BOOL)popupRowSelectable:(long)row { 
 	return YES;
 }
 
-- (long)popupItemCount {
+- (long)popupItemCount { 
 	return 3;
 }
 
-- (id)popupItemForRow:(long)row	{
+- (id)popupItemForRow:(long)row	{ 
     SMFMenuItem *it = [SMFMenuItem menuItem];
     switch (row) {
 		case MarkAsWatchedOption: {
@@ -496,7 +503,7 @@ typedef enum {
     return it;
 }
 
-- (long)popupDefaultIndex {
+- (long)popupDefaultIndex { 
 	return 0;
 }
 

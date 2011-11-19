@@ -8,13 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface PlexMediaShelfView : BRMediaShelfView
 {
-    id controller;
+    id adapter;
 }
 
-@property (retain) id controller;
 @property (retain) id provider;
 @property (retain) id focusedIndexCompat;
+@property (retain) id adapter;
 
 @end

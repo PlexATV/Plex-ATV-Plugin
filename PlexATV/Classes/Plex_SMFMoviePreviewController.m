@@ -77,7 +77,7 @@
                                    masterFrame.size.height*(10.f/720.f));
     [cdiv1 setFrame:cdiv1Frame];
     [self addControl:cdiv1];
-    [_hideList addObject:cdiv1];
+    //[_hideList addObject:cdiv1];
     [cdiv1 release];
     
     
@@ -91,7 +91,7 @@
                                    cdiv1Frame.size.height);
     [cdiv2 setFrame:cdiv2Frame];
     [self addControl:cdiv2];
-    [_hideList addObject:cdiv2];
+    //[_hideList addObject:cdiv2];
     [cdiv2 release];
     
     /*
@@ -131,7 +131,7 @@
         [imageControl release];
     }
     [self addControl:flagPanel];
-    [_hideList addObject:flagPanel];
+    //[_hideList addObject:flagPanel];
     [flagPanel release];    
 }
 

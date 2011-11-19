@@ -4,7 +4,7 @@
 //
 //  Created by ccjensen on 10/01/2011.
 //
-//  Inspired by 
+//  Inspired by
 //
 //		MLoader.m
 //		MextLoader
@@ -20,7 +20,6 @@
 #import "PlexSecuritySettingsController.h"
 #import "HWUserDefaults.h"
 #import "Constants.h"
-#import "gitversion.h"
 
 @implementation HWSettingsController
 @synthesize topLevelController;
@@ -41,14 +40,14 @@
 		topLevelController = nil;
 		[self setLabel:@"Plex Settings"];
 		[self setListTitle:@"Plex Settings"];
-		
+
 		[self setupList];
-	}	
+	}
 	return self;
 }
 
 - (void)dealloc {
-	[super dealloc];	
+	[super dealloc];
 }
 
 - (NSString *)description {
@@ -82,48 +81,49 @@
 
 - (void)setupList {
 	[_items removeAllObjects];
-	
+
 	// =========== servers ===========
 	SMFMenuItem *serversMenuItem = [SMFMenuItem folderMenuItem];
 	[serversMenuItem setTitle:@"Manage server list"];
-	[_items addObject:serversMenuItem];    
-	
+	[_items addObject:serversMenuItem];
+
     // =========== view settings ===========
 	SMFMenuItem *viewSettingsMenuItem = [SMFMenuItem folderMenuItem];
 	[viewSettingsMenuItem setTitle:@"View settings"];
 	[_items addObject:viewSettingsMenuItem];
-    
-    
+
+
     // =========== playback settings ===========
 	SMFMenuItem *playbackSettingsMenuItem = [SMFMenuItem folderMenuItem];
 	[playbackSettingsMenuItem setTitle:@"Playback settings"];
 	[_items addObject:playbackSettingsMenuItem];
-    
-    
+
+
     // =========== security settings ===========
 	SMFMenuItem *securitySettingsMenuItem = [SMFMenuItem folderMenuItem];
 	[securitySettingsMenuItem setTitle:@"Security settings"];
 	[_items addObject:securitySettingsMenuItem];
-	
-    
+
+
 	// =========== version number ===========
 	SMFMenuItem *pluginVersionNumberMenuItem = [SMFMenuItem menuItem];
-	
+
 	[pluginVersionNumberMenuItem setTitle:@"Version"];
-	[pluginVersionNumberMenuItem setRightText:[NSString stringWithFormat:@"%@-%@", kPlexPluginVersion, PLEX_GIT_VERSION]];
+	[pluginVersionNumberMenuItem setRightText:kPlexPluginVersion];
     [_items addObject:pluginVersionNumberMenuItem];
-	
-    
+
+
 	//this code can be used to find all the accessory types
-//    	for (int i = 0; i<32; i++) {
-//    		BRMenuItem *tempSettingMenuItem = [[BRMenuItem alloc] init];
-//    		[tempSettingMenuItem addAccessoryOfType:i];
-//    		
-//    		NSString *tempSettingTitle = [[NSString alloc] initWithFormat:@"temp %d", i];
-//    		[tempSettingMenuItem setText:tempSettingTitle withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
-//    		[tempSettingTitle release];
-//    		[_items addObject:tempSettingMenuItem];
-//    	}
+ /*   	for (int i = 0; i<32; i++) {
+    		BRMenuItem *tempSettingMenuItem = [[BRMenuItem alloc] init];
+    		[tempSettingMenuItem addAccessoryOfType:i];
+
+    		NSString *tempSettingTitle = [[NSString alloc] initWithFormat:@"temp %d", i];
+    		[tempSettingMenuItem setText:tempSettingTitle withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
+    		[tempSettingTitle release];
+    		[_items addObject:tempSettingMenuItem];
+    	}
+  */
 }
 
 #pragma mark -
@@ -133,7 +133,7 @@
 		case ServersIndex: {
 			HWServersController* menuController = [[HWServersController alloc] init];
 			[[[BRApplicationStackManager singleton] stack] pushController:menuController];
-			[menuController release];
+			[menuController autorelease];
 			break;
 		}
 		case ViewSettingsIndex: {
@@ -195,7 +195,7 @@
 		case PluginVersionNumberIndex: {
 			// =========== quality setting ===========
 			[asset setTitle:@"Credit to:"];
-			[asset setSummary:@"quequick, b0bben and ccjensen, brent112, boots and all the ppl in the forums. <3 you all"];
+			[asset setSummary:@"quequick, b0bben and ccjensen, brent112, boots2x, tobiashieta, tomcool and all the ppl in the forums. <3 you all"];
 			break;
 		}
 		default:
@@ -206,7 +206,7 @@
 	[p setShowsMetadataImmediately:YES];
 	[p setAsset:asset];
 	[asset release];
-	return [p autorelease];  
+	return [p autorelease];
 }
 
 

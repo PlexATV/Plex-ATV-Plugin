@@ -17,6 +17,7 @@
 
 @synthesize machines = _machines;
 
+
 #pragma mark -
 #pragma mark Object/Class Lifecycle
 - (id) init {
@@ -149,9 +150,9 @@
 		
 		[result addAccessoryOfType:1]; //folder
 		if (m.canConnect) {
-			[result addAccessoryOfType:18]; //online
+            [result addAccessoryOfType:[SMF_COMPAT usingFourPointThreePlus] ? 19: 18]; //online
 		} else {
-			[result addAccessoryOfType:19]; //offline
+            [result addAccessoryOfType:[SMF_COMPAT usingFourPointThreePlus] ? 20: 19]; //online
 		}
 		
 	}	

@@ -85,8 +85,8 @@
 	Machine* m = [_names objectAtIndex:selected];
 	DLog(@"machine selected: %@", m);
 	
-	HWPlexDir* menuController = [[HWPlexDir alloc] init];
-	menuController.rootContainer = [m.request rootLevel];
+	HWPlexDir* menuController = [[HWPlexDir alloc] initWithRootContainer:[m.request rootLevel] andTabBar:nil];
+	//menuController.rootContainer = [m.request rootLevel];
 	[[[BRApplicationStackManager singleton] stack] pushController:menuController];
 	[menuController release];
 }

@@ -85,7 +85,7 @@ void checkNil(NSObject *ctrl)
 - (void)wasPushed {
 	[[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
 	[super wasPushed];
-    [self _removeAllControls];
+    //[self _removeAllControls];
 	[self drawSelf];
 }
 
@@ -169,11 +169,11 @@ void checkNil(NSObject *ctrl)
 	 */
 	DLog(@"shelf");
 	_shelfControl = [[PlexMediaShelfView alloc] init];
-	[_shelfControl setProvider:[self getProviderForShelf]];
+	[_shelfControl setProvider:[self providerForShelf]];
 	[_shelfControl setColumnCount:7];
 	[_shelfControl setCentered:NO];
     [_shelfControl setCoverflowMargin:0.05000000074505806f];
-	
+	[_shelfControl layoutSubcontrols];
     
 	
 	DLog(@"box");
@@ -203,7 +203,9 @@ void checkNil(NSObject *ctrl)
     NSString *gridLabel = [NSString stringWithFormat:@"All %@", self.gridMediaContainer.name];
 	[div2 setLabel:gridLabel];
 	
-	CGRect dividerFrame = CGRectMake(0, boxFrame.size.height+10.f, 0, 0);
+	CGRect dividerFrame;
+	dividerFrame.origin.x = 0;
+	dividerFrame.origin.y = boxFrame.size.height+10.f;
 	[div2 setFrame:dividerFrame];
 	
 	
@@ -217,10 +219,14 @@ void checkNil(NSObject *ctrl)
 	[_gridControl setRightMargin:0.05000000074505806];
 	[_gridControl setAcceptsFocus:YES];
 	[_gridControl setProviderRequester:_gridControl];
-    //[_gridControl layoutSubcontrols];
     
-	CGRect gridFrame = CGRectMake(0, dividerFrame.origin.y - 25, 0, [_gridControl _totalHeight] + 50.f);
+	CGRect gridFrame;
+	gridFrame.origin.y = dividerFrame.origin.y-25;
+	gridFrame.size.height = [_gridControl _totalHeight] + 50.f;
 	[_gridControl setFrame:masterFrame];
+	
+	CGRect gridBoxFrame;
+	gridBoxFrame.origin.x = 0;
 	
 	BRBoxControl *gridBox = [[BRBoxControl alloc] init];
 	[gridBox setAcceptsFocus:YES];
@@ -239,7 +245,10 @@ void checkNil(NSObject *ctrl)
     
 	
 	BRSpacerControl *spacerBottom=[BRSpacerControl spacerWithPixels:44.f];
-	CGRect spacerFrame = CGRectMake(0, 0, 0, 44.f);
+	CGRect spacerFrame;
+	spacerFrame.origin.x=0;
+	spacerFrame.origin.y = 0;
+	spacerFrame.size.height = 44.f;
 	[spacerBottom setFrame:spacerFrame];
 	
 	[_panelControl addControl:spacerBottom];
@@ -279,7 +288,7 @@ void checkNil(NSObject *ctrl)
 #endif
     PlexControlFactory *controlFactory = [[PlexControlFactory alloc] initForMainMenu:NO];
 	controlFactory.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
-	
+    
 	BRPhotoDataStoreProvider* provider = [BRPhotoDataStoreProvider providerWithDataStore:store 
 																		  controlFactory:controlFactory];
 	
@@ -293,13 +302,34 @@ void checkNil(NSObject *ctrl)
 	
 }
 
--(id)getProviderForGrid
+-(BRPhotoDataStoreProvider *)providerForShelf {
+	NSSet *_set = [NSSet setWithObject:[BRMediaType photo]];
+	NSPredicate *_pred = [NSPredicate predicateWithFormat:@"mediaType == %@",[BRMediaType photo]];
+	BRDataStore *store = [[BRDataStore alloc] initWithEntityName:@"Hello" predicate:_pred mediaTypes:_set];
+	
+	for (PlexMediaObject *pmo in self.shelfMediaObjects) {
+		[store addObject:pmo.previewAsset];
+	}
+	
+    PlexControlFactory *controlFactory = [[PlexControlFactory alloc] initForMainMenu:NO];
+	//SMFControlFactory *controlFactory = [[SMFControlFactory alloc] initForMainMenu:NO];
+    controlFactory.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+	
+	id provider = [BRPhotoDataStoreProvider providerWithDataStore:store controlFactory:controlFactory];
+	[store release];
+#if LOCAL_DEBUG_ENABLED
+	DLog(@"providerForShelf: %@", provider);
+#endif
+	return provider;
+}
+
+-(BRPhotoDataStoreProvider *)getProviderForGrid
 {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"getProviderForGrid_start");
 #endif
-	NSSet *_set = [NSSet setWithObject:[BRMediaType movie]];
-	NSPredicate *_pred = [NSPredicate predicateWithFormat:@"mediaType == %@",[BRMediaType movie]];
+	NSSet *_set = [NSSet setWithObject:[BRMediaType photo]];
+	NSPredicate *_pred = [NSPredicate predicateWithFormat:@"mediaType == %@",[BRMediaType photo]];
 	BRDataStore *store = [[BRDataStore alloc] initWithEntityName:@"Hello2" predicate:_pred mediaTypes:_set];
 	
 	for (int i=0;i<[self.gridMediaObjects count];i++)
@@ -313,13 +343,13 @@ void checkNil(NSObject *ctrl)
     
     
     PlexControlFactory *controlFactory = [[PlexControlFactory alloc] initForMainMenu:NO];
-	controlFactory.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+	//SMFControlFactory *controlFactory = [[SMFControlFactory alloc] initForMainMenu:NO];
+    controlFactory.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 	
     BRPhotoDataStoreProvider* provider = [BRPhotoDataStoreProvider providerWithDataStore:store 
 																		  controlFactory:controlFactory];
-    [controlFactory release];
+
     [store release];
-    
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"getProviderForGrid_end");
 #endif
@@ -335,10 +365,16 @@ void checkNil(NSObject *ctrl)
 	if (remoteAction==kBREventRemoteActionPlay && action.value==1)
 	{
 		int index;
-		NSArray *mediaObjects = nil;
+		NSArray *mediaObjects;
 		
 		if ([_shelfControl isFocused]) {
-            index = [_shelfControl focusedIndexCompat];
+            //DLog(@"focusedIndex: %@", [_shelfControl focusedIndexCompat]);
+            if ([SMF_COMPAT usingFourPointFourPlus]) {
+                index = [[_shelfControl focusedIndexCompat] indexAtPosition:1];
+            } else {
+                index = [_shelfControl focusedIndex];
+            }
+            
 			mediaObjects = self.shelfMediaObjects;
 #if LOCAL_DEBUG_ENABLED
 			DLog(@"item in shelf selected. mediaObjects: %d, index:%d",[mediaObjects count], index);
@@ -358,7 +394,8 @@ void checkNil(NSObject *ctrl)
 #if LOCAL_DEBUG_ENABLED
 			DLog(@"brEventaction. have %d mediaObjects and index %d, showing movie preview ctrl",[mediaObjects count], index);
 #endif      
-            [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:[mediaObjects objectAtIndex:index]];
+			
+            [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:[[mediaObjects objectAtIndex:index] retain]];
 		}
 		else {
 			DLog(@"error: no selected mediaObject");

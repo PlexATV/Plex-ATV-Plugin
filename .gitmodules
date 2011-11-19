@@ -1,6 +1,6 @@
-[submodule "_Contrib/SMFramework"]
-	path = _Contrib/SMFramework
-	url = git://github.com/tru/SMFramework.git
 [submodule "_Contrib/libPLEX-iOS"]
 	path = _Contrib/libPLEX-iOS
 	url = git://github.com/quiqueck/libPLEX-iOS.git
+[submodule "_Contrib/SMFramework"]
+	path = _Contrib/SMFramework
+	url = git://github.com/tru/SMFramework.git

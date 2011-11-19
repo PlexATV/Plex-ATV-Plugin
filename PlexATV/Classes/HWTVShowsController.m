@@ -200,26 +200,35 @@
     self.themeMusicTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(playThemeMusicForMediaObjectInTimer:) userInfo:userInfo repeats:NO];
 }
 
--(BOOL)bookcaseController:(Plex_SMFBookcaseController *)bookcaseController allowSelectionForShelf:(PlexMediaShelfView *)shelfControl atIndex:(NSInteger)index {
+-(BOOL)bookcaseController:(Plex_SMFBookcaseController *)bookcaseController allowSelectionForShelf:(id)shelfControl atIndex:(NSInteger)index {
     return YES;
 }
 
--(void)bookcaseController:(Plex_SMFBookcaseController *)bookcaseController selectionWillOccurInShelf:(PlexMediaShelfView *)shelfControl atIndex:(NSInteger)index {
+-(void)bookcaseController:(Plex_SMFBookcaseController *)bookcaseController selectionWillOccurInShelf:(id)shelfControl atIndex:(NSInteger)index {
 #if LOCAL_DEBUG_ENABLED
 	DLog(@"select will occur");
 #endif
 }
 
--(void)bookcaseController:(Plex_SMFBookcaseController *)bookcaseController selectionDidOccurInShelf:(PlexMediaShelfView *)shelfControl atIndex:(NSInteger)index {
+-(void)bookcaseController:(Plex_SMFBookcaseController *)bookcaseController selectionDidOccurInShelf:(id)shelfControl atIndex:(NSInteger)index {
+    NSUInteger focusedIndex;
+    
+    if ([SMF_COMPAT usingFourPointFourPlus]) {
+        focusedIndex = [[shelfControl focusedIndexPath] indexAtPosition:1];
+    } else {
+        focusedIndex = [shelfControl focusedIndex];
+    }
+
+    
 #if LOCAL_DEBUG_ENABLED
-	DLog(@"select did occur at index: %d and shelfindex: %ld",index, [shelfControl focusedIndexCompat]);	
+	DLog(@"select did occur at index: %d and shelfindex: %ld",index, focusedIndex);
 #endif
     
     PlexMediaObject *tvshow = [tvShows.directories objectAtIndex:index];
     
     self.seasonsForSelectedTVShow = [tvshow contents];
     
-    PlexMediaObject *season = [self.seasonsForSelectedTVShow.directories objectAtIndex:[shelfControl focusedIndexCompat]];
+    PlexMediaObject *season = [self.seasonsForSelectedTVShow.directories objectAtIndex:focusedIndex];
     
     if ([[season contents] hasOnlyEpisodes]) {
         [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:season];

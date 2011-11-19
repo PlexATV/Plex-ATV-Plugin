@@ -187,22 +187,29 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     
     DLog(@"attribute type: %@", [aMediaObject.attributes valueForKey:@"type"]);
     DLog(@"view group: %@", aMediaObject.mediaContainer.viewGroup);
-    
+    DLog(@"container %@", aMediaObject.containerType);
     //play theme music if we're entering a tv show
     if (aMediaObject.isTVShow || aMediaObject.isSeason || aMediaObject.isEpisode) {
         [[PlexThemeMusicPlayer sharedPlexThemeMusicPlayer] startPlayingThemeMusicIfAppropiateForMediaObject:aMediaObject];
     }
-    
+ 
+    if ([@"Directory" isEqualToString:aMediaObject.containerType]) {
+        //just a fix for channel content that's fucked up
+    }
+        
     // ============ sound plugin or other type of sound, initiate playback ============
     //initiate playback when aMediaObject is plugin content (as preplay is generally no use)
-    if ([@"Track" isEqualToString:aMediaObject.containerType]
-        || [@"clip" isEqualToString:[aMediaObject.attributes valueForKey:@"type"]]
-        || [PlexViewGroupStoreInfo isEqualToString:aMediaObject.mediaContainer.viewGroup]){
+    else if ([@"Track" isEqualToString:aMediaObject.containerType]
+        || [@"clip" isEqualToString:[aMediaObject.attributes valueForKey:@"type"]])
+        //|| [PlexViewGroupStoreInfo isEqualToString:aMediaObject.mediaContainer.viewGroup])
+    {
+        DLog(@"got track, starting playback");
         return [[PlexPlaybackController alloc] initWithPlexMediaObject:aMediaObject];
 	}
     
     // ========== movie, initiate movie pre-play view ============
-    else if ((aMediaObject.hasMedia || [@"Video" isEqualToString:aMediaObject.containerType]) && aMediaObject.mediaContainer.viewGroup != PlexViewGroupStoreInfo) {
+    else if (aMediaObject.hasMedia || [@"Video" isEqualToString:aMediaObject.containerType] || aMediaObject.isVideo ) {
+        DLog(@"got video, starting playback");
         return [[PlexPreplayController alloc] initWithPlexMediaObject:aMediaObject];
     }
     

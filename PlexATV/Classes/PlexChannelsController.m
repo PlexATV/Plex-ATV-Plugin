@@ -42,6 +42,7 @@
 - (id) initWithRootContainer:(PlexMediaContainer*)container {
 	self = [self init];
 	self.rootContainer = container;
+    DLog(@"rootCont: %@", self.rootContainer);
 	return self;
 }
 

@@ -9,13 +9,8 @@
 #import <Foundation/Foundation.h>
 
 
-@interface PlexControlFactory : BRPhotoControlFactory {
-    BOOL _alwaysShowTitles;
-    BRImage *_defaultImage;
+@interface PlexControlFactory : SMFControlFactory {
+
 }
 
-@property (assign)BOOL _alwaysShowTitles;
-@property (retain)BRImage *defaultImage;
-
--(BRControl *)controlForImageProxy:(BRURLImageProxy *)imageProxy title:(NSString *)title;
 @end

@@ -29,6 +29,8 @@
 -(void)drawSelf;
 - (id)getProviderForGrid;
 -(id)getProviderForShelf;
+-(BRPhotoDataStoreProvider *)providerForShelf;
+
 //our own stuff
 - (id)initWithPlexAllMovies:(PlexMediaContainer *)allMovies andRecentMovies:(PlexMediaContainer *)recentMovies;
 
