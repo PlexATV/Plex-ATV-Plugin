@@ -4,7 +4,7 @@ Version: 0.8.3
 Priority: optional
 Size: 1083178
 Installed-Size: 2662
-Depends: beigelist,com.nito,org.tomcool.smframework (>= 0.7.7-2)
+Depends: beigelist(>=2.1-1), mobilesubstrate, org.tomcool.smframework (>= 0.7.7-2)
 Replaces: plex-client-plugin
 Architecture: iphoneos-arm
 Description: A PLEX Client for Lowtide (beta)
