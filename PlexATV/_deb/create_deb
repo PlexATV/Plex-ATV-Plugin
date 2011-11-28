@@ -20,5 +20,5 @@ mv PLEX.frapplication.deb plex_atv_plugin-$VERSION.deb
 cp plex_atv_plugin-$VERSION.deb REPO/
 cd REPO
 ./dpkg-scanpackages.pl -m . /dev/null /downloads/PLEX/ >Packages
-rm Packages.bz2
+#rm Packages.bz2
 #bzip2 Packages
