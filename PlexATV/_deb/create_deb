@@ -17,8 +17,8 @@ cat debian_control | sed "s/\*\*VERSION\*\*/$VERSION/" > PLEX.frapplication/DEBI
 
 dpkg-deb -b PLEX.frapplication
 mv PLEX.frapplication.deb plex_atv_plugin-$VERSION.deb
-
-#cd REPO
-#./dpkg-scanpackages.pl -m . /dev/null /downloads/PLEX/ >Packages
-#rm Packages.bz2
+cp plex_atv_plugin-$VERSION.deb REPO/
+cd REPO
+./dpkg-scanpackages.pl -m . /dev/null /downloads/PLEX/ >Packages
+rm Packages.bz2
 #bzip2 Packages

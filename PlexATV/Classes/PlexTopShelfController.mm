@@ -196,7 +196,7 @@
     poster.titleVerticalOffset = 0.039999999105930328;
     [poster setNonAttributedTitleWithCrossfade:title];
 
-    return poster;
+    return [poster autorelease];
 }
 
 
