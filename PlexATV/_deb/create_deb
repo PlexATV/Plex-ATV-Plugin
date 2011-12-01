@@ -16,8 +16,7 @@ echo "Building $VERSION"
 cat debian_control | sed "s/\*\*VERSION\*\*/$VERSION/" > PLEX.frapplication/DEBIAN/control
 
 dpkg-deb -b PLEX.frapplication
-mv PLEX.frapplication.deb plex_atv_plugin-$VERSION.deb
-cp plex_atv_plugin-$VERSION.deb REPO/
+mv PLEX.frapplication.deb REPO/plex_atv_plugin-$VERSION.deb
 cd REPO
 ./dpkg-scanpackages.pl -m . /dev/null /downloads/PLEX/ >Packages
 #rm Packages.bz2

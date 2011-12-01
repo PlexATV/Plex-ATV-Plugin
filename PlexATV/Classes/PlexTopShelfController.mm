@@ -70,14 +70,15 @@
 
 - (void)setContentToContainer:(PlexMediaContainer*)aMediaContainer {
     self.containerName = aMediaContainer.name;
-
+/*
     NSString *onDeckQuery = [NSString stringWithFormat:@"%@/onDeck", aMediaContainer.key];
     PlexMediaContainer *onDeckContainer = [aMediaContainer.request query:onDeckQuery callingObject:nil ignorePresets:YES timeout:20 cachePolicy:NSURLRequestUseProtocolCachePolicy];
     self.onDeckMediaContainer = onDeckContainer;
 
     NSString *recentlyAddedQuery = [NSString stringWithFormat:@"%/library/recentlyAdded", aMediaContainer.key];
     PlexMediaContainer *recentlyAddedContainer = [aMediaContainer.request query:recentlyAddedQuery callingObject:nil ignorePresets:YES timeout:20 cachePolicy:NSURLRequestUseProtocolCachePolicy];
-    self.recentlyAddedMediaContainer = recentlyAddedContainer;
+   */
+    self.recentlyAddedMediaContainer = aMediaContainer;
 }
 
 - (void)refresh {

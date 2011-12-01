@@ -121,9 +121,13 @@
         [[PlexClientCapabilities sharedPlexClientCapabilities] removeAudioCodec:PlexClientDecoderName_AC3];
     }
 
-    //DTS doesn't work on the ATV, so remove it...
-    [[PlexClientCapabilities sharedPlexClientCapabilities] removeAudioCodec:PlexClientDecoderName_DTS];
-
+    if ([PLEX_COMPAT usingFourPointFour] && wantsAC3) { //until we can confirm DTS working
+        [[PlexClientCapabilities sharedPlexClientCapabilities] setAudioDecoderForCodec:PlexClientDecoderName_DTS bitrate:PlexClientBitrateAny channels:PlexClientAudioChannels_7_1Surround];        
+    }
+    else {
+        //DTS doesn't work on the ATV, so remove it...
+        [[PlexClientCapabilities sharedPlexClientCapabilities] removeAudioCodec:PlexClientDecoderName_DTS];        
+    }
 
     [[PlexClientCapabilities sharedPlexClientCapabilities] setAudioDecoderForCodec:PlexClientDecoderName_AAC bitrate:PlexClientBitrateAny channels:PlexClientAudioChannels_7_1Surround];
 

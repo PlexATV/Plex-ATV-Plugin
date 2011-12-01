@@ -180,12 +180,7 @@
 #if LOCAL_DEBUG_ENABLED
     DLog();
 #endif
-    BRImage *coverImg = [BRImage imageWithURL:self.coverArtRealURL];
-    if (coverImg) {
-        return coverImg;
-    }
-    else
-        return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+    return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 
 }
 

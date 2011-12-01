@@ -76,11 +76,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
 
 
-        //TEST. TODO: remove this
-        DLog(@"usingFourPointTwoPlus: %@", [SMF_COMPAT usingFourPointTwoPlus] ? @"YES" : @"NO");
-        DLog(@"usingFourPointThreePlus: %@", [SMF_COMPAT usingFourPointThreePlus] ? @"YES" : @"NO");
-        DLog(@"usingFourPointFourPlus: %@", [SMF_COMPAT usingFourPointFourPlus] ? @"YES" : @"NO");
-
+        //some debug output to help us pinpoint users iOS version when troubleshooting
         DLog(@"PLEX usingFourPointTwoPlus: %@", [PLEX_COMPAT usingFourPointTwo] ? @"YES" : @"NO");
         DLog(@"PLEX usingFourPointThreePlus: %@", [PLEX_COMPAT usingFourPointThree] ? @"YES" : @"NO");
         DLog(@"PLEX usingFourPointFourPlus: %@", [PLEX_COMPAT usingFourPointFour] ? @"YES" : @"NO");
@@ -262,7 +258,8 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         DLog(@"Adding categories for machine [%@]", machine);
 #endif
 
-
+        [self.topShelfController setContentToContainer:machine.recentlyAddedMedia];
+        [self.topShelfController refresh];
 
 
         //================== add all it's categories to our appliances list ==================
@@ -375,8 +372,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         DLog(@"MachineManager: Reload machines as machine [%@] was added", m);
 #endif
         [self rebuildCategories];
-        [self.topShelfController setContentToContainer:m.rootLevel];
-        [self.topShelfController refresh];
 
     }
 }
@@ -388,8 +383,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m);
 #endif
         [self rebuildCategories];
-        [self.topShelfController setContentToContainer:m.rootLevel];
-        [self.topShelfController refresh];
     } else {
         //machine is not available
     }
@@ -408,8 +401,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         DLog(@"MachineManager: Reload machines as machine [%@] list was updated [%@] or came online/offline [%@]", m, machinesLibrarySectionsWasUpdated ? @"YES" : @"NO", machineHasEitherGoneOnlineOrOffline ? @"YES" : @"NO");
 #endif
         [self rebuildCategories];
-        [self.topShelfController setContentToContainer:m.rootLevel];
-        [self.topShelfController refresh];
 
     }
 

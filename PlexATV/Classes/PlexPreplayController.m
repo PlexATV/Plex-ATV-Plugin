@@ -463,7 +463,7 @@ typedef enum {
 - (BRImage*)coverArt {
     BRImage *coverArt = nil;
     if ([self.selectedMediaObject.previewAsset hasCoverArt] && self.selectedMediaObject.isMovie) {
-        coverArt = [self.selectedMediaObject.previewAsset coverArt];
+        coverArt = [[self.selectedMediaObject.previewAsset imageProxy] imageForImageSize:512];
     }
     else {
         coverArt = [self.selectedMediaObject.previewAsset seasonCoverArt];
