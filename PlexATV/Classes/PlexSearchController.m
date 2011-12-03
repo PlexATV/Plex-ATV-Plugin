@@ -103,7 +103,6 @@
 }
 
 - (void)refresh {
-    DLog();
     int listCount = [self.items count];
     if (listCount > 0) {
         [self.list setAcceptsFocus:YES];
@@ -132,7 +131,7 @@
     //============================ TEXT ENTRY ============================
     if (!self.textEntry) {
         BRTextEntryControl *aTextEntry;
-/*        if ([PLEX_COMPAT usingFourPointThree]) {
+        if ([PLEX_COMPAT usingFourPointThree]) {
             DLog(@"4.3+ textentry");
             aTextEntry = [[BRTextEntryControl alloc] initWithTextEntryStyle:9];
             aTextEntry.frame = CGRectMake(140,
@@ -140,14 +139,14 @@
                                           400,
                                           534);
             aTextEntry.canWrapHorizontally = NO;
-        } else {   */
+        } else {   
         DLog(@"NON 4.3 textentry");
         aTextEntry = [[BRTextEntryControl alloc] initWithTextEntryStyle:2];
         aTextEntry.frame = CGRectMake(108,
                                       70,
                                       460,
                                       499);
-        //    }
+        }
         self.textEntry = aTextEntry;
 
         [self addControl:aTextEntry];
@@ -281,9 +280,6 @@
     self.currentSearchMediaContainer = [data objectForKey:kSearchResultsKey];
     self.items = self.currentSearchMediaContainer.directories;
     [self refresh];
-
-    //free the passed data
-    [data release];
 }
 
 - (void)performSearch:(NSMutableDictionary*)data {
@@ -337,7 +333,6 @@
 }
 
 - (id)itemForRow:(long)row {
-
     PlexMediaObject *pmo = [self.items objectAtIndex:row];
     return pmo.menuItem;
 }
