@@ -178,6 +178,11 @@
                                           controlFactory:controlFactory];
     [controlFactory release];
     [store release];
+    
+#if LOCAL_DEBUG_ENABLED
+    DLog(@"datastore done");
+#endif
+    
     return provider;
 }
 

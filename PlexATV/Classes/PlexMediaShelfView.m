@@ -12,9 +12,7 @@
 @synthesize adapter;
 
 - (id)init {
-
-    Class cls = NSClassFromString(@"ATVVersionInfo");
-    if (cls != nil && [[cls currentOSVersion] isEqualToString:@"5.0"])
+    if ([PLEX_COMPAT usingFourPointThree])
     {
         self = [super init];
     } else {
@@ -35,11 +33,9 @@
 }
 
 - (void)setProvider:(id)provider {
-
-    Class cls = NSClassFromString(@"ATVVersionInfo");
-    if (cls != nil && [[cls currentOSVersion] isEqualToString:@"5.0"])
+    if ([PLEX_COMPAT usingFourPointThree])
     {
-        DLog(@"Using 4.4 provider settings!");
+        DLog(@"Using 4.3+ provider settings!");
         BRProviderDataSourceAdapter *_adapter = [[NSClassFromString (@"BRProviderDataSourceAdapter")alloc] init];
         [_adapter setProviders:[NSArray arrayWithObjects:provider, nil]];
         [self setDelegate:_adapter];
@@ -52,8 +48,7 @@
 }
 
 - (id)focusedIndexCompat {
-    Class cls = NSClassFromString(@"ATVVersionInfo");
-    if (cls != nil && [[cls currentOSVersion] isEqualToString:@"5.0"])
+    if ([PLEX_COMPAT usingFourPointThree])
     {
         return [self focusedIndexPath];
     } else {
@@ -62,8 +57,7 @@
 }
 
 - (void)setFocusedIndexCompat:(id)focusedIndexCompat {
-    Class cls = NSClassFromString(@"ATVVersionInfo");
-    if (cls != nil && [[cls currentOSVersion] isEqualToString:@"5.0"])
+    if ([PLEX_COMPAT usingFourPointThree])
     {
         self.focusedIndexPath = focusedIndexCompat;
     } else {

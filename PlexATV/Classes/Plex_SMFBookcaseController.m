@@ -117,6 +117,7 @@
         //============================ SHELF ============================
         PlexMediaShelfView *shelfControl = [[PlexMediaShelfView alloc] init];
         [shelfControl setProvider:[self.datasource bookcaseController:self datastoreProviderForShelfAtIndex:i]];
+        
         CGRect shelfFrame = shelfControl.frame;
         shelfFrame.size.height = 215.0f;
         [shelfControl setColumnCount:7];
@@ -124,12 +125,11 @@
         [shelfControl setHorizontalGap:23];
         [shelfControl setCoverflowMargin:0.05000000074505806f];
         [_shelfControls addObject:shelfControl];
-
+        
         if (i == 0) {
             focusedShelf = shelfControl;
             focusedShelfIndex = 0;
         }
-
 
         //============================ SHELF BOX ============================
         BRBoxControl *shelfBox = [[BRBoxControl alloc] init];
