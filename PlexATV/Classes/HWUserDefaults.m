@@ -108,7 +108,7 @@
 
     DLog(@"setting up client caps");
     BOOL wantsAC3 = [[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioAC3Enabled];
-    BOOL wantsDTS = (wantsAC3 && [PLEX_COMPAT usingFourPointFour]);//[[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];
+    BOOL wantsDTS = NO;//[[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];
 
     //reset everything, we'll redo all that we need below
     [[PlexClientCapabilities sharedPlexClientCapabilities] resetCaps];
