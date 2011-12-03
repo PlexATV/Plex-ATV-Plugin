@@ -86,8 +86,12 @@
     DLog(@"on deck: [%@] count [%d]", self.onDeckMediaContainer, [self.onDeckMediaContainer.directories count]);
     DLog(@"recently added: [%@] count [%d]", self.recentlyAddedMediaContainer, [self.recentlyAddedMediaContainer.directories count]);
 #endif
-    if ([self.onDeckMediaContainer.directories count] > 0 || [self.recentlyAddedMediaContainer.directories count] > 0) {
-        [topShelfView setState:1];  //shelf refresh command
+    //if ([self.onDeckMediaContainer.directories count] > 0 || [self.recentlyAddedMediaContainer.directories count] > 0) {
+    if ([self.recentlyAddedMediaContainer.directories count] > 0) {  
+        if ([PLEX_COMPAT usingFourPointFour])
+            [topShelfView setState:2];  //shelf refresh command
+        else
+            [topShelfView setState:1];
         
         
 #if LOCAL_DEBUG_ENABLED

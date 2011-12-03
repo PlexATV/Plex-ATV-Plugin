@@ -131,7 +131,16 @@
     //============================ TEXT ENTRY ============================
     if (!self.textEntry) {
         BRTextEntryControl *aTextEntry;
-        if ([PLEX_COMPAT usingFourPointThree]) {
+        if ([PLEX_COMPAT usingFourPointFour]) {
+            DLog(@"4.4+ textentry");
+            aTextEntry = [[BRTextEntryControl alloc] initWithTextEntryStyle:5];
+            aTextEntry.frame = CGRectMake(140,
+                                          53,
+                                          400,
+                                          534);
+            aTextEntry.canWrapHorizontally = NO;
+        }
+        else if ([PLEX_COMPAT usingFourPointThree]) {
             DLog(@"4.3+ textentry");
             aTextEntry = [[BRTextEntryControl alloc] initWithTextEntryStyle:9];
             aTextEntry.frame = CGRectMake(140,
