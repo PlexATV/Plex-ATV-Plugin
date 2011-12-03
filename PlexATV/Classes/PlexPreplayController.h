@@ -43,5 +43,6 @@
 
 - (id)initWithPlexMediaObject:(PlexMediaObject*)aMediaObject;
 - (void)changeMetadataViewToShowDataForIndex:(int)index;
+- (BRImage*)flagImageForUrl:(NSURL*)url;
 
 @end

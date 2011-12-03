@@ -168,18 +168,27 @@
 }
 
 - (id)seasonCoverArt {
-    BRImage *coverImg = [BRImage imageWithURL:self.seasonCoverArtRealURL];
+    NSURLRequest *request = [pmo.request urlRequestWithAuthenticationHeadersForURL:self.seasonCoverArtRealURL];
+    
+    NSDictionary *headerFields = [request allHTTPHeaderFields];
+    BRURLImageProxy *aImageProxy = [BRURLImageProxy proxyWithURL:[request URL] headerFields:headerFields];
+    aImageProxy.writeToDisk = YES;
+
+    BRImage *coverImg = [aImageProxy imageForImageSize:512];
     if (coverImg) {
         return coverImg;
     }
     else
         return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
-
 }
+
 - (id)coverArt {
 #if LOCAL_DEBUG_ENABLED
     DLog();
 #endif
+    
+    //this method will be called first, then imageProxy (which will load the real cover art)
+    
     return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 
 }

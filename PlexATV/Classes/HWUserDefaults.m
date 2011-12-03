@@ -108,7 +108,7 @@
 
     DLog(@"setting up client caps");
     BOOL wantsAC3 = [[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioAC3Enabled];
-    //BOOL wantsDTS = NO;//[[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];
+    BOOL wantsDTS = (wantsAC3 && [PLEX_COMPAT usingFourPointFour]);//[[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];
 
     //reset everything, we'll redo all that we need below
     [[PlexClientCapabilities sharedPlexClientCapabilities] resetCaps];
@@ -121,11 +121,13 @@
         [[PlexClientCapabilities sharedPlexClientCapabilities] removeAudioCodec:PlexClientDecoderName_AC3];
     }
 
-    if ([PLEX_COMPAT usingFourPointFour] && wantsAC3) { //until we can confirm DTS working
+    if (wantsDTS) { //until we can confirm DTS working
+        DLog(@"wants DTS");
         [[PlexClientCapabilities sharedPlexClientCapabilities] setAudioDecoderForCodec:PlexClientDecoderName_DTS bitrate:PlexClientBitrateAny channels:PlexClientAudioChannels_7_1Surround];        
     }
     else {
-        //DTS doesn't work on the ATV, so remove it...
+        DLog(@"don't want DTS");
+        //DTS doesn't work on < 4.4.x, so remove it...
         [[PlexClientCapabilities sharedPlexClientCapabilities] removeAudioCodec:PlexClientDecoderName_DTS];        
     }
 

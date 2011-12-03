@@ -431,11 +431,21 @@ typedef enum {
     return table;
 }
 
+//why so complicated? well, remote servers ALWAYS need auth headers, that's why
+- (BRImage*)flagImageForUrl:(NSURL*)url {
+    NSURLRequest *request = [self.selectedMediaObject.request urlRequestWithAuthenticationHeadersForURL:url];
+    
+    NSDictionary *headerFields = [request allHTTPHeaderFields];
+    BRURLImageProxy *aImageProxy = [BRURLImageProxy proxyWithURL:[request URL] headerFields:headerFields];
+    aImageProxy.writeToDisk = YES;
+    return [aImageProxy imageForImageSize:512];
+}
+
 - (NSArray*)flags {
-    NSMutableArray *flags = [NSMutableArray array];
+    NSMutableArray *_flags = [NSMutableArray array];
 
     if ([self.selectedMediaObject.previewAsset starRatingImage])
-        [flags addObject:[self.selectedMediaObject.previewAsset starRatingImage]];
+        [_flags addObject:[self.selectedMediaObject.previewAsset starRatingImage]];
 
     NSDictionary *mediaAttributes = self.selectedMediaObject.mediaResource.attributes;
 
@@ -443,14 +453,18 @@ typedef enum {
     for (PlexFlagTypes attribute in flagAttributes) {
         if ([mediaAttributes valueForKey:attribute]) {
             PlexImage *flagImage = [self.selectedMediaObject.mediaContainer flagForType:attribute named:[mediaAttributes valueForKey:attribute]];
-            [flags addObject:[BRImage imageWithURL:flagImage.imageURL]];
+
+            BRImage *img = [self flagImageForUrl:flagImage.imageURL];
+            
+            if (img)
+                [_flags addObject:img];           
         }
     }
 
     if ([self.selectedMediaObject.previewAsset hasClosedCaptioning])
-        [flags addObject:[[BRThemeInfo sharedTheme] ccBadge]];
+        [_flags addObject:[[BRThemeInfo sharedTheme] ccBadge]];
 
-    return flags;
+    return _flags;
 }
 
 - (NSString*)rating {
