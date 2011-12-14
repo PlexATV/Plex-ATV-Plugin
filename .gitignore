@@ -12,3 +12,4 @@ PlexATV/_deb/Packages
 .DS_Store
 /PlexATV/Classes/gitversion.h
 plex-workspace.xcworkspace/xcuserdata/
+DerivedData
