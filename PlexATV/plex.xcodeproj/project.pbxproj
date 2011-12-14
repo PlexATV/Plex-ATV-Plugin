@@ -299,8 +299,6 @@
 		089C166AFE841209C02AAC07 /* atvTwo */ = {
 			isa = PBXGroup;
 			children = (
-				611021E2149900F90045B431 /* PlexPad.xcodeproj */,
-				61C1BD7A13FA48FC0083E8AC /* SMFramework.xcodeproj */,
 				875A86EB12704ACC00ECADC2 /* theos */,
 				08FB77AFFE84173DC02AAC07 /* Classes */,
 				32C88E010371C26100C91783 /* Other Sources */,
@@ -314,6 +312,8 @@
 		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				611021E2149900F90045B431 /* PlexPad.xcodeproj */,
+				61C1BD7A13FA48FC0083E8AC /* SMFramework.xcodeproj */,
 				1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */,
 				1058C7AEFEA557BF11CA2CBB /* Other Frameworks */,
 			);
@@ -650,8 +650,10 @@
 			files = (
 			);
 			inputPaths = (
+				"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex",
 			);
 			outputPaths = (
+				"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/plex",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -666,10 +668,12 @@
 			inputPaths = (
 			);
 			outputPaths = (
+				$SRCROOT/Classes/gitversion.h,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "echo \"#define PLEX_GIT_VERSION @\\\"`git rev-parse --verify HEAD --short=8`\\\"\" > $SRCROOT/Classes/gitversion.h";
+			showEnvVarsInLog = 0;
 		};
 		727FA3A7137BA6C600949450 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -684,6 +688,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "KEYWORDS=\"TODO:|FIXME:|\\?\\?\\?:|\\!\\!\\!:\"\nfind \"${SRCROOT}\" \\( -name \"*.h\" -or -name \"*.m\" \\) -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($KEYWORDS).*\\$\" | perl -p -e \"s/($KEYWORDS)/ warning: \\$1/\"";
+			showEnvVarsInLog = 0;
 		};
 		DD02DEB612FCACEC0019FBEE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
