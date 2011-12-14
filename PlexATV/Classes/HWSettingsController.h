@@ -21,4 +21,13 @@
 @property (readwrite, assign) BRBaseAppliance *topLevelController;
 - (void)setupList;
 
++ (void)showDialogBoxWithTitle:(NSString*)title
+             secondaryInfoText:(NSString*)infoText
+                   deviceTitle:(NSString*)deviceTitle
+       deviceSecondaryInfoText:(NSString*)deviceInfoText
+                textFieldLabel:(NSString*)textFieldLabel
+               withInitialText:(NSString*)initialText
+               usingSecureText:(BOOL)useSecureText
+                      delegate:(id)_delegate;
+
 @end

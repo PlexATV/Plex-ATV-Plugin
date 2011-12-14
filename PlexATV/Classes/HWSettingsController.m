@@ -18,6 +18,7 @@
 #import "PlexViewSettingsController.h"
 #import "PlexPlaybackSettingsController.h"
 #import "PlexSecuritySettingsController.h"
+#import "PlexMyPlexSettingsController.h"
 #import "HWUserDefaults.h"
 #import "Constants.h"
 #import "gitversion.h"
@@ -30,8 +31,9 @@
 #define ServersIndex                0
 #define ViewSettingsIndex           1
 #define PlaybackSettingsIndex       2
-#define SecuritySettingsIndex       3
-#define PluginVersionNumberIndex    4
+#define MyPlexSettingsIndex         3
+#define SecuritySettingsIndex       4
+#define PluginVersionNumberIndex    5
 
 
 #pragma mark -
@@ -93,12 +95,15 @@
     [viewSettingsMenuItem setTitle:@"View settings"];
     [_items addObject:viewSettingsMenuItem];
 
-
     // =========== playback settings ===========
     SMFMenuItem *playbackSettingsMenuItem = [SMFMenuItem folderMenuItem];
     [playbackSettingsMenuItem setTitle:@"Playback settings"];
     [_items addObject:playbackSettingsMenuItem];
-
+    
+    // =========== myPlex settings ===========
+    SMFMenuItem *myplexSettingsMenuItem = [SMFMenuItem folderMenuItem];
+    myplexSettingsMenuItem.title = @"myPlex settings";
+    [_items addObject:myplexSettingsMenuItem];
 
     // =========== security settings ===========
     SMFMenuItem *securitySettingsMenuItem = [SMFMenuItem folderMenuItem];
@@ -131,36 +136,42 @@
 #pragma mark List Delegate Methods
 - (void)itemSelected:(long)selected {
     switch (selected) {
-    case ServersIndex: {
-        HWServersController *menuController = [[HWServersController alloc] init];
-        [[[BRApplicationStackManager singleton] stack] pushController:menuController];
-        [menuController release];
-        break;
-    }
-    case ViewSettingsIndex: {
-        PlexViewSettingsController *menuController = [[PlexViewSettingsController alloc] init];
-        [[[BRApplicationStackManager singleton] stack] pushController:menuController];
-        [menuController release];
-        break;
-    }
-    case PlaybackSettingsIndex: {
-        PlexPlaybackSettingsController *menuController = [[PlexPlaybackSettingsController alloc] init];
-        [[[BRApplicationStackManager singleton] stack] pushController:menuController];
-        [menuController release];
-        break;
-    }
-    case SecuritySettingsIndex: {
-        PlexSecuritySettingsController *menuController = [[PlexSecuritySettingsController alloc] init];
-        [[[BRApplicationStackManager singleton] stack] pushController:menuController];
-        [menuController release];
-        break;
-    }
-    case PluginVersionNumberIndex: {
-        //do nothing
-        break;
-    }
-    default:
-        break;
+        case ServersIndex: {
+            HWServersController *menuController = [[HWServersController alloc] init];
+            [[[BRApplicationStackManager singleton] stack] pushController:menuController];
+            [menuController release];
+            break;
+        }
+        case ViewSettingsIndex: {
+            PlexViewSettingsController *menuController = [[PlexViewSettingsController alloc] init];
+            [[[BRApplicationStackManager singleton] stack] pushController:menuController];
+            [menuController release];
+            break;
+        }
+        case PlaybackSettingsIndex: {
+            PlexPlaybackSettingsController *menuController = [[PlexPlaybackSettingsController alloc] init];
+            [[[BRApplicationStackManager singleton] stack] pushController:menuController];
+            [menuController release];
+            break;
+        }
+        case MyPlexSettingsIndex: {
+            PlexMyPlexSettingsController *menuController = [[PlexMyPlexSettingsController alloc] init];
+            [[[BRApplicationStackManager singleton] stack] pushController:menuController];
+            [menuController release];
+            break;        
+        }
+        case SecuritySettingsIndex: {
+            PlexSecuritySettingsController *menuController = [[PlexSecuritySettingsController alloc] init];
+            [[[BRApplicationStackManager singleton] stack] pushController:menuController];
+            [menuController release];
+            break;
+        }
+        case PluginVersionNumberIndex: {
+            //do nothing
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -207,6 +218,33 @@
     [p setAsset:asset];
     [asset release];
     return [p autorelease];
+}
+
++ (void)showDialogBoxWithTitle:(NSString*)title
+             secondaryInfoText:(NSString*)infoText
+                   deviceTitle:(NSString*)deviceTitle
+       deviceSecondaryInfoText:(NSString*)deviceInfoText
+                textFieldLabel:(NSString*)textFieldLabel
+               withInitialText:(NSString*)initialText
+               usingSecureText:(BOOL)useSecureText
+                      delegate:(id)_delegate{
+    
+    BRTextEntryController *textCon = [[BRTextEntryController alloc] init];
+    
+    [textCon setTextFieldDelegate:_delegate];
+    [textCon setTitle:title];
+    [textCon setSecondaryInfoText:infoText];
+    [textCon setTextEntryTextFieldLabel:textFieldLabel];
+    [textCon setInitialTextEntryText:initialText];
+    
+    //set device text to match
+    [textCon.editor setDeviceKeyboardTitle:deviceTitle subText:deviceInfoText];
+    
+    //obfuscated text?
+    [textCon.editor.textField setUseSecureText:useSecureText];
+    
+    [[[BRApplicationStackManager singleton] stack] pushController:textCon];
+    [textCon release];
 }
 
 

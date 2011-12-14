@@ -12,6 +12,10 @@
 #import "HWUserDefaults.h"
 #import "Constants.h"
 
+@class HWServerDetailsController;
+
+#import "HWSettingsController.h"
+
 @implementation HWServerDetailsController
 
 #define SecondsBeforeDismissingPrompt 5.0
@@ -390,7 +394,14 @@
     NSString *deviceSecondaryInfoText = secondaryInfoText;
     NSString *textFieldLabel = @"Server name (optional)";
 
-    [self showDialogBoxWithTitle:title secondaryInfoText:secondaryInfoText deviceTitle:deviceTitle deviceSecondaryInfoText:deviceSecondaryInfoText textFieldLabel:textFieldLabel withInitialText:initalText usingSecureText:NO];
+    [HWSettingsController showDialogBoxWithTitle:title 
+                               secondaryInfoText:secondaryInfoText
+                                     deviceTitle:deviceTitle
+                         deviceSecondaryInfoText:deviceSecondaryInfoText
+                                  textFieldLabel:textFieldLabel
+                                 withInitialText:initalText
+                                 usingSecureText:NO
+                                        delegate:self];
 }
 
 - (void)showEnterUsernameDialogBoxWithInitialText:(NSString*)initalText {
@@ -400,7 +411,14 @@
     NSString *deviceSecondaryInfoText = secondaryInfoText;
     NSString *textFieldLabel = @"Username";
 
-    [self showDialogBoxWithTitle:title secondaryInfoText:secondaryInfoText deviceTitle:deviceTitle deviceSecondaryInfoText:deviceSecondaryInfoText textFieldLabel:textFieldLabel withInitialText:initalText usingSecureText:NO];
+    [HWSettingsController showDialogBoxWithTitle:title 
+                               secondaryInfoText:secondaryInfoText
+                                     deviceTitle:deviceTitle
+                         deviceSecondaryInfoText:deviceSecondaryInfoText
+                                  textFieldLabel:textFieldLabel
+                                 withInitialText:initalText
+                                 usingSecureText:NO
+                                        delegate:self];
 }
 
 - (void)showEnterPasswordDialogBoxWithInitialText:(NSString*)initalText {
@@ -410,7 +428,14 @@
     NSString *deviceSecondaryInfoText = secondaryInfoText;
     NSString *textFieldLabel = @"Password";
 
-    [self showDialogBoxWithTitle:title secondaryInfoText:secondaryInfoText deviceTitle:deviceTitle deviceSecondaryInfoText:deviceSecondaryInfoText textFieldLabel:textFieldLabel withInitialText:initalText usingSecureText:YES];
+    [HWSettingsController showDialogBoxWithTitle:title 
+                               secondaryInfoText:secondaryInfoText
+                                     deviceTitle:deviceTitle
+                         deviceSecondaryInfoText:deviceSecondaryInfoText
+                                  textFieldLabel:textFieldLabel
+                                 withInitialText:initalText
+                                 usingSecureText:NO
+                                        delegate:self];
 }
 
 - (void)showEnterHostNameDialogBoxWithInitialText:(NSString*)initalText {
@@ -420,7 +445,14 @@
     NSString *deviceSecondaryInfoText = secondaryInfoText;
     NSString *textFieldLabel = @"IP/Hostname";
 
-    [self showDialogBoxWithTitle:title secondaryInfoText:secondaryInfoText deviceTitle:deviceTitle deviceSecondaryInfoText:deviceSecondaryInfoText textFieldLabel:textFieldLabel withInitialText:initalText usingSecureText:NO];
+    [HWSettingsController showDialogBoxWithTitle:title 
+                               secondaryInfoText:secondaryInfoText
+                                     deviceTitle:deviceTitle
+                         deviceSecondaryInfoText:deviceSecondaryInfoText
+                                  textFieldLabel:textFieldLabel
+                                 withInitialText:initalText
+                                 usingSecureText:NO
+                                        delegate:self];
 }
 
 - (void)showEnterPortNumberDialogBoxWithInitialText:(NSString*)initalText {
@@ -430,33 +462,14 @@
     NSString *deviceSecondaryInfoText = secondaryInfoText;
     NSString *textFieldLabel = @"Port Number";
 
-    [self showDialogBoxWithTitle:title secondaryInfoText:secondaryInfoText deviceTitle:deviceTitle deviceSecondaryInfoText:deviceSecondaryInfoText textFieldLabel:textFieldLabel withInitialText:initalText usingSecureText:NO];
-}
-
-- (void)showDialogBoxWithTitle:(NSString*)title
-             secondaryInfoText:(NSString*)infoText
-                   deviceTitle:(NSString*)deviceTitle
-       deviceSecondaryInfoText:(NSString*)deviceInfoText
-                textFieldLabel:(NSString*)textFieldLabel
-               withInitialText:(NSString*)initialText
-               usingSecureText:(BOOL)useSecureText {
-
-    BRTextEntryController *textCon = [[BRTextEntryController alloc] init];
-
-    [textCon setTextFieldDelegate:self];
-    [textCon setTitle:title];
-    [textCon setSecondaryInfoText:infoText];
-    [textCon setTextEntryTextFieldLabel:textFieldLabel];
-    [textCon setInitialTextEntryText:initialText];
-
-    //set device text to match
-    [textCon.editor setDeviceKeyboardTitle:deviceTitle subText:deviceInfoText];
-
-    //obfuscated text?
-    [textCon.editor.textField setUseSecureText:useSecureText];
-
-    [[[BRApplicationStackManager singleton] stack] pushController:textCon];
-    [textCon release];
+    [HWSettingsController showDialogBoxWithTitle:title 
+                               secondaryInfoText:secondaryInfoText
+                                     deviceTitle:deviceTitle
+                         deviceSecondaryInfoText:deviceSecondaryInfoText
+                                  textFieldLabel:textFieldLabel
+                                 withInitialText:initalText
+                                 usingSecureText:NO
+                                        delegate:self];
 }
 
 - (void)textDidEndEditing:(id)text {

@@ -51,6 +51,7 @@
 		01A0F597127228BC007A60B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A0F596127228BC007A60B5 /* Foundation.framework */; };
 		01A0F59D127228CC007A60B5 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A0F59C127228CC007A60B5 /* libz.dylib */; };
 		611021F21499023E0045B431 /* libPLEX-OSS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 611021EE149900FB0045B431 /* libPLEX-OSS.a */; };
+		6110222C149924C50045B431 /* PlexMyPlexSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6110222B149924C50045B431 /* PlexMyPlexSettingsController.m */; };
 		61861A771479255C0073958E /* PlexMediaShelfView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6124E32914018274001D5F8D /* PlexMediaShelfView.m */; };
 		66E5AEB11303562D00FD8EA9 /* HWServersController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66E5AEB01303562D00FD8EA9 /* HWServersController.m */; };
 		7205CCE4135A7E7C001EFC55 /* PlexChannelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7205CCE3135A7E7C001EFC55 /* PlexChannelsController.m */; };
@@ -180,6 +181,8 @@
 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		611021E2149900F90045B431 /* PlexPad.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PlexPad.xcodeproj; path = ../../KLEXi/PlexPad/PlexPad.xcodeproj; sourceTree = "<group>"; };
+		6110222A149924C50045B431 /* PlexMyPlexSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexMyPlexSettingsController.h; path = Classes/PlexMyPlexSettingsController.h; sourceTree = "<group>"; };
+		6110222B149924C50045B431 /* PlexMyPlexSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexMyPlexSettingsController.m; path = Classes/PlexMyPlexSettingsController.m; sourceTree = "<group>"; };
 		6124E32814018273001D5F8D /* PlexMediaShelfView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexMediaShelfView.h; path = Classes/PlexMediaShelfView.h; sourceTree = "<group>"; };
 		6124E32914018274001D5F8D /* PlexMediaShelfView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexMediaShelfView.m; path = Classes/PlexMediaShelfView.m; sourceTree = "<group>"; };
 		61C1BD7A13FA48FC0083E8AC /* SMFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMFramework.xcodeproj; path = ../_Contrib/SMFramework/SMFramework.xcodeproj; sourceTree = "<group>"; };
@@ -457,6 +460,8 @@
 				66E5AEB01303562D00FD8EA9 /* HWServersController.m */,
 				7273929712FA891E008B4C86 /* HWServerDetailsController.h */,
 				7273929812FA891E008B4C86 /* HWServerDetailsController.m */,
+				6110222A149924C50045B431 /* PlexMyPlexSettingsController.h */,
+				6110222B149924C50045B431 /* PlexMyPlexSettingsController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -701,7 +706,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\nTARGET_ATV='living-room-apple-tv.local'\nSSH_OPTS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'\n\n#copy to the ATV\nscp ${SSH_OPTS} \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@${TARGET_ATV}:${TARGET_DIR}\nscp ${SSH_OPTS} \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@${TARGET_ATV}:${TARGET_DIR}\n\n#restart UI\nssh ${SSH_OPTS} root@${TARGET_ATV} 'killall AppleTV'\n";
+			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\nTARGET_ATV='apple-tv.local'\nSSH_OPTS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'\n\n#copy to the ATV\nscp ${SSH_OPTS} \"${BUILT_PRODUCTS_DIR}/plex.frappliance/plex\" root@${TARGET_ATV}:${TARGET_DIR}\nscp ${SSH_OPTS} \"${PROJECT_DIR}/_deb/PLEX.frapplication/Applications/${APP_NAME}/Appliances/PLEX.frappliance/Info.plist\" root@${TARGET_ATV}:${TARGET_DIR}\n\n#restart UI\nssh ${SSH_OPTS} root@${TARGET_ATV} 'killall AppleTV'\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -750,6 +755,7 @@
 				720EC0811370F017009AA4F9 /* PlexMediaObject+Assets.m in Sources */,
 				727D80921374B4CB00FBE23E /* PlexThemeMusicPlayer.m in Sources */,
 				61861A771479255C0073958E /* PlexMediaShelfView.m in Sources */,
+				6110222C149924C50045B431 /* PlexMyPlexSettingsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
