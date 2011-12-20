@@ -32,6 +32,8 @@
 #import <plex-oss/PlexClientCapabilities.h>
 #import <plex-oss/Preferences.h>
 #import <plex-oss/PlexStreamingQuality.h>
+#import <plex-oss/PlexMediaPart.h>
+#import <plex-oss/PlexMedia.h>
 #import "PlexMediaProvider.h"
 #import "PlexMediaAsset.h"
 #import "PlexMediaAssetOld.h"
@@ -51,7 +53,7 @@ PlexMediaProvider *__provider = nil;
 #define kEndTrackingProgressPercentageCompleted 0.95f
 
 @implementation PlexPlaybackController
-@synthesize mediaObject, playProgressTimer;
+@synthesize mediaObject, playProgressTimer, currentPart, currentPartIndex;
 
 
 #pragma mark -
@@ -61,6 +63,10 @@ PlexMediaProvider *__provider = nil;
     self = [super init];
     if (self != nil) {
         self.mediaObject = aMediaObject;
+        self.currentPartIndex = 0;
+        self.currentPart = nil;
+        userCancel = NO;
+        useDirectPlay = YES; /* get this from prefs later */
     }
 
     return self;
@@ -70,6 +76,7 @@ PlexMediaProvider *__provider = nil;
     DLog(@"deallocing player controller for %@", self.mediaObject.name);
 
     self.mediaObject = nil;
+    self.currentPart = nil;
     [self.playProgressTimer invalidate];
     self.playProgressTimer = nil;
     [super dealloc];
@@ -121,6 +128,14 @@ PlexMediaProvider *__provider = nil;
     }
 }
 
+#pragma mark -
+#pragma mark Utilities
+- (NSURL*)partURL
+{
+    NSURL *ret = useDirectPlay?currentPart.mediaURL:currentPart.mediaStreamURL;
+    return ret;
+}
+
 
 #pragma mark -
 #pragma mark Playback Methods
@@ -129,12 +144,45 @@ PlexMediaProvider *__provider = nil;
     if ([@"Track" isEqualToString:self.mediaObject.containerType]) {
         DLog(@"ITS A TRAP(CK)!");
         [self playbackAudio];
-    }
-    else {
+    } else {
+        PlexMedia *media = [mediaObject mediaResource];
+        if (!media) {
+            DLog(@"big fail!");
+            return;
+        }
+        
+        PlexMediaPart *part = [media partAtIndex:0];
+        if (!part) {
+            DLog(@"no media parts available");
+            return;
+        }
+        
+        self.currentPart = part;
+        self.currentPartIndex = 0;
+        
+        /* check if we need to redirect */
+        if (self.currentPart.parentMedia.redirectionNeededBeforePlay) {
+            if (self.currentPart.contents.directories.count > 0) {
+                PlexMediaObject *obj = [self.currentPart.contents.directories objectAtIndex:0];
+                
+                /* forward playable information */
+                obj.mediaResource.canPlayWithoutTranscoder = self.currentPart.parentMedia.canPlayWithoutTranscoder;
+                self.mediaObject = obj;
+                self.currentPart = nil;
+                
+                DLog(@"Redirecting to new mediaObject, can be played: %d", obj.mediaResource.canPlayWithoutTranscoder);
+                [self startPlaying];
+                return;
+            } else {
+                DLog(@"Failed to redirect!");
+                return;
+            }
+        }
+
         DLog(@"viewOffset: %@", [self.mediaObject.attributes valueForKey:@"viewOffset"]);
-
+        
         NSNumber *viewOffset = [NSNumber numberWithInt:[[self.mediaObject.attributes valueForKey:@"viewOffset"] intValue]];
-
+        
         float totalOffsetInSeconds = [viewOffset intValue] / 1000.0f;
         //if progress is less than start tracking time, don't even bother to ask if video should be resumed.
         if (totalOffsetInSeconds < kStartTrackingProgressTime) {
@@ -157,7 +205,7 @@ PlexMediaProvider *__provider = nil;
     //playback started, tell MM to chill
     [[MachineManager sharedMachineManager] stopAutoDetection];
     [[MachineManager sharedMachineManager] stopMonitoringMachineState];
-
+    
     [self.mediaObject.attributes setObject:[NSNumber numberWithInt:offset] forKey:@"viewOffset"]; //set where in the video we want to start...
 
     //determine the user selected quality setting
@@ -169,16 +217,18 @@ PlexMediaProvider *__provider = nil;
 
     DLog(@"streaming bitrate: %d", self.mediaObject.request.machine.streamingBitrate);
     DLog(@"Quality: %@", self.mediaObject.request.machine.streamQuality);
-    //DLog(@"%@", pmo.request.machine.capabilities.qualities);
-    NSURL *mediaURL = [self.mediaObject mediaURL];
+
+    NSURL *mediaURL = self.partURL;
+    NSMutableURLRequest *mediaReq = [self.currentPart.request urlRequestWithStreamingHeadersForURL:mediaURL];
 
     DLog(@"Starting Playback of %@", mediaURL);
 
     BOOL didTimeOut = NO;
-    //TODO: what cache policy should we use??
-    [self.mediaObject.request dataForURL:mediaURL authenticateStreaming:YES timeout:0 didTimeout:&didTimeOut cachePolicy:NSURLCacheStorageAllowedInMemoryOnly];
-
-
+    [self.currentPart.request dataForRequest:mediaReq timeout:30 didTimeout:&didTimeOut];
+    if (didTimeOut) {
+        DLog(@"Time out when getting data");
+        return; /* TODO: display warning here? */
+    }
 
     if (__provider == nil) {
         __provider = [[PlexMediaProvider alloc] init];

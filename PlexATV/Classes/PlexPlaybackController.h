@@ -23,12 +23,20 @@
 //
 
 #import <Foundation/Foundation.h>
+
 @class PlexMediaObject;
+@class PlexMediaPart;
 
 @interface PlexPlaybackController : BRController {
     BOOL playbackCancelled;
+    BOOL useDirectPlay;
+    BOOL userCancel;
 }
 @property (retain) PlexMediaObject *mediaObject;
+
+@property (retain) PlexMediaPart *currentPart;
+@property (assign) NSUInteger currentPartIndex;
+
 @property (retain) NSTimer *playProgressTimer;
 
 - (id)initWithPlexMediaObject:(PlexMediaObject*)aMediaObject;
