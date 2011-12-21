@@ -57,6 +57,12 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
 
 #pragma mark -
 #pragma mark Controller Lifecycle behaviour
+- (void)swapController:(BRController*)newController {
+    DLog(@"Navigating using controller type: [%@]", [newController class]);
+    [waitControl controlWasDeactivated];
+    [[[BRApplicationStackManager singleton] stack] swapController:newController];
+}
+
 - (void)wasPushed {
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
     [super wasPushed];
@@ -65,14 +71,26 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
 
     //determine view/controller type for target container if not already determined before we were pushed
     //(some types are pre-set like settings, server list, etc)
-    if (!self.targetController && self.targetMediaObject) {
-        BRController *controller = [self newControllerForObject:self.targetMediaObject];
-        self.targetController = controller;
-        [controller release];
+    PlexMediaObject *targetObj = self.targetMediaObject;
+    [targetObj retain];
+    @synchronized(targetObj) {
+        if (!self.targetController && targetObj) {
+            NSLog(@"Loading data for %@", targetObj.name);
+            [waitControl setPromptText:[NSString stringWithFormat:@"Loading %@", targetObj.name]];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                BRController *controller = [self newControllerForObject:targetObj];
+                NSLog(@"Have data...");
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self swapController:controller];
+                });
+                [targetObj release];
+                [controller release];
+            });
+            return;
+        }
     }
-
-    DLog(@"Navigating using controller type: [%@]", [self.targetController class]);
-    [[[BRApplicationStackManager singleton] stack] swapController:self.targetController];
+    [targetObj release];
+    [self swapController:self.targetController];
     self.targetController = nil;
 }
 

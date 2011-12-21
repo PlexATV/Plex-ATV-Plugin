@@ -13,6 +13,7 @@
 @interface PlexChannelsController : SMFMediaMenuController {
     PlexMediaContainer *rootContainer;
     PlexMediaObject *playbackItem;
+    NSInteger rowIsLoading;
 }
 
 @property (readwrite, retain) PlexMediaContainer *rootContainer;

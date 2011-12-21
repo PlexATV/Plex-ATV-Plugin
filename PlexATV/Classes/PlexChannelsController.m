@@ -30,6 +30,7 @@
         [self setListIcon:sp horizontalOffset:0.0 kerningFactor:0.15];
 
         rootContainer = nil;
+        rowIsLoading = -1;
         [[self list] setDatasource:self];
         return (self);
 
@@ -88,12 +89,25 @@
 
 - (void)itemSelected:(long)selected; {
     PlexMediaObject *pmo = [rootContainer.directories objectAtIndex:selected];
-    PlexMediaContainer *channel = [pmo.request query:[pmo.attributes valueForKey:@"path"] callingObject:nil ignorePresets:YES timeout:20 cachePolicy:NSURLRequestUseProtocolCachePolicy];
-
-    HWPlexDir *menuController = [[HWPlexDir alloc] initWithRootContainer:channel andTabBar:nil];
-    [[[BRApplicationStackManager singleton] stack] pushController:menuController];
-
-    [menuController release];
+    rowIsLoading = selected;
+    [self.list reload];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        PlexMediaContainer *channel = [pmo.request query:[pmo.attributes valueForKey:@"path"] 
+                                           callingObject:nil 
+                                           ignorePresets:YES
+                                                 timeout:20
+                                             cachePolicy:NSURLRequestUseProtocolCachePolicy];
+        rowIsLoading = -1;
+        if (channel) {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                HWPlexDir *menuController = [[HWPlexDir alloc] initWithRootContainer:channel andTabBar:nil];
+                [[[BRApplicationStackManager singleton] stack] pushController:menuController];
+            
+                [menuController release];
+            });
+        }
+    });
 }
 
 
@@ -128,11 +142,17 @@
     }
 
     [menuItem setText:menuItemText withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
-    [menuItem addAccessoryOfType:1];
+    if (rowIsLoading == row) {
+        [menuItem addAccessoryOfType:6];
+    } else {
+        [menuItem addAccessoryOfType:1];
+    }
     return [menuItem autorelease];
 }
 
 - (BOOL)rowSelectable:(long)selectable {
+    if (rowIsLoading == 0 || rowIsLoading > 0)
+        return NO;
     return TRUE;
 }
 
