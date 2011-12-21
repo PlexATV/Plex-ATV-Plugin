@@ -219,16 +219,21 @@ PlexMediaProvider *__provider = nil;
     DLog(@"Quality: %@", self.mediaObject.request.machine.streamQuality);
 
     NSURL *mediaURL = self.partURL;
-    NSMutableURLRequest *mediaReq = [self.currentPart.request urlRequestWithStreamingHeadersForURL:mediaURL];
-
     DLog(@"Starting Playback of %@", mediaURL);
+    didUseTranscoder = NO;
+    
+    if (!self.mediaObject.mediaResource.canPlayWithoutTranscoder) {
+        NSMutableURLRequest *mediaReq = [self.currentPart.request urlRequestWithStreamingHeadersForURL:mediaURL];
 
-    BOOL didTimeOut = NO;
-    [self.currentPart.request dataForRequest:mediaReq timeout:30 didTimeout:&didTimeOut];
-    if (didTimeOut) {
-        DLog(@"Time out when getting data");
-        return; /* TODO: display warning here? */
+        BOOL didTimeOut = NO;
+        [self.currentPart.request dataForRequest:mediaReq timeout:30 didTimeout:&didTimeOut];
+        if (didTimeOut) {
+            DLog(@"Time out when getting data");
+            return; /* TODO: display warning here? */
+        }
+        didUseTranscoder = YES;
     }
+    
 
     if (__provider == nil) {
         __provider = [[PlexMediaProvider alloc] init];
@@ -394,11 +399,13 @@ PlexMediaProvider *__provider = nil;
 
         break;
     case kBRMediaPlayerStateStopped:
-        DLog(@"stopping the transcoder");
+        if (didUseTranscoder) {
+            DLog(@"stopping the transcoder");
 
-        //stop the transcoding on PMS
-        [self.mediaObject.request stopTranscoder];
-        DLog(@"transcoder stopped");
+            //stop the transcoding on PMS
+            [self.mediaObject.request stopTranscoder];
+            DLog(@"transcoder stopped");
+        }
 
         if (self.playProgressTimer && [self.playProgressTimer isValid]) {
             [self.playProgressTimer invalidate];

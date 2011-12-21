@@ -103,6 +103,7 @@
 
     //tell pms we like direct-stream and we will be sending caps to it
     [[PlexPrefs defaultPreferences] setAllowDirectStreaming:YES];
+    [[PlexPrefs defaultPreferences] setAllowDirectPlayback:YES];
 
     DLog(@"direct-streaming: %@",[[PlexPrefs defaultPreferences] allowDirectStreaming] ? @"YES" : @"NO");
 

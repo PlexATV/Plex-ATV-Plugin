@@ -115,16 +115,12 @@
         // =========== enable ac3 menu ===========
         BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioAC3Enabled];
         [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesPlaybackAudioAC3Enabled];
-        [self setupList];
-        [self.list reload];
         break;
     }
     case PlaybackAudioDTSEnabledIndex: {
         // =========== enable dts ===========
         BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];
         [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesPlaybackAudioDTSEnabled];
-        [self setupList];
-        [self.list reload];
         break;
     }
     case PlaybackVideoQualityProfileIndex: {
@@ -134,14 +130,20 @@
             qualitySetting = 0;
         }
         [[HWUserDefaults preferences] setInteger:qualitySetting forKey:PreferencesPlaybackVideoQualityProfile];
+        NSUInteger directStreamQual = 0;
+        if (qualitySetting > 6 && qualitySetting < 9) directStreamQual = 720;
+        if (qualitySetting > 8) directStreamQual = 1080;
+        DLog(@"directStreamQual = %d", directStreamQual);
+        [[HWUserDefaults defaultPreferences] setDirectStreamQuality:directStreamQual];
 
-        [self setupList];
-        [self.list reload];
         break;
     }
     default:
         break;
     }
+
+    [self setupList];
+    [self.list reload];
 
     //re-send the caps to the PMS
     [HWUserDefaults setupPlexClient];

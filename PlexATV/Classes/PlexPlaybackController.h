@@ -31,6 +31,7 @@
     BOOL playbackCancelled;
     BOOL useDirectPlay;
     BOOL userCancel;
+    BOOL didUseTranscoder;
 }
 @property (retain) PlexMediaObject *mediaObject;
 
