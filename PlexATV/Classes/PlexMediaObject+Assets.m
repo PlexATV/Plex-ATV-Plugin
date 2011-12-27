@@ -83,7 +83,7 @@
         } else {
             NSString *detailedText = previewAsset.year ? previewAsset.year : @" ";
             if ([previewAsset isHD]) {
-                [menuItem addAccessoryOfType:11];
+                [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeHD];
             }
             [menuItem setDetailedText:detailedText withAttributes:nil];
             [menuItem setText:[self name] withAttributes:nil];
@@ -96,21 +96,24 @@
         if ([self.type isEqualToString:PlexMediaObjectTypeShow] || [self.type isEqualToString:PlexMediaObjectTypeSeason]) {
             if ([self.attributes valueForKey:@"agent"] == nil) {
                 if ([self seenState] == PlexMediaObjectSeenStateUnseen) {
-                    [menuItem addAccessoryOfType:[PLEX_COMPAT usingFourPointThree] ? 16:15];
+                    [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeLeftUnseen];
                 } else if ([self seenState] == PlexMediaObjectSeenStateInProgress) {
-                    [menuItem addAccessoryOfType:[PLEX_COMPAT usingFourPointThree] ? 17:16];
+                    [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeLeftPartialSeen];
                 }
             }
         }
 
         [menuItem setText:[self name] withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
-
-        if (self.loading) {
-            [menuItem addAccessoryOfType:6];
-        } else {
-            [menuItem addAccessoryOfType:0];
-        }
+        
+        [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeFolder];
     }
+
+    if (self.loading) {
+        [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeSpinner];
+    } else {
+        [menuItem removeAccessoryOfType:kPlexAccessoryTypeSpinner];
+    }
+
     return [menuItem autorelease];
 }
 

@@ -134,7 +134,7 @@
 
     if(row == 0) {
         [result setText:@"Add new server" withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
-        [result addAccessoryOfType:0];
+        [result addAccessoryOfPlexType:kPlexAccessoryTypeNone];
     } else {
         Machine *m = [self.machines objectAtIndex:row - 1];
         NSString *serverName;
@@ -149,11 +149,11 @@
 
         [result setText:serverName withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
 
-        [result addAccessoryOfType:1]; //folder
+        [result addAccessoryOfPlexType:kPlexAccessoryTypeFolder]; //folder
         if (m.canConnect) {
-            [result addAccessoryOfType:[PLEX_COMPAT usingFourPointThree] ? 19:18]; //online
+            [result addAccessoryOfPlexType:kPlexAccessoryTypeLeftGreenPlaylist];
         } else {
-            [result addAccessoryOfType:[PLEX_COMPAT usingFourPointThree] ? 20:19]; //online
+            [result addAccessoryOfPlexType:kPlexAccessoryTypeLeftPurplePlaylist];
         }
 
     }

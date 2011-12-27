@@ -389,7 +389,7 @@ PlexMediaProvider *__provider = nil;
 }
 
 - (void)playerStateChanged:(NSNotification*)event {
-    //DLog(@"%@", event)
+    DLog(@"%@", event)
     BRMediaPlayer *playa = [[BRMediaPlayerManager singleton] activePlayer];
 
     switch (playa.playerState) {

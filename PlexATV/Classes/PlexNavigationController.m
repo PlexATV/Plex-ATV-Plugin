@@ -61,10 +61,10 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     DLog(@"Navigating using controller type: [%@]", [newController class]);
     [waitControl controlWasDeactivated];
     if ([[[BRApplicationStackManager singleton] stack] peekController] == self) {
-        NSLog(@"Swaping");
+        DLog(@"Swaping %@", [[[BRApplicationStackManager singleton] stack] peekController]);
         [[[BRApplicationStackManager singleton] stack] swapController:newController];
     } else {
-        NSLog(@"Pushing");
+        DLog(@"Pushing %@", [[[BRApplicationStackManager singleton] stack] peekController]);
         [[[BRApplicationStackManager singleton] stack] pushController:newController];
     }
 }
@@ -204,6 +204,7 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
         || [@"albums" isEqualToString:aMediaObject.mediaContainer.content]
         || [@"playlists" isEqualToString:aMediaObject.mediaContainer.content]) {
         [self swapController:[[PlexSongListController alloc] initWithPlexContainer:contents title:aMediaObject.name]];
+        return;
     }
     
     // ============ tv or movie view ============

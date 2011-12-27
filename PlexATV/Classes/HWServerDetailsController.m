@@ -298,24 +298,24 @@
     NSString *rightText = [self rightTextForRow:row];
     if (row == ServerRefreshSections) {
         if (self.machine.sectionsAreRefreshing) {
-            accessoryType = 6; //spinner icon
+            accessoryType = kPlexAccessoryTypeSpinner;
         } else {
-            accessoryType = 3; //refresh icon
+            accessoryType = kPlexAccessoryTypeReload;
         }
 
     } else if (row == ServerExcludedFromList) {
-        accessoryType = 0; //nothing
+        accessoryType = kPlexAccessoryTypeNone;
 
     } else if (row == ServerDelete) {
-        accessoryType = 0; //nothing
+        accessoryType = kPlexAccessoryTypeNone;
 
     } else if (row == ListAddNewConnection) {
-        accessoryType = 12; //stack/new
+        accessoryType = kPlexAccessoryTypeStack;
 
     } else {
-        accessoryType = 1; //folder
+        accessoryType = kPlexAccessoryTypeFolder;
     }
-    [menuItem addAccessoryOfType:accessoryType];
+    [menuItem addAccessoryOfPlexType:accessoryType];
     [menuItem setTitle:title];
     [menuItem setRightText:rightText];
     return menuItem;

@@ -104,7 +104,7 @@
     Machine *m = [_names objectAtIndex:row];
     NSString *name = [NSString stringWithFormat:@"%@", m.serverName, m];
     [result setText:name withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
-    [result addAccessoryOfType:m.hostName != nil && ![m.hostName empty]]; //folder
+    [result addAccessoryOfPlexType:m.hostName ? kPlexAccessoryTypeFolder : kPlexAccessoryTypeNone];
 
 
     return [result autorelease];

@@ -118,9 +118,9 @@
     [pluginVersionNumberMenuItem setRightText:[NSString stringWithFormat:@"%@-%@", kPlexPluginVersion, PLEX_GIT_VERSION]];
     [_items addObject:pluginVersionNumberMenuItem];
 
-
+#if 0
     //this code can be used to find all the accessory types
-   /*       for (int i = 0; i<32; i++) {
+          for (int i = 0; i<32; i++) {
                    BRMenuItem *tempSettingMenuItem = [[BRMenuItem alloc] init];
                    [tempSettingMenuItem addAccessoryOfType:i];
 
@@ -129,7 +129,8 @@
                    [tempSettingTitle release];
                    [_items addObject:tempSettingMenuItem];
            }
-     */
+#endif
+     
 }
 
 #pragma mark -

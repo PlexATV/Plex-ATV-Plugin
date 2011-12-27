@@ -143,9 +143,9 @@
 
     [menuItem setText:menuItemText withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
     if (rowIsLoading == row) {
-        [menuItem addAccessoryOfType:6];
+        [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeSpinner];
     } else {
-        [menuItem addAccessoryOfType:1];
+        [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeFolder];
     }
     return [menuItem autorelease];
 }
