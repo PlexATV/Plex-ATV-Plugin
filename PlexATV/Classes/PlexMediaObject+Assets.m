@@ -81,11 +81,13 @@
             }
             [menuItem setText:setText withAttributes:[[BRThemeInfo sharedTheme] metadataTitleAttributes]];
         } else {
-            NSString *detailedText = previewAsset.year ? previewAsset.year : @" ";
+            NSString *detailedText = previewAsset.year;
             if ([previewAsset isHD]) {
                 [menuItem addAccessoryOfPlexType:kPlexAccessoryTypeHD];
             }
-            [menuItem setDetailedText:detailedText withAttributes:nil];
+            if (detailedText) {
+                [menuItem setDetailedText:detailedText withAttributes:nil];
+            }
             [menuItem setText:[self name] withAttributes:nil];
         }
 
