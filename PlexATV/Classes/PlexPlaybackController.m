@@ -166,7 +166,7 @@ PlexMediaProvider *__provider = nil;
                 PlexMediaObject *obj = [self.currentPart.contents.directories objectAtIndex:0];
                 
                 /* forward playable information */
-                obj.mediaResource.canPlayWithoutTranscoder = self.currentPart.parentMedia.canPlayWithoutTranscoder;
+                //obj.mediaResource.canPlayWithoutTranscoder = self.currentPart.parentMedia.canPlayWithoutTranscoder;
                 self.mediaObject = obj;
                 self.currentPart = nil;
                 
