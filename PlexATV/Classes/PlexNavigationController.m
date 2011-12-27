@@ -60,36 +60,21 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
 - (void)swapController:(BRController*)newController {
     DLog(@"Navigating using controller type: [%@]", [newController class]);
     [waitControl controlWasDeactivated];
-    [[[BRApplicationStackManager singleton] stack] swapController:newController];
+    if ([[[BRApplicationStackManager singleton] stack] peekController] == self) {
+        NSLog(@"Swaping");
+        [[[BRApplicationStackManager singleton] stack] swapController:newController];
+    } else {
+        NSLog(@"Pushing");
+        [[[BRApplicationStackManager singleton] stack] pushController:newController];
+    }
 }
 
 - (void)wasPushed {
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
     [super wasPushed];
-
+    
     [self.waitControl setPromptText:self.promptText];
-
-    //determine view/controller type for target container if not already determined before we were pushed
-    //(some types are pre-set like settings, server list, etc)
-    PlexMediaObject *targetObj = self.targetMediaObject;
-    [targetObj retain];
-    @synchronized(targetObj) {
-        if (!self.targetController && targetObj) {
-            NSLog(@"Loading data for %@", targetObj.name);
-            [waitControl setPromptText:[NSString stringWithFormat:@"Loading %@", targetObj.name]];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                BRController *controller = [self newControllerForObject:targetObj];
-                NSLog(@"Have data...");
-                dispatch_sync(dispatch_get_main_queue(), ^{
-                    [self swapController:controller];
-                });
-                [targetObj release];
-                [controller release];
-            });
-            return;
-        }
-    }
-    [targetObj release];
+    
     [self swapController:self.targetController];
     self.targetController = nil;
 }
@@ -135,7 +120,13 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     self.targetMediaObject = aMediaObject;
     self.promptText = [NSString stringWithFormat:@"Loading \"%@\"...", self.targetMediaObject.name];
 
-    [[[BRApplicationStackManager singleton] stack] pushController:self];
+//    [[[BRApplicationStackManager singleton] stack] pushController:self];
+    [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
+    BRController *ctrl = [self newControllerForObject:self.targetMediaObject];
+    if (ctrl) {
+        [self swapController:ctrl];
+        aMediaObject.loading = NO;
+    }
 }
 
 - (void)navigateToSearchForMachine:(Machine*)aMachine {
@@ -201,12 +192,66 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     [[[BRApplicationStackManager singleton] stack] pushController:self];
 }
 
-
 #pragma mark -
 #pragma mark Determine View Type Methods
-- (BRController*)newControllerForObject:(PlexMediaObject*)aMediaObject {
+- (void)processMediaContainer:(PlexMediaObject*)aMediaObject content:(PlexMediaContainer*)contents
+{
     BRController *controller = nil;
+    aMediaObject.loading = NO;
+    
+    // ============ music view ============
+    if ([PlexViewGroupAlbum isEqualToString:aMediaObject.mediaContainer.viewGroup]
+        || [@"albums" isEqualToString:aMediaObject.mediaContainer.content]
+        || [@"playlists" isEqualToString:aMediaObject.mediaContainer.content]) {
+        [self swapController:[[PlexSongListController alloc] initWithPlexContainer:contents title:aMediaObject.name]];
+    }
+    
+    // ============ tv or movie view ============
+    NSInteger requestedViewType = 0;
+    if (aMediaObject.isMovie) {
+        requestedViewType = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForMovies];
+    } else {
+        requestedViewType = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForTvShows];
+    }
+    
+    BRTabControl *tabBar = nil;
+    switch (requestedViewType) {
+        case kATVPlexViewTypeList: {
+            //only filter and create tab bar if we are navigating plex's built in stuff
+            if ([contents.identifier isEqualToString:@"com.plexapp.plugins.library"]) {
+                contents = [self applySkipFilteringOnContainer:contents];
+                tabBar = [self newTabBarForContents:contents];
+            }
+            
+            controller = [[HWPlexDir alloc] initWithRootContainer:contents andTabBar:tabBar];
+            [tabBar release];
+            break;
+        }
+        case kATVPlexViewTypeGrid: {
+            if (aMediaObject.isMovie) {
+                controller = [self newGridController:contents withShelfKeyString:@"recentlyAdded"];
+            } else {
+                controller = [self newGridController:contents withShelfKeyString:@"recentlyViewedShows"];
+            }
+            break;
+        }
+        case kATVPlexViewTypeBookcase: {
+            controller = [self newTVShowsController:contents];
+            break;
+        }
+        default:
+            break;
+    }
+    
+    if (!controller) {
+        //if all else fails, use list view
+        controller = [[HWPlexDir alloc] initWithRootContainer:contents andTabBar:tabBar];
+    }
+    
+    [self swapController:controller];
+}
 
+- (BRController*)newControllerForObject:(PlexMediaObject*)aMediaObject {
     DLog(@"attribute type: %@", [aMediaObject.attributes valueForKey:@"type"]);
     DLog(@"view group: %@", aMediaObject.mediaContainer.viewGroup);
     DLog(@"container %@", aMediaObject.containerType);
@@ -235,57 +280,21 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
         return [[PlexPreplayController alloc] initWithPlexMediaObject:aMediaObject];
     }
 
-    PlexMediaContainer *contents = [aMediaObject contents];
-
-    // ============ music view ============
-    if ([PlexViewGroupAlbum isEqualToString:aMediaObject.mediaContainer.viewGroup]
-        || [@"albums" isEqualToString:aMediaObject.mediaContainer.content]
-        || [@"playlists" isEqualToString:aMediaObject.mediaContainer.content]) {
-        return [[PlexSongListController alloc] initWithPlexContainer:contents title:aMediaObject.name];
-    }
-
-    // ============ tv or movie view ============
-    NSInteger requestedViewType = 0;
-    if (aMediaObject.isMovie) {
-        requestedViewType = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForMovies];
-    } else {
-        requestedViewType = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForTvShows];
-    }
-
-    BRTabControl *tabBar = nil;
-    switch (requestedViewType) {
-    case kATVPlexViewTypeList: {
-        //only filter and create tab bar if we are navigating plex's built in stuff
-        if ([contents.identifier isEqualToString:@"com.plexapp.plugins.library"]) {
-            contents = [self applySkipFilteringOnContainer:contents];
-            tabBar = [self newTabBarForContents:contents];
-        }
-
-        controller = [[HWPlexDir alloc] initWithRootContainer:contents andTabBar:tabBar];
-        [tabBar release];
-        break;
-    }
-    case kATVPlexViewTypeGrid: {
-        if (aMediaObject.isMovie) {
-            controller = [self newGridController:contents withShelfKeyString:@"recentlyAdded"];
-        } else {
-            controller = [self newGridController:contents withShelfKeyString:@"recentlyViewedShows"];
-        }
-        break;
-    }
-    case kATVPlexViewTypeBookcase: {
-        controller = [self newTVShowsController:contents];
-        break;
-    }
-    default:
-        break;
-    }
-
-    if (!controller) {
-        //if all else fails, use list view
-        controller = [[HWPlexDir alloc] initWithRootContainer:contents andTabBar:tabBar];
-    }
-    return controller;
+    /* load contents async */
+    [aMediaObject retain];
+    /* hacky stuff right here */
+    [aMediaObject.mediaContainer retain];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        PlexMediaContainer *contents = [aMediaObject contents];
+        /* now we have it, let's execute the code on the main thread */
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self processMediaContainer:aMediaObject content:contents];
+        });
+        [aMediaObject.mediaContainer release];
+        [aMediaObject release];
+    });
+    
+    return nil; /* deferred controller */
 }
 
 - (BRTabControl*)newTabBarForContents:(PlexMediaContainer*)someContents {

@@ -353,6 +353,9 @@
 
 - (void)itemSelected:(long)selected; {
     PlexMediaObject *pmo = [self.items objectAtIndex:selected];
+    pmo.loading = YES;
+    [self.list reload];
+        
     [[PlexNavigationController sharedPlexNavigationController] navigateToObjectsContents:pmo];
 }
 

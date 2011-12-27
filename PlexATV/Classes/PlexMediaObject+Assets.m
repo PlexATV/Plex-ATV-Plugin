@@ -105,7 +105,11 @@
 
         [menuItem setText:[self name] withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
 
-        [menuItem addAccessoryOfType:1];
+        if (self.loading) {
+            [menuItem addAccessoryOfType:6];
+        } else {
+            [menuItem addAccessoryOfType:0];
+        }
     }
     return [menuItem autorelease];
 }
