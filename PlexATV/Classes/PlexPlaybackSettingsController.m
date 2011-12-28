@@ -23,9 +23,10 @@
 
 //----------- audio -----------
 #define PlaybackAudioAC3EnabledIndex        0
-#define PlaybackAudioDTSEnabledIndex        2
+//#define PlaybackAudioDTSEnabledIndex        2
 //----------- video -----------
 #define PlaybackVideoQualityProfileIndex    1
+#define PlaybackVideoDirectPlay             2
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
@@ -105,6 +106,14 @@
     PlexStreamingQualityDescriptor *qualitySetting = [self.plexStreamingQualities objectAtIndex:qualityProfileNumber];
     [qualitySettingMenuItem setRightText:qualitySetting.name];
     [_items addObject:qualitySettingMenuItem];
+
+    // =========== direct play ===========
+    SMFMenuItem *allowDirectPlayEnabled = [SMFMenuItem menuItem];
+    [allowDirectPlayEnabled setTitle:@"Direct Play"];
+    BOOL directPlayAllowed = [[HWUserDefaults defaultPreferences] allowDirectPlayback];
+    [qualitySettingMenuItem setRightText:directPlayAllowed ? @"Enabled" : @"Disabled"];
+    [_items addObject:allowDirectPlayEnabled];
+    
 }
 
 #pragma mark -
@@ -117,12 +126,14 @@
         [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesPlaybackAudioAC3Enabled];
         break;
     }
+#if 0
     case PlaybackAudioDTSEnabledIndex: {
         // =========== enable dts ===========
         BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesPlaybackAudioDTSEnabled];
         [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesPlaybackAudioDTSEnabled];
         break;
     }
+#endif
     case PlaybackVideoQualityProfileIndex: {
         NSInteger qualitySetting = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoQualityProfile];
         qualitySetting++;
@@ -136,6 +147,11 @@
         DLog(@"directStreamQual = %d", directStreamQual);
         [[HWUserDefaults defaultPreferences] setDirectStreamQuality:directStreamQual];
 
+        break;
+    }
+    case PlaybackVideoDirectPlay: {
+        BOOL allowDP = ![[HWUserDefaults defaultPreferences] allowDirectPlayback];
+        [[HWUserDefaults defaultPreferences] setAllowDirectPlayback:allowDP];
         break;
     }
     default:
@@ -157,14 +173,21 @@
         [asset setSummary:@"Enables your AppleTV to receive AC3 sound when available in your videos"];
         break;
     }
+#if 0
     case PlaybackAudioDTSEnabledIndex: {
         [asset setTitle:@"Toggles whether you want DTS sound output or not"];
         [asset setSummary:@"Enables your AppleTV to receive DTS sound when available in your videos"];
         break;
     }
+#endif
     case PlaybackVideoQualityProfileIndex: {
         [asset setTitle:@"Select the video quality profile"];
         [asset setSummary:@"Sets the video quality profile of the streamed video."];
+        break;
+    }
+    case PlaybackVideoDirectPlay: {
+        [asset setTitle:@"Toggles whether you want to enable direct play"];
+        [asset setTitle:@"Direct play allows you to play comptabible files directly on the Apple TV, but might not work at all times"];
         break;
     }
     default:

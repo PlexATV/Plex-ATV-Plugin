@@ -132,8 +132,7 @@ PlexMediaProvider *__provider = nil;
 #pragma mark Utilities
 - (NSURL*)partURL
 {
-    NSURL *ret = useDirectPlay?currentPart.mediaURL:currentPart.mediaStreamURL;
-    return ret;
+    return currentPart.mediaURL;
 }
 
 
