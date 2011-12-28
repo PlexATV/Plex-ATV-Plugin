@@ -72,6 +72,8 @@ typedef enum {
         listDropShadowControl = [[SMFListDropShadowControl alloc] init];
         [listDropShadowControl setCDelegate:self];
         [listDropShadowControl setCDatasource:self];
+        
+        pressedMore = NO;
     }
     return self;
 }
@@ -140,6 +142,7 @@ typedef enum {
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
     [super wasExhumed];
     [shelfCtrl _scrollIndexToVisible:currentSelectedIndex];
+    [self reload];
 }
 
 - (void)wasBuried {
@@ -192,6 +195,15 @@ typedef enum {
 
 - (BOOL)controllerCanSwitchToNext:(SMFMoviePreviewController*)c {
     return YES;
+}
+
+- (void)doneReloading
+{
+    DLog();
+    if (pressedMore) {
+        [self setFocusedControl:[self._buttons lastObject]];
+        pressedMore = NO;
+    }
 }
 
 - (void)controllerSwitchToNext:(SMFMoviePreviewController*)ctrl {
@@ -596,6 +608,7 @@ typedef enum {
 
 - (void)popup:(id)p itemSelected:(long)row {
     [p removeFromParent];
+    BOOL reload = YES;
     switch (row) {
     case MarkAsWatchedOption: {
         DLog(@"marking movie as watched");
@@ -609,7 +622,12 @@ typedef enum {
     }
     default:
         DLog(@"going back");
+        reload = NO;
         break;
+    }
+    if (reload) {
+        pressedMore = YES;
+        [self reload];
     }
 }
 

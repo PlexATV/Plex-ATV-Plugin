@@ -144,6 +144,9 @@
     [self addControl:flagPanel];
     //[_hideList addObject:flagPanel];
     [flagPanel release];
+    
+    if ([self respondsToSelector:@selector(doneReloading)])
+        [self performSelector:@selector(doneReloading)];
 }
 
 - (void)layoutSubcontrols {
