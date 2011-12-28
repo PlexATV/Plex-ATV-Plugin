@@ -387,8 +387,6 @@
         mediaType = [BRMediaType song];
     else if ([@"episode" isEqualToString:plexMediaType])
         mediaType = [BRMediaType TVShow];
-    else if (plexMediaType == nil)
-        mediaType = nil;
     else
         mediaType = [BRMediaType movie];
     return mediaType;
