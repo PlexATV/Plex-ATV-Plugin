@@ -10,6 +10,7 @@
 {
     long currentItem;
     NSString *password;
+    BOOL isLoggingIn;
 }
 
 @property (retain) NSString *password;

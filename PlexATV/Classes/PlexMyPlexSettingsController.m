@@ -24,6 +24,7 @@
         [self setLabel:@"myPlex Settings"];
         [self setListTitle:@"myPlex Settings"];
 
+        isLoggingIn = NO;
         [self setupList];
     }
     return self;
@@ -80,6 +81,11 @@ enum Indexes {
     SMFMenuItem *myPlexStatusMenuItem = [SMFMenuItem menuItem];
     myPlexStatusMenuItem.title = @"myPlex status";
     myPlexStatusMenuItem.rightText = [self getMyPlexStatus];
+    if (isLoggingIn) {
+        [myPlexStatusMenuItem addAccessoryOfPlexType:kPlexAccessoryTypeSpinner];
+    } else {
+        [myPlexStatusMenuItem removeAccessoryOfPlexType:kPlexAccessoryTypeSpinner];
+    }
     [_items addObject:myPlexStatusMenuItem];
 
     SMFMenuItem *myPlexUsernameMenuItem = [SMFMenuItem menuItem];
@@ -156,10 +162,14 @@ enum Indexes {
 
 - (void)sendLoginDetailsInBackground {
     if ([[PlexPrefs defaultPreferences] myPlexUser] && self.password) {
+        isLoggingIn = YES;
+        [self setupList];
+        [self.list release];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [[MyPlex sharedMyPlex] loginUser:[[PlexPrefs defaultPreferences] myPlexUser] withPassword:self.password];
             DLog (@"Done with myPlex loginUser");
             dispatch_async (dispatch_get_main_queue (), ^{
+                isLoggingIn = NO;
                 [self setupList];
                 [self.list reload];
             });
