@@ -4,6 +4,7 @@
 #import "HWPlexDir.h"
 #import <plex-oss/MachineManager.h>
 #import <plex-oss/Machine.h>
+#import <plex-oss/MachineConnectionBase.h>
 #import <plex-oss/PlexRequest.h>
 
 @implementation HWBasicMenu
@@ -62,15 +63,32 @@
 
 
 - (id)previewControlForItem:(long)item {
-    BRImage *theImage = [BRImage imageWithPath:[[NSBundle bundleForClass:[HWBasicMenu class]] pathForResource:@"PmsLogo" ofType:@"png"]];
+    SMFBaseAsset *asset = [[SMFBaseAsset alloc] init];
 
+    Machine *m = [_names objectAtIndex:item];
+    
+    NSString *logo = @"PmsLogo";
+    if ([m.bestConnection.type isEqualToString:@"myPlex"])
+        logo = @"MyPlexLogo";
 
-    BRImageAndSyncingPreviewController *obj = [[BRImageAndSyncingPreviewController alloc] init];
-
-    [obj setImage:theImage];
-
-    return [obj autorelease];
-
+    [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[HWBasicMenu class]] pathForResource:logo ofType:@"png"]]];
+    [asset setTitle:m.hostName];
+    
+    if (m.bestConnection) {
+        DLog();
+        NSString *detailedText = [NSString stringWithFormat:@"IP: %@\nServer version: %@\nConnection type: %@\nOn local network: %@", 
+                                  m.bestConnection.ip, m.bestConnection.versionStr, m.bestConnection.type, m.bestConnection.inLocalNetwork ? @"Yes": @"No"];
+        [asset setSummary:detailedText];
+    } else {
+        [asset setSummary:@"No bestConnection here"];
+    }
+    
+    SMFMediaPreview *p = [[SMFMediaPreview alloc] init];
+    p.asset = asset;
+    p.showsMetadataImmediately = YES;
+    [asset release];
+    
+    return p;
 }
 
 - (BOOL)shouldRefreshForUpdateToObject:(id)object {
@@ -104,7 +122,7 @@
     Machine *m = [_names objectAtIndex:row];
     NSString *name = [NSString stringWithFormat:@"%@", m.serverName, m];
     [result setText:name withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
-    [result addAccessoryOfPlexType:m.hostName ? kPlexAccessoryTypeFolder : kPlexAccessoryTypeNone];
+    [result addAccessoryOfPlexType:m.hostName ? kPlexAccessoryTypeComputer : kPlexAccessoryTypeNone];
 
 
     return [result autorelease];
