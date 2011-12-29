@@ -111,7 +111,7 @@
     SMFMenuItem *allowDirectPlayEnabled = [SMFMenuItem menuItem];
     [allowDirectPlayEnabled setTitle:@"Direct Play"];
     BOOL directPlayAllowed = [[HWUserDefaults defaultPreferences] allowDirectPlayback];
-    [qualitySettingMenuItem setRightText:directPlayAllowed ? @"Enabled" : @"Disabled"];
+    [allowDirectPlayEnabled setRightText:directPlayAllowed ? @"Enabled" : @"Disabled"];
     [_items addObject:allowDirectPlayEnabled];
     
 }
@@ -150,7 +150,10 @@
         break;
     }
     case PlaybackVideoDirectPlay: {
-        BOOL allowDP = ![[HWUserDefaults defaultPreferences] allowDirectPlayback];
+        BOOL allowDP = [[HWUserDefaults defaultPreferences] allowDirectPlayback];
+        if (allowDP) allowDP = NO;
+        else allowDP = YES;
+        NSLog(@"AllowDP = %d", allowDP);
         [[HWUserDefaults defaultPreferences] setAllowDirectPlayback:allowDP];
         break;
     }
