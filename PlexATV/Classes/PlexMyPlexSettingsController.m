@@ -59,6 +59,7 @@
 {
     DLog(@"getMyPlexStatus");
     if ([[MyPlex sharedMyPlex] authenticated]) {
+        [[MachineManager sharedMachineManager] forceDetectorUpdate];
         return @"OK";
     }
     if ([MyPlex sharedMyPlex].hadError) {

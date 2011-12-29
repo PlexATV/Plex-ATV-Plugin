@@ -238,7 +238,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         NSString *machineName = [machine.serverName copy];
 
         //check if the user has added this machine to the exclusion list
-        if ([machinesExcludedFromServerList containsObject:machineID]) {
+        if ([machinesExcludedFromServerList containsObject:machineID] || !machine.owned) {
             //machine specifically excluded, skip
 #if LOCAL_DEBUG_ENABLED
             DLog(@"Machine [%@] is included in the server exclusion list, skipping", machineID);
