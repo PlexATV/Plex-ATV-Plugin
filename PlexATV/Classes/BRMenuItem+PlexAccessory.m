@@ -18,4 +18,13 @@
     [self addAccessoryOfType:type];
 }
 
+- (void)removeAccessoryOfPlexType:(kPlexAccessoryTypes)type
+{
+    if ([PLEX_COMPAT usingFourPointThree] && type >= 15) {
+        type += 1;
+    }
+
+    [self removeAccessoryOfType:type];
+}
+
 @end

@@ -40,5 +40,6 @@ typedef enum kPlexAccessoryTypes_t {
 @interface BRMenuItem (PlexAccessory)
 
 - (void)addAccessoryOfPlexType:(kPlexAccessoryTypes)type;
+- (void)removeAccessoryOfPlexType:(kPlexAccessoryTypes)type;
 
 @end
