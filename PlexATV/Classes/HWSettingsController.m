@@ -179,6 +179,8 @@
 
 - (id)previewControlForItem:(long)item {
     SMFBaseAsset *asset = [[SMFBaseAsset alloc] init];
+    [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"PlexSettings" ofType:@"png"]]];
+    
     switch (item) {
     case ServersIndex: {
         // =========== servers ===========
@@ -204,6 +206,13 @@
         [asset setSummary:@"Change passcode and activate security measures"];
         break;
     }
+    case MyPlexSettingsIndex: {
+        // =========== myPlex setting ===========
+        [asset setTitle:@"Modify myPlex status and settings"];
+        [asset setSummary:@"Login / Logout of myPlex"];
+        [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"MyPlexLogo" ofType:@"png"]]];
+        break;
+    }
     case PluginVersionNumberIndex: {
         // =========== quality setting ===========
         [asset setTitle:@"Credit to:"];
@@ -213,7 +222,7 @@
     default:
         break;
     }
-    [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"PlexSettings" ofType:@"png"]]];
+    
     SMFMediaPreview *p = [[SMFMediaPreview alloc] init];
     [p setShowsMetadataImmediately:YES];
     [p setAsset:asset];

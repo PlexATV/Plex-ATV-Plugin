@@ -23,7 +23,7 @@
     if( (self = [super init]) != nil ) {
         [self setLabel:@"myPlex Settings"];
         [self setListTitle:@"myPlex Settings"];
-        
+
         [self setupList];
     }
     return self;
@@ -55,8 +55,7 @@
 #pragma mark -
 #pragma mark List setup
 
-- (NSString*)getMyPlexStatus
-{
+- (NSString*)getMyPlexStatus {
     DLog(@"getMyPlexStatus");
     if ([[MyPlex sharedMyPlex] authenticated]) {
         [[MachineManager sharedMachineManager] forceDetectorUpdate];
@@ -65,32 +64,31 @@
     if ([MyPlex sharedMyPlex].hadError) {
         return [MyPlex sharedMyPlex].lastError;
     }
-    
+
     return @"Not logged in";
 }
 
-enum Indexes
-{
+enum Indexes {
     StatusMenuItem,
     UserMenuItem,
-    PasswordMenuItem,
+    PasswordMenuItem
 };
 
 - (void)setupList {
     [_items removeAllObjects];
-    
+
     SMFMenuItem *myPlexStatusMenuItem = [SMFMenuItem menuItem];
     myPlexStatusMenuItem.title = @"myPlex status";
     myPlexStatusMenuItem.rightText = [self getMyPlexStatus];
     [_items addObject:myPlexStatusMenuItem];
-    
+
     SMFMenuItem *myPlexUsernameMenuItem = [SMFMenuItem menuItem];
     myPlexUsernameMenuItem.title = @"myPlex user name";
     if ([[PlexPrefs defaultPreferences] myPlexUser]) {
         myPlexUsernameMenuItem.rightText = [[PlexPrefs defaultPreferences] myPlexUser];
     }
     [_items addObject:myPlexUsernameMenuItem];
-    
+
     SMFMenuItem *myPlexPasswordMenuItem = [SMFMenuItem menuItem];
     myPlexPasswordMenuItem.title = @"myPlex password";
     myPlexPasswordMenuItem.rightText = @"";
@@ -101,7 +99,7 @@ enum Indexes
 #pragma mark List Delegate Methods
 - (void)itemSelected:(long)selected {
     currentItem = selected;
-    
+
     switch (selected) {
         case StatusMenuItem:
             if (![MyPlex sharedMyPlex].authenticated) {
@@ -120,7 +118,7 @@ enum Indexes
                                          usingSecureText:NO
                                                 delegate:self];
         }
-            break;
+        break;
         case PasswordMenuItem:
         {
             [HWSettingsController showDialogBoxWithTitle:@"myPlex - Password"
@@ -132,15 +130,14 @@ enum Indexes
                                          usingSecureText:YES
                                                 delegate:self];
         }
-            break;
+        break;
         default:
             break;
     }
 }
 
 #pragma mark TextEntry delegate
-- (void)textDidEndEditing:(id)text 
-{
+- (void)textDidEndEditing:(id)text {
     switch (currentItem) {
         case UserMenuItem:
             [[PlexPrefs defaultPreferences] setMyPlexUser:[text stringValue]];
@@ -151,21 +148,20 @@ enum Indexes
         default:
             break;
     }
-    
+
     [self sendLoginDetailsInBackground];
-    
+
     [[[BRApplicationStackManager singleton] stack] popController];
 }
 
-- (void)sendLoginDetailsInBackground
-{
+- (void)sendLoginDetailsInBackground {
     if ([[PlexPrefs defaultPreferences] myPlexUser] && self.password) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [[MyPlex sharedMyPlex] loginUser:[[PlexPrefs defaultPreferences] myPlexUser] withPassword:self.password];
-            DLog(@"Done with myPlex loginUser");
+            DLog (@"Done with myPlex loginUser");
             [self setupList];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async (dispatch_get_main_queue (), ^{
                 [self.list reload];
             });
             
@@ -192,8 +188,8 @@ enum Indexes
             break;
         }
     }
-    
-    [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"PlexSettings" ofType:@"png"]]];
+
+    [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"MyPlexLogo" ofType:@"png"]]];
     SMFMediaPreview *p = [[SMFMediaPreview alloc] init];
     [p setShowsMetadataImmediately:YES];
     [p setAsset:asset];
