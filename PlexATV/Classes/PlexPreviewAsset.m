@@ -372,7 +372,7 @@
         }
     }
 
-    if (![pmo.summary empty])
+    if (![pmo.summary isZeroLength])
         return pmo.summary;
     else if (pmo.mediaContainer != nil)
         return [pmo.mediaContainer.attributes valueForKey:@"summary"];
