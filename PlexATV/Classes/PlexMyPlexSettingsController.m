@@ -159,9 +159,8 @@ enum Indexes {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [[MyPlex sharedMyPlex] loginUser:[[PlexPrefs defaultPreferences] myPlexUser] withPassword:self.password];
             DLog (@"Done with myPlex loginUser");
-            [self setupList];
-            
             dispatch_async (dispatch_get_main_queue (), ^{
+                [self setupList];
                 [self.list reload];
             });
             
