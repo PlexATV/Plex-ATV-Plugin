@@ -166,6 +166,12 @@ PlexMediaProvider *__provider = nil;
                 
                 /* forward playable information */
                 //obj.mediaResource.canPlayWithoutTranscoder = self.currentPart.parentMedia.canPlayWithoutTranscoder;
+                if (!obj.mediaResource.canPlayWithoutTranscoder) {
+                    /* what does the parent say? */
+                    if (self.currentPart.parentMedia.canPlayWithoutTranscoder) {
+                        obj.mediaResource.canPlayWithoutTranscoder = YES;
+                    }
+                }
                 self.mediaObject = obj;
                 self.currentPart = nil;
                 
