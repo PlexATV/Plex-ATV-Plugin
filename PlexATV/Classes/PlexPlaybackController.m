@@ -34,6 +34,7 @@
 #import <plex-oss/PlexStreamingQuality.h>
 #import <plex-oss/PlexMediaPart.h>
 #import <plex-oss/PlexMedia.h>
+#import <plex-oss/MachineConnectionBase.h>
 #import "PlexMediaProvider.h"
 #import "PlexMediaAsset.h"
 #import "PlexMediaAssetOld.h"
@@ -212,14 +213,22 @@ PlexMediaProvider *__provider = nil;
     [[MachineManager sharedMachineManager] stopMonitoringMachineState];
     
     [self.mediaObject.attributes setObject:[NSNumber numberWithInt:offset] forKey:@"viewOffset"]; //set where in the video we want to start...
+    
+    BOOL isLocal = self.mediaObject.request.machine.bestConnection.inLocalNetwork;
 
     //determine the user selected quality setting
-    NSInteger qualityProfileNumber = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoQualityProfile];
+    NSInteger qualityProfileNumber;
+    if (isLocal) {
+        qualityProfileNumber = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoQualityProfile];
+    } else {
+        qualityProfileNumber = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoQualityRemoteProfile];
+    }
     PlexStreamingQualityDescriptor *streamQuality = [[HWUserDefaults plexStreamingQualities] objectAtIndex:qualityProfileNumber];
 
     //send our desired quality setting to the PMS
     self.mediaObject.request.machine.streamQuality = streamQuality;
 
+    DLog(@"Machine is local: %@", isLocal ? @"YES" : @"NO");
     DLog(@"streaming bitrate: %d", self.mediaObject.request.machine.streamingBitrate);
     DLog(@"Quality: %@", self.mediaObject.request.machine.streamQuality);
 

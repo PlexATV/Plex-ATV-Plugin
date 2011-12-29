@@ -19,14 +19,16 @@
 #import "Constants.h"
 
 @implementation PlexPlaybackSettingsController
-@synthesize plexStreamingQualities;
+@synthesize plexStreamingQualities, plexDirectPlayQualities;
 
 //----------- audio -----------
-#define PlaybackAudioAC3EnabledIndex        0
+#define PlaybackAudioAC3EnabledIndex                0
 //#define PlaybackAudioDTSEnabledIndex        2
 //----------- video -----------
-#define PlaybackVideoQualityProfileIndex    1
-#define PlaybackVideoDirectPlay             2
+#define PlaybackVideoQualityProfileIndex            1
+#define PlaybackVideoQualityRemoteProfileIndex      2
+#define PlaybackVideoDirectPlay                     3
+#define PlaybackVideoDirectPlayQuality              4
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
@@ -36,16 +38,20 @@
         [self setListTitle:@"Plex Playback Settings"];
 
         self.plexStreamingQualities = [HWUserDefaults plexStreamingQualities];
+        self.plexDirectPlayQualities = [NSArray arrayWithObjects:@"SD", @"720", @"1080", nil];
+        
         [self setupList];
 
         [[self list] addDividerAtIndex:0 withLabel:@"Audio"];
         [[self list] addDividerAtIndex:1 withLabel:@"Video"];
+        
     }
     return self;
 }
 
 - (void)dealloc {
     self.plexStreamingQualities = nil;
+    self.plexDirectPlayQualities = nil;
 
     [super dealloc];
 }
@@ -101,20 +107,39 @@
     // =========== quality setting ===========
     SMFMenuItem *qualitySettingMenuItem = [SMFMenuItem menuItem];
 
-    [qualitySettingMenuItem setTitle:@"Quality Profile"];
+    [qualitySettingMenuItem setTitle:@"Quality Profile (local content)"];
     NSInteger qualityProfileNumber = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoQualityProfile];
     PlexStreamingQualityDescriptor *qualitySetting = [self.plexStreamingQualities objectAtIndex:qualityProfileNumber];
     [qualitySettingMenuItem setRightText:qualitySetting.name];
     [_items addObject:qualitySettingMenuItem];
 
+    // =========== quality setting (remote) ===========
+    SMFMenuItem *qualitySettingRemoteMenuItem = [SMFMenuItem menuItem];
+    
+    [qualitySettingRemoteMenuItem setTitle:@"Quality Profile (remote content)"];
+    NSInteger qualityProfileRemoteNumber = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoQualityRemoteProfile];
+    PlexStreamingQualityDescriptor *qualityRemoteSetting = [self.plexStreamingQualities objectAtIndex:qualityProfileRemoteNumber];
+    [qualitySettingRemoteMenuItem setRightText:qualityRemoteSetting.name];
+    [_items addObject:qualitySettingRemoteMenuItem];
+
     // =========== direct play ===========
     SMFMenuItem *allowDirectPlayEnabled = [SMFMenuItem menuItem];
+    
     [allowDirectPlayEnabled setTitle:@"Direct Play"];
     BOOL directPlayAllowed = [[HWUserDefaults defaultPreferences] allowDirectPlayback];
     [allowDirectPlayEnabled setRightText:directPlayAllowed ? @"Enabled" : @"Disabled"];
     [_items addObject:allowDirectPlayEnabled];
+
+    // =========== quality setting (direct play) ===========
+    SMFMenuItem *directPlayQualityItem = [SMFMenuItem menuItem];
     
+    [directPlayQualityItem setTitle:@"Direct Play Quality Profile"];
+    NSInteger dpQualityIndex = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoDirectPlayQuality];
+    NSString *dpQualStr = [self.plexDirectPlayQualities objectAtIndex:dpQualityIndex];
+    [directPlayQualityItem setRightText:dpQualStr];
+    [_items addObject:directPlayQualityItem];
 }
+
 
 #pragma mark -
 #pragma mark List Delegate Methods
@@ -141,12 +166,15 @@
             qualitySetting = 0;
         }
         [[HWUserDefaults preferences] setInteger:qualitySetting forKey:PreferencesPlaybackVideoQualityProfile];
-        NSUInteger directStreamQual = 0;
-        if (qualitySetting > 6 && qualitySetting < 9) directStreamQual = 720;
-        if (qualitySetting > 8) directStreamQual = 1080;
-        DLog(@"directStreamQual = %d", directStreamQual);
-        [[HWUserDefaults defaultPreferences] setDirectStreamQuality:directStreamQual];
-
+        break;
+    }
+    case PlaybackVideoQualityRemoteProfileIndex: {
+        NSInteger qualitySetting = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoQualityRemoteProfile];
+        qualitySetting++;
+        if (qualitySetting >= [self.plexStreamingQualities count]) {
+            qualitySetting = 0;
+        }
+        [[HWUserDefaults preferences] setInteger:qualitySetting forKey:PreferencesPlaybackVideoQualityRemoteProfile];        
         break;
     }
     case PlaybackVideoDirectPlay: {
@@ -156,6 +184,19 @@
         NSLog(@"AllowDP = %d", allowDP);
         [[HWUserDefaults defaultPreferences] setAllowDirectPlayback:allowDP];
         break;
+    }
+    case PlaybackVideoDirectPlayQuality: {
+        NSInteger dpQuality = [[HWUserDefaults preferences] integerForKey:PreferencesPlaybackVideoDirectPlayQuality];
+        
+        dpQuality ++;
+        if (dpQuality >= 3)
+            dpQuality = 0;
+        
+        [[HWUserDefaults preferences] setInteger:dpQuality forKey:PreferencesPlaybackVideoDirectPlayQuality];
+        
+        NSString *dpQualityStr = [self.plexDirectPlayQualities objectAtIndex:dpQuality];
+        DLog(@"directStreamQual = %@", dpQualityStr);
+        [[HWUserDefaults defaultPreferences] setDirectStreamQuality:[dpQualityStr intValue]];
     }
     default:
         break;
@@ -188,12 +229,23 @@
         [asset setSummary:@"Sets the video quality profile of the streamed video."];
         break;
     }
+    case PlaybackVideoQualityRemoteProfileIndex: {
+        [asset setTitle:@"Select the video quality profile"];
+        [asset setSummary:@"Sets the video quality profile of the streamed video from remote sites"];
+        break;
+    }
     case PlaybackVideoDirectPlay: {
         [asset setTitle:@"Toggles whether you want to enable direct play"];
         [asset setTitle:@"Direct play allows you to play comptabible files directly on the Apple TV, but might not work at all times"];
         break;
     }
-    default:
+    case PlaybackVideoDirectPlayQuality: {
+        [asset setTitle:@"Select the video quality when playing directly"];
+        [asset setTitle:@"Prefer this verison of the video when playing directly"];
+        break;
+    }
+
+        default:
         break;
     }
     [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"PlexSettings" ofType:@"png"]]];

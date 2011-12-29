@@ -16,6 +16,8 @@
 #define PreferencesPlaybackAudioAC3Enabled @"PreferencesPlaybackAudioAC3Enabled"
 #define PreferencesPlaybackAudioDTSEnabled @"PreferencesPlaybackAudioDTSEnabled"
 #define PreferencesPlaybackVideoQualityProfile @"PreferencesPlaybackVideoQualityProfile"
+#define PreferencesPlaybackVideoQualityRemoteProfile @"PreferencesPlaybackVideoQualityRemoteProfile"
+#define PreferencesPlaybackVideoDirectPlayQuality @"PreferencesPlaybackVideoDirectPlayQuality"
 
 #define PreferencesSecuritySettingsLockEnabled @"PreferencesSecuritySettingsLockEnabled"
 #define PreferencesSecurityPasscode @"PreferencesSecurityPasscode"

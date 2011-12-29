@@ -16,6 +16,7 @@
 
 @interface PlexPlaybackSettingsController : SMFMediaMenuController {}
 @property (retain) NSArray *plexStreamingQualities;
+@property (retain) NSArray *plexDirectPlayQualities;
 - (void)setupList;
 
 @end
