@@ -176,12 +176,10 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
     BRApplianceCategory *appliance;
     for (int i = 0; i < [self.currentApplianceCategories count]; i++) {
         appliance = [self.currentApplianceCategories objectAtIndex:i];
-        if ([appliance.name isEqualToString:@"Refresh"]) {
+        if ([appliance.name isEqualToString:@"Search"]) {
             [appliance setPreferredOrder:0];
-        } else if ([appliance.name isEqualToString:@"Search"]) {
-            [appliance setPreferredOrder:1];
         } else {
-            [appliance setPreferredOrder:i + 2]; //+2 so we reserve 0 for refresh and 1 for search
+            [appliance setPreferredOrder:i + 1]; //+1 so we reserve 0 for search
         }
     }
     //other servers appliance category, set it to the second to last
@@ -271,20 +269,16 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
 
         //for (PlexMediaObject *pmo in allDirectories) {
-        int totalItems = [allDirectories count] + 3; //refresh + search + channels
+        int totalItems = [allDirectories count] + 2; //search + channels
         for (int i = 0; i < totalItems; i++) {
             NSString *categoryPath = nil;
             NSString *categoryName = nil;
 
             if (i == [allDirectories count]) {
                 //add special search appliance
-                categoryName = @"Refresh";
-                categoryPath = @"refresh";
-            } else if (i == [allDirectories count] + 1) {
-                //add special search appliance
                 categoryName = @"Search";
                 categoryPath = @"search";
-            } else if (i == [allDirectories count] + 2) {
+            } else if (i == [allDirectories count] + 1) {
                 //add special channels appliance
                 categoryName = @"Channels";
                 categoryPath = @"channels";
