@@ -41,6 +41,7 @@
 #import "PlexSongAsset.h"
 #import "PlexNavigationController.h"
 #import "PlexThemeMusicPlayer.h"
+#import "PlexTrackingUtil.h"
 
 #define LOCAL_DEBUG_ENABLED 1
 
@@ -280,6 +281,7 @@ PlexMediaProvider *__provider = nil;
     //[mgm presentMediaAsset:pma options:0];
     [mgm presentPlayer:player options:0];
     DLog(@"presented player");
+    [[PlexTrackingUtil sharedTracker] trackEvent:@"PlaybackMovie"];
 
     self.playProgressTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f
                               target:self
@@ -311,6 +313,7 @@ PlexMediaProvider *__provider = nil;
     [psa release];
 
     [[BRMediaPlayerManager singleton] presentPlayer:player options:nil];
+    [[PlexTrackingUtil sharedTracker] trackEvent:@"PlaybackAudio"];
 
     DLog(@"presented audio player");
 }

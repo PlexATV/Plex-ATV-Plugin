@@ -21,7 +21,7 @@
 
 #define PreferencesSecuritySettingsLockEnabled @"PreferencesSecuritySettingsLockEnabled"
 #define PreferencesSecurityPasscode @"PreferencesSecurityPasscode"
-
+#define PreferencesAllowTracking @"PreferencesAllowTracking"
 
 
 

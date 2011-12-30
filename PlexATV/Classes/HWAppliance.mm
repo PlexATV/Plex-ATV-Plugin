@@ -8,6 +8,7 @@
 #import "Constants.h"
 #import "PlexNavigationController.h"
 #import "PlexTopShelfController.h"
+#import "PlexTrackingUtil.h"
 
 #define SERVER_LIST_ID @"hwServerList"
 #define SETTINGS_ID @"hwSettings"
@@ -34,7 +35,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
     [PlexPrefs setBaseClassForPlexPrefs:[HWUserDefaults class ]];
 }
 
-
 - (id)init {
     self = [super init];
     if(self) {
@@ -49,6 +49,9 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         [HWUserDefaults setupPlexClient];
 
         DLog(@"==================== plex client starting up - init [%@] ====================", self);
+        
+        
+        [[PlexTrackingUtil sharedTracker] setupTracking];
 
         self.topShelfController = [[PlexTopShelfController alloc] init];
         self.currentApplianceCategories = [[NSMutableArray alloc] init];

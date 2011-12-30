@@ -10,6 +10,7 @@
 #import <plex-oss/PlexStreamingQuality.h>
 #import <plex-oss/PlexRequest + Security.h>
 #import "Constants.h"
+#import "gitversion.h"
 
 
 @implementation HWUserDefaults
@@ -99,7 +100,7 @@
 
 + (void)setupPlexClient {
     DLog(@"registering ourselves with the PMS");
-    [PlexRequest setApplicationName:@"Plex-ATV" version:kPlexPluginVersion];
+    [PlexRequest setApplicationName:@"Plex-ATV" version:[NSString stringWithFormat:@"%@-%@", kPlexPluginVersion, PLEX_GIT_VERSION]];
 
     //tell pms we like direct-stream and we will be sending caps to it
     [[PlexPrefs defaultPreferences] setAllowDirectStreaming:YES];
@@ -179,6 +180,7 @@
             [NSNumber numberWithBool:NO], PreferencesSecuritySettingsLockEnabled,
             [NSNumber numberWithInt:0], PreferencesSecurityPasscode,
             [NSDictionary dictionary], PersistedTabBarLastSelections,
+            [NSNumber numberWithBool:YES], PreferencesAllowTracking,
             nil];
 }
 

@@ -55,6 +55,7 @@
 		61861A771479255C0073958E /* PlexMediaShelfView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6124E32914018274001D5F8D /* PlexMediaShelfView.m */; };
 		61A01EDC14AA667B006DF829 /* BRMenuItem+PlexAccessory.m in Sources */ = {isa = PBXBuildFile; fileRef = 61A01EDB14AA667B006DF829 /* BRMenuItem+PlexAccessory.m */; };
 		61BA974014ACD6D200FB8E01 /* MyPlexLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 61BA973F14ACD6D200FB8E01 /* MyPlexLogo.png */; };
+		61BA974814ADC14600FB8E01 /* PlexTrackingUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 61BA974714ADC14500FB8E01 /* PlexTrackingUtil.m */; };
 		61E8420D14ABBB140000707A /* NSString+ZeroLength.m in Sources */ = {isa = PBXBuildFile; fileRef = 61E8420C14ABBB140000707A /* NSString+ZeroLength.m */; };
 		66E5AEB11303562D00FD8EA9 /* HWServersController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66E5AEB01303562D00FD8EA9 /* HWServersController.m */; };
 		7205CCE4135A7E7C001EFC55 /* PlexChannelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7205CCE3135A7E7C001EFC55 /* PlexChannelsController.m */; };
@@ -191,6 +192,8 @@
 		61A01EDA14AA667B006DF829 /* BRMenuItem+PlexAccessory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "BRMenuItem+PlexAccessory.h"; path = "Classes/BRMenuItem+PlexAccessory.h"; sourceTree = "<group>"; };
 		61A01EDB14AA667B006DF829 /* BRMenuItem+PlexAccessory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "BRMenuItem+PlexAccessory.m"; path = "Classes/BRMenuItem+PlexAccessory.m"; sourceTree = "<group>"; };
 		61BA973F14ACD6D200FB8E01 /* MyPlexLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MyPlexLogo.png; path = Resources/MyPlexLogo.png; sourceTree = "<group>"; };
+		61BA974614ADC14500FB8E01 /* PlexTrackingUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexTrackingUtil.h; path = Classes/PlexTrackingUtil.h; sourceTree = "<group>"; };
+		61BA974714ADC14500FB8E01 /* PlexTrackingUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexTrackingUtil.m; path = Classes/PlexTrackingUtil.m; sourceTree = "<group>"; };
 		61C1BD7A13FA48FC0083E8AC /* SMFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SMFramework.xcodeproj; path = ../_Contrib/SMFramework/SMFramework.xcodeproj; sourceTree = "<group>"; };
 		61E8420B14ABBB140000707A /* NSString+ZeroLength.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+ZeroLength.h"; path = "Classes/NSString+ZeroLength.h"; sourceTree = "<group>"; };
 		61E8420C14ABBB140000707A /* NSString+ZeroLength.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+ZeroLength.m"; path = "Classes/NSString+ZeroLength.m"; sourceTree = "<group>"; };
@@ -454,6 +457,8 @@
 				61A01EDB14AA667B006DF829 /* BRMenuItem+PlexAccessory.m */,
 				61E8420B14ABBB140000707A /* NSString+ZeroLength.h */,
 				61E8420C14ABBB140000707A /* NSString+ZeroLength.m */,
+				61BA974614ADC14500FB8E01 /* PlexTrackingUtil.h */,
+				61BA974714ADC14500FB8E01 /* PlexTrackingUtil.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -772,6 +777,7 @@
 				6110222C149924C50045B431 /* PlexMyPlexSettingsController.m in Sources */,
 				61A01EDC14AA667B006DF829 /* BRMenuItem+PlexAccessory.m in Sources */,
 				61E8420D14ABBB140000707A /* NSString+ZeroLength.m in Sources */,
+				61BA974814ADC14600FB8E01 /* PlexTrackingUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -836,6 +842,7 @@
 					"HTTP_SERVER_PORT=32400",
 				);
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../_Contrib/GANTracker",
 					"$(SRCROOT)/../../KLEXi/_Contrib/SDKs-Debug/Ambertation-Plex/iphoneos.sdk/usr/local/include/",
 					"\"$(SRCROOT)/../_Contrib/SMFramework\"",
 					"\"$(SRCROOT)/theos/include\"",
@@ -844,10 +851,14 @@
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_OUTPUT_FORMAT = binary;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/theos/include\"";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../_Contrib/GANTracker",
+					"\"$(SRCROOT)/theos/include\"",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-fdiagnostics-show-option";
 				OTHER_LDFLAGS = (
+					"-lGoogleAnalytics",
 					"-undefined",
 					dynamic_lookup,
 					"-all_load",
