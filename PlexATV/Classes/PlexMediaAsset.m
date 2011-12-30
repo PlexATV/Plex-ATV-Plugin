@@ -292,6 +292,9 @@
 
 - (id)mediaType {
 #pragma mark only different one
+    if ([PLEX_COMPAT usingFourPointFour]) {
+        return [BRMediaType movie];
+    }
     return [BRMediaType sedonaMovie];
 }
 

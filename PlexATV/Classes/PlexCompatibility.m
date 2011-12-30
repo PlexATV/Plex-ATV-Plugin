@@ -35,7 +35,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PlexCompatibility, compat)
             _usingFourPointTwo = YES;
             _usingFourPointThree = YES;
         }
-        if (cls != nil && [[cls currentOSVersion] isEqualToString:@"5.0"]) {
+        if (cls != nil && [[cls currentOSVersion] rangeOfString:@"5."].location != NSNotFound) {
             _usingFourPointTwo = YES;
             _usingFourPointThree = YES;
             _usingFourPointFour = YES;
