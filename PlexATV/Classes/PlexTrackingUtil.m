@@ -10,10 +10,11 @@
 #import "GANTracker.h"
 #import "HWUserDefaults.h"
 #import "Constants.h"
+#import "Plex_SynthesizeSingleton.h"
 
 @implementation PlexTrackingUtil
 
-SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTrackingUtil, Tracker);
+PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTrackingUtil);
 
 - (void)setupTracking
 {

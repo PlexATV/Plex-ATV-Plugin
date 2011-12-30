@@ -11,7 +11,7 @@
 
 @interface PlexTrackingUtil : NSObject<GANTrackerDelegate>
 
-+ (PlexTrackingUtil*)sharedTracker;
++ (PlexTrackingUtil*)sharedPlexTrackingUtil;
 - (void)setupTracking;
 - (void)trackEvent:(NSString*)event;
 - (void)trackEvent:(NSString*)event withValue:(NSInteger)value;

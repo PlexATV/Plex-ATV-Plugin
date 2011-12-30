@@ -281,7 +281,7 @@ PlexMediaProvider *__provider = nil;
     //[mgm presentMediaAsset:pma options:0];
     [mgm presentPlayer:player options:0];
     DLog(@"presented player");
-    [[PlexTrackingUtil sharedTracker] trackEvent:@"PlaybackMovie"];
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackEvent:@"PlaybackMovie"];
 
     self.playProgressTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f
                               target:self
@@ -313,7 +313,7 @@ PlexMediaProvider *__provider = nil;
     [psa release];
 
     [[BRMediaPlayerManager singleton] presentPlayer:player options:nil];
-    [[PlexTrackingUtil sharedTracker] trackEvent:@"PlaybackAudio"];
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackEvent:@"PlaybackAudio"];
 
     DLog(@"presented audio player");
 }

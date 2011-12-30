@@ -62,7 +62,7 @@ void checkNil(NSObject *ctrl){
 
 - (void)dealloc {
 #if LOCAL_DEBUG_ENABLED
-    DLog(@"deallocing HWMediaShelfController");
+    DLog(@"deallocing HWMediaGridController");
 #endif
     self.shelfMediaContainer = nil;
     self.gridMediaContainer = nil;

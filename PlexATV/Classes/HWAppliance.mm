@@ -51,7 +51,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         DLog(@"==================== plex client starting up - init [%@] ====================", self);
         
         
-        [[PlexTrackingUtil sharedTracker] setupTracking];
+        [[PlexTrackingUtil sharedPlexTrackingUtil] setupTracking];
 
         self.topShelfController = [[PlexTopShelfController alloc] init];
         self.currentApplianceCategories = [[NSMutableArray alloc] init];
