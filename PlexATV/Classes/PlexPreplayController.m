@@ -73,7 +73,7 @@ typedef enum {
         [listDropShadowControl setCDelegate:self];
         [listDropShadowControl setCDatasource:self];
         
-        pressedMore = NO;
+        buttonIndex = 0;
     }
     return self;
 }
@@ -108,7 +108,7 @@ typedef enum {
         //set both focused and selected to the new index
         currentSelectedIndex = newIndex;
         lastFocusedIndex = newIndex;
-        shelfCtrl.focusedIndexCompat = newIndex;
+        shelfCtrl.focusedIndexCompat = (id)newIndex;
         self.selectedMediaObject = [self.relatedMediaContainer.directories objectAtIndex:currentSelectedIndex];
         //move the shelf if needed to show the new item
         [shelfCtrl _scrollIndexToVisible:currentSelectedIndex];
@@ -200,9 +200,8 @@ typedef enum {
 - (void)doneReloading
 {
     DLog();
-    if (pressedMore) {
-        [self setFocusedControl:[self._buttons lastObject]];
-        pressedMore = NO;
+    if (buttonIndex < 3) {
+        [self setFocusedControl:[self._buttons objectAtIndex:buttonIndex]];
     }
 }
 
@@ -242,22 +241,25 @@ typedef enum {
 
         int buttonId = [buttonControl.identifier intValue];
         switch (buttonId) {
-        case kPlayButton: {
-            DLog(@"initiate movie playback");
-            [[PlexNavigationController sharedPlexNavigationController] initiatePlaybackOfMediaObject:self.selectedMediaObject];
-            break;
-        }
-        case kMoreButton: {
-            [listDropShadowControl addToController:self]; //show popup for marking movie as watched/unwatched
-            break;
-        }
-        case kAudioSubsButton: {
-            PlexAudioSubsController *subCtrl = [[PlexAudioSubsController alloc] initWithMediaObject:self.selectedMediaObject];
-            [[[BRApplicationStackManager singleton] stack] pushController:subCtrl];
-            [subCtrl release];
-        }
-        default:
-            break;
+            case kPlayButton: {
+                DLog(@"initiate movie playback");
+                [[PlexNavigationController sharedPlexNavigationController] initiatePlaybackOfMediaObject:self.selectedMediaObject];
+                buttonIndex = 0;
+                break;
+            }
+            case kMoreButton: {
+                [listDropShadowControl addToController:self]; //show popup for marking movie as watched/unwatched
+                buttonIndex = 1;
+                break;
+            }
+            case kAudioSubsButton: {
+                PlexAudioSubsController *subCtrl = [[PlexAudioSubsController alloc] initWithMediaObject:self.selectedMediaObject];
+                [[[BRApplicationStackManager singleton] stack] pushController:subCtrl];
+                buttonIndex = 2;
+                [subCtrl release];
+            }
+            default:
+                break;
         }
 
         //none of the buttons do anything, make error sound for now
@@ -274,6 +276,7 @@ typedef enum {
             focusedIndexCompat = [(id)self.shelfControl focusedIndex];
             DLog(@"using 4.2 index for shelf. %d", focusedIndexCompat);
         }
+        buttonIndex = 3;
         [self changeMetadataViewToShowDataForIndex:focusedIndexCompat];
     }
 }
@@ -287,7 +290,7 @@ typedef enum {
     } else if (newControl == shelfCtrl) {
         //the shelf is now re-focused, load previous focused element
         shelfIsSelected = YES;
-        shelfCtrl.focusedIndexCompat = lastFocusedIndex;
+        shelfCtrl.focusedIndexCompat = (id)lastFocusedIndex;
     }
 }
 
@@ -308,7 +311,7 @@ typedef enum {
 }
 
 - (void)controller:(SMFMoviePreviewController*)c playButtonEventInShelf:(PlexMediaShelfView*)shelfControl {
-    int selectedIndex = [shelfControl focusedIndex];
+    int selectedIndex = (int)[shelfControl focusedIndexCompat];
     PlexMediaObject *shelfSelectedMediaObject = [self.relatedMediaContainer.directories objectAtIndex:selectedIndex];
 #if LOCAL_DEBUG_ENABLED
     DLog(@"play button in shelf at index [%d]: %@", selectedIndex, shelfSelectedMediaObject);
@@ -626,7 +629,6 @@ typedef enum {
         break;
     }
     if (reload) {
-        pressedMore = YES;
         [self reload];
     }
 }

@@ -37,7 +37,7 @@
     BOOL moreInfoSelected;
     SMFListDropShadowControl *listDropShadowControl; //popup
     PlexMediaShelfView *shelfCtrl;
-    BOOL pressedMore;
+    NSUInteger buttonIndex;
 }
 @property (retain) PlexMediaContainer *relatedMediaContainer;
 @property (retain) PlexMediaObject *selectedMediaObject;
