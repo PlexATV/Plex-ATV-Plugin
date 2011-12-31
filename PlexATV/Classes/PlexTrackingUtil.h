@@ -15,5 +15,6 @@
 - (void)setupTracking;
 - (void)trackEvent:(NSString*)event;
 - (void)trackEvent:(NSString*)event withValue:(NSInteger)value;
+- (void)trackPage:(NSString*)page;
 
 @end

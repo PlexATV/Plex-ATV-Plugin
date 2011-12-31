@@ -86,6 +86,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
     }
 
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:@"/"];
     [self reloadCategories];
     return self;
 }

@@ -11,6 +11,7 @@
 #import "HWUserDefaults.h"
 #import "Constants.h"
 #import "Plex_SynthesizeSingleton.h"
+#import "gitversion.h"
 
 @implementation PlexTrackingUtil
 
@@ -26,28 +27,32 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTrackingUtil);
     NSError *err;
     if (![[GANTracker sharedTracker] setCustomVariableAtIndex:1
                                                          name:@"AppVersion" 
-                                                        value:[[NSBundle mainBundle] objectForInfoDictionaryKey:kPlexPluginVersion]
+                                                        value:[NSString stringWithFormat:@"%@-%@", kPlexPluginVersion, PLEX_GIT_VERSION]
                                                     withError:&err]) {
         DLog(@"Error %@", [err description]);
+    }
+    
+    NSString *versionStr = [[UIDevice currentDevice] systemVersion];
+    Class cls = NSClassFromString(@"ATVVersionInfo");
+    if (cls) {
+        versionStr = [cls currentOSVersion];
     }
     
     if (![[GANTracker sharedTracker] setCustomVariableAtIndex:2
-                                                         name:@"iOSVersion" 
-                                                        value:[[UIDevice currentDevice] systemVersion]
+                                                         name:@"currentOSVersion" 
+                                                        value:versionStr
                                                     withError:&err]) {
         DLog(@"Error %@", [err description]);
     }
-    
-    if (![[GANTracker sharedTracker] setCustomVariableAtIndex:3
-                                                         name:@"Platform"
-                                                        value:@"AppleTV2"
-                                                    withError:&err]) {
-        DLog(@"Error %@", [err description]);
-    }
-    
+        
     [[GANTracker sharedTracker] trackEvent:@"System" action:@"StartUp" label:@"System startup" value:1 withError:nil];
 }
 
+
+- (void)trackPage:(NSString*)page
+{
+    [[GANTracker sharedTracker] trackPageview:page withError:nil];
+}
 
 - (void)trackEvent:(NSString*)event withValue:(NSInteger)value
 {

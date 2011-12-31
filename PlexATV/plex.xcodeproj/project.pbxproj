@@ -725,7 +725,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\nTARGET_ATV='living-room-apple-tv.local'\nSSH_OPTS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'\n\n#copy to the ATV\nscp ${SSH_OPTS} ${BUILT_PRODUCTS_DIR}/plex.frappliance/* root@${TARGET_ATV}:${TARGET_DIR}\necho \"scp ${SSH_OPTS} '${BUILT_PRODUCTS_DIR}/plex.frappliance/*' root@${TARGET_ATV}:${TARGET_DIR}\"\n\n\n#restart UI\nssh ${SSH_OPTS} root@${TARGET_ATV} 'killall AppleTV'\n";
+			shellScript = "export APP_NAME=\"Lowtide.app\"\nexport TARGET_DIR=/Applications/${APP_NAME}/Appliances/PLEX.frappliance\nTARGET_ATV='apple-tv.local'\nSSH_OPTS='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'\n\n#copy to the ATV\nscp ${SSH_OPTS} ${BUILT_PRODUCTS_DIR}/plex.frappliance/* root@${TARGET_ATV}:${TARGET_DIR}\necho \"scp ${SSH_OPTS} '${BUILT_PRODUCTS_DIR}/plex.frappliance/*' root@${TARGET_ATV}:${TARGET_DIR}\"\n\n\n#restart UI\nssh ${SSH_OPTS} root@${TARGET_ATV} 'killall AppleTV'\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
