@@ -33,25 +33,37 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
 + (void)initialize {
     [PlexPrefs setBaseClassForPlexPrefs:[HWUserDefaults class ]];
+    [PlexAppliance XBMCfixUIDevice]; //fix for ios 5
+    [UIDevice preloadCurrentForMacros];
+    //#warning Please check elan.plexapp.com/2010/12/24/happy-holidays-from-plex/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+osxbmc+%28Plex%29 to get a set of transcoder keys
+    [PlexRequest setStreamingKey:@"k3U6GLkZOoNIoSgjDshPErvqMIFdE0xMTx8kgsrhnC0="
+                    forPublicKey:@"KQMIY6GATPC63AIMC4R2"];
+    //instrumentObjcMessageSends(YES);
+    
+    //tell PMS what kind of codecs and media we can play
+    [HWUserDefaults setupPlexClient];
+    [[PlexTrackingUtil sharedPlexTrackingUtil] setupTracking];
+
+    //some debug output to help us pinpoint users iOS version when troubleshooting
+    DLog(@"PLEX usingFourPointTwoPlus: %@", [PLEX_COMPAT usingFourPointTwo] ? @"YES" : @"NO");
+    DLog(@"PLEX usingFourPointThreePlus: %@", [PLEX_COMPAT usingFourPointThree] ? @"YES" : @"NO");
+    DLog(@"PLEX usingFourPointFourPlus: %@", [PLEX_COMPAT usingFourPointFour] ? @"YES" : @"NO");
+    
 }
 
 - (id)init {
     self = [super init];
     if(self) {
-        [self XBMCfixUIDevice]; //fix for ios 5
-
-        [UIDevice preloadCurrentForMacros];
-        //#warning Please check elan.plexapp.com/2010/12/24/happy-holidays-from-plex/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+osxbmc+%28Plex%29 to get a set of transcoder keys
-        [PlexRequest setStreamingKey:@"k3U6GLkZOoNIoSgjDshPErvqMIFdE0xMTx8kgsrhnC0=" forPublicKey:@"KQMIY6GATPC63AIMC4R2"];
-        //instrumentObjcMessageSends(YES);
-
-        //tell PMS what kind of codecs and media we can play
-        [HWUserDefaults setupPlexClient];
-
+        
+        /* Note, at least in newer firmware of AppleTV the init function is called over and over again
+           Make sure to do as little as possible in the init function AND cleanup in -dealloc */
+        
         DLog(@"==================== plex client starting up - init [%@] ====================", self);
-        
-        
-        [[PlexTrackingUtil sharedPlexTrackingUtil] setupTracking];
+        if (![[MachineManager sharedMachineManager] autoDetectionActive]) {
+            [[MachineManager sharedMachineManager] startAutoDetection];
+            [[MachineManager sharedMachineManager] startMonitoringMachineState];
+            [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:YES];
+        }
 
         self.topShelfController = [[PlexTopShelfController alloc] init];
         self.currentApplianceCategories = [[NSMutableArray alloc] init];
@@ -59,34 +71,13 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         self.otherServersApplianceCategory = [SERVER_LIST_CAT retain];
         self.settingsApplianceCategory = [SETTINGS_CAT retain];
 
-
         [[ProxyMachineDelegate shared] removeAllDelegates];
         [[ProxyMachineDelegate shared] registerDelegate:self];
-        if (![[MachineManager sharedMachineManager] autoDetectionActive]) {
-            [[MachineManager sharedMachineManager] startAutoDetection];
-            [[MachineManager sharedMachineManager] startMonitoringMachineState];
-            [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:YES];
-        }
 
-        //TODO: make topshelf refresh itself depending on which section you select. start catching section list focus changes here
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(logFocusChanged:)name:@"kBRControlFocusChangedNotification" object:nil];
-
-        //stop the MM from sending WOL packets to PMS when AppleTV is going to sleep...
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(logNotifications:) name:nil object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pauseMachineMonitoring:)name:@"BRStopBackgroundProcessing" object:nil];
-
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resumeMachineMonitoring:)name:@"BRResumeBackgroundProcessing" object:nil];
 
-
-
-        //some debug output to help us pinpoint users iOS version when troubleshooting
-        DLog(@"PLEX usingFourPointTwoPlus: %@", [PLEX_COMPAT usingFourPointTwo] ? @"YES" : @"NO");
-        DLog(@"PLEX usingFourPointThreePlus: %@", [PLEX_COMPAT usingFourPointThree] ? @"YES" : @"NO");
-        DLog(@"PLEX usingFourPointFourPlus: %@", [PLEX_COMPAT usingFourPointFour] ? @"YES" : @"NO");
-
     }
-
-    [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:@"/"];
     [self reloadCategories];
     return self;
 }
@@ -198,6 +189,21 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
     return allApplianceCategories;
 }
 
+- (void)dealloc {
+    DLog(@"!!!!!!! WAS DEALLOCED!");
+    [[ProxyMachineDelegate shared] removeDelegate:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [[MachineManager sharedMachineManager] stopAutoDetection];
+    [[MachineManager sharedMachineManager] stopMonitoringMachineState];
+    
+    self.topShelfController = nil;
+    self.currentApplianceCategories = nil;
+    self.otherServersApplianceCategory = nil;
+    self.settingsApplianceCategory = nil;
+    [super dealloc];
+}
+
 - (id)identifierForContentAlias:(id)contentAlias {
     return @"Plex";
 }
@@ -226,11 +232,18 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
     [super reloadCategories];
 }
 
+- (BOOL)machineIsExcluded:(Machine *)m
+{
+    NSArray *machinesExcludedFromServerList = [[HWUserDefaults preferences] objectForKey:PreferencesMachinesExcludedFromServerList];
+    if (!m.owned) return YES;
+    if ([machinesExcludedFromServerList containsObject:m.machineID]) return YES;
+    return NO;
+}
+
 - (void)rebuildCategories {
     [self.currentApplianceCategories removeAllObjects];
 
     NSArray *machines = [[MachineManager sharedMachineManager] threadSafeMachines];
-    NSArray *machinesExcludedFromServerList = [[HWUserDefaults preferences] objectForKey:PreferencesMachinesExcludedFromServerList];
 
 #if LOCAL_DEBUG_ENABLED
     DLog(@"Reloading categories with machines [%@]", machines);
@@ -240,7 +253,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         NSString *machineName = [machine.serverName copy];
 
         //check if the user has added this machine to the exclusion list
-        if ([machinesExcludedFromServerList containsObject:machineID] || !machine.owned) {
+        if ([self machineIsExcluded:machine]) {
             //machine specifically excluded, skip
 #if LOCAL_DEBUG_ENABLED
             DLog(@"Machine [%@] is included in the server exclusion list, skipping", machineID);
@@ -353,33 +366,27 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 #pragma mark -
 #pragma mark Machine Delegate Methods
 - (void)machineWasRemoved:(Machine*)m {
-#if LOCAL_DEBUG_ENABLED
-    DLog(@"MachineManager: Removed machine [%@], so reload", m);
-#endif
-    [self rebuildCategories];
+    if (![self machineIsExcluded:m]) {
+        DLog(@"MachineManager: Removed machine [%@], so reload", m);
+        [self rebuildCategories];
+    }
 }
 
 - (void)machineWasAdded:(Machine*)m {
-#if LOCAL_DEBUG_ENABLED
     DLog(@"MachineManager: Added machine [%@]", m);
-#endif
     BOOL machineIsOnlineAndConnectable = m.isComplete;
 
-    if (machineIsOnlineAndConnectable) {
-#if LOCAL_DEBUG_ENABLED
+    if (machineIsOnlineAndConnectable && ![self machineIsExcluded:m]) {
         DLog(@"MachineManager: Reload machines as machine [%@] was added", m);
-#endif
         [self rebuildCategories];
 
     }
 }
 
 - (void)machineWasChanged:(Machine*)m {
-    if (m.isOnline && m.canConnect) {
+    if (m.isOnline && m.canConnect && ![self machineIsExcluded:m]) {
         //machine is available
-#if LOCAL_DEBUG_ENABLED
         DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m);
-#endif
         [self rebuildCategories];
     } else {
         //machine is not available
@@ -387,6 +394,10 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 }
 
 - (void)machine:(Machine*)m updatedInfo:(ConnectionInfoType)updateMask {
+    
+    if ([self machineIsExcluded:m])
+        return;
+    
 #if LOCAL_DEBUG_ENABLED
     DLog(@"MachineManager: Updated Info with update mask [%d] from machine [%@]", updateMask, m);
 #endif
@@ -410,7 +421,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 }
 
 // thx to awesome ppl at xmbc project for finding this one. you guys rule!
-- (void)XBMCfixUIDevice {
++ (void)XBMCfixUIDevice {
     // iOS 5.x has removed the internal load of UIKit in AppleTV app
     // and there is an overlap of some UIKit and AppleTV methods.
     // This voodoo seems to clear up the wonkiness. :)

@@ -17,6 +17,6 @@
 @property (nonatomic, retain) BRApplianceCategory *settingsApplianceCategory;
 
 - (void)rebuildCategories;
-- (void)XBMCfixUIDevice;
++ (void)XBMCfixUIDevice;
 
 @end
