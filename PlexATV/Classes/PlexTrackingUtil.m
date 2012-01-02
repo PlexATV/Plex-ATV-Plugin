@@ -12,6 +12,7 @@
 #import "Constants.h"
 #import "Plex_SynthesizeSingleton.h"
 #import "gitversion.h"
+#import <plex-oss/MyPlex.h>
 
 @implementation PlexTrackingUtil
 
@@ -45,7 +46,12 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTrackingUtil);
         DLog(@"Error %@", [err description]);
     }
         
-    [[GANTracker sharedTracker] trackEvent:@"System" action:@"StartUp" label:@"System startup" value:1 withError:nil];
+    //[[GANTracker sharedTracker] trackEvent:@"System" action:@"StartUp" label:@"System startup" value:1 withError:nil];
+    if ([[MyPlex sharedMyPlex] authenticated]) {
+        [self trackEvent:@"Using myPlex"];
+    }
+    
+    [self trackPage:@"/"];
 }
 
 

@@ -282,6 +282,7 @@ PlexMediaProvider *__provider = nil;
     [mgm presentPlayer:player options:0];
     DLog(@"presented player");
     [[PlexTrackingUtil sharedPlexTrackingUtil] trackEvent:@"PlaybackMovie"];
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackEvent:@"UsedDirectPlay" withValue:!didUseTranscoder];
 
     self.playProgressTimer = [NSTimer scheduledTimerWithTimeInterval:10.0f
                               target:self

@@ -25,6 +25,7 @@
 #import <SMFControllerPasscodeController.h>
 #import "PlexPlaybackController.h"
 #import "PlexMediaObject+Assets.h"
+#import "PlexTrackingUtil.h"
 
 @implementation PlexNavigationController
 @synthesize waitControl;
@@ -110,6 +111,7 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     PlexPlaybackController *playbackController = [[PlexPlaybackController alloc] initWithPlexMediaObject:aMediaObject];
     self.targetController = playbackController;
     [playbackController release];
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:aMediaObject.key];
 
     [[[BRApplicationStackManager singleton] stack] pushController:self];
 }
@@ -138,6 +140,8 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     PlexSearchController *searchController = [[PlexSearchController alloc] initWithMachine:aMachine];
     self.targetController = searchController;
     [searchController release];
+    
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:@"/search"];
 
     [[[BRApplicationStackManager singleton] stack] pushController:self];
 }
@@ -152,6 +156,7 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     PlexChannelsController *channelsController = [[PlexChannelsController alloc] initWithRootContainer:channelsContainer];
     self.targetController = channelsController;
     [channelsController release];
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:@"/channels"];
 
     [[[BRApplicationStackManager singleton] stack] pushController:self];
 }
@@ -176,6 +181,7 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
         [settingsController release];
     }
 
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:@"/settings"];
     [[[BRApplicationStackManager singleton] stack] pushController:self];
 }
 
@@ -188,6 +194,8 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     HWBasicMenu *serverList = [[HWBasicMenu alloc] init];
     self.targetController = serverList;
     [serverList release];
+    
+    [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:@"/serverlist"];
 
     [[[BRApplicationStackManager singleton] stack] pushController:self];
 }
@@ -324,7 +332,7 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
 
         //this one is always added, though perhaps needs to not be included in the music views?
         i = [[BRTabControlItem alloc] init];
-        [i setLabel:@"Unwatched"];
+        [i setLabel:(BRTextControl*)@"Unwatched"];
         [i setIdentifier:TabBarUnwatchedItemsIdentifier];
         [tabBar addTabItem:i];
         [i release];

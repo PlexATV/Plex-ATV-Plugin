@@ -36,7 +36,6 @@
 #import "PlexNavigationController.h"
 #import "PlexThemeMusicPlayer.h"
 #import "PlexAudioSubsController.h"
-#import "PlexTrackingUtil.h"
 
 #define LOCAL_DEBUG_ENABLED 1
 #define ModifyViewStatusOptionDialog @"ModifyViewStatusOptionDialog"
@@ -83,7 +82,6 @@
         NSInteger lastTabBarSelection = [HWUserDefaults lastTabBarSelectionForMachineID:machineID section:sectionKey viewGroup:viewGroup];
         [self.tabBar selectTabItemAtIndex:lastTabBarSelection];
         
-        [[PlexTrackingUtil sharedPlexTrackingUtil] trackPage:self.rootContainer.key];
     }
     return self;
 }
