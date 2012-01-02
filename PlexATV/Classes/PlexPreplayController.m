@@ -59,6 +59,7 @@ typedef enum {
 @implementation PlexPreplayController
 @synthesize relatedMediaContainer;
 @synthesize selectedMediaObject;
+@synthesize cachedFlags;
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
@@ -72,7 +73,7 @@ typedef enum {
         listDropShadowControl = [[SMFListDropShadowControl alloc] init];
         [listDropShadowControl setCDelegate:self];
         [listDropShadowControl setCDatasource:self];
-        cachedFlags = nil;
+        self.cachedFlags = nil;
         
         buttonIndex = 0;
     }
@@ -97,7 +98,7 @@ typedef enum {
     self.relatedMediaContainer = nil;
     self.datasource = nil;
     self.delegate = nil;
-    cachedFlags = nil;
+    self.cachedFlags = nil;
 
     [listDropShadowControl release];
     DLog(@"********** PlexPrePlayController is dealloced");
@@ -112,7 +113,7 @@ typedef enum {
         lastFocusedIndex = newIndex;
         shelfCtrl.focusedIndexCompat = (id)newIndex;
         self.selectedMediaObject = [self.relatedMediaContainer.directories objectAtIndex:currentSelectedIndex];
-        cachedFlags = nil;
+        self.cachedFlags = nil;
         //move the shelf if needed to show the new item
         [shelfCtrl _scrollIndexToVisible:currentSelectedIndex];
         //refresh metadata, but don't touch the shelf
@@ -134,7 +135,7 @@ typedef enum {
     self.delegate = nil;
     self.selectedMediaObject = nil;
     self.relatedMediaContainer = nil;
-    cachedFlags = nil;
+    self.cachedFlags = nil;
 
     [listDropShadowControl setCDelegate:nil];
     [listDropShadowControl setCDatasource:nil];
@@ -146,6 +147,7 @@ typedef enum {
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
     [super wasExhumed];
     [shelfCtrl _scrollIndexToVisible:currentSelectedIndex];
+    DLog(@"exhumed");
     [self reload];
 }
 
@@ -461,13 +463,12 @@ typedef enum {
 }
 
 - (NSArray*)flags {
-    if (cachedFlags) {
-        DLog(@"Flags are cached %d", [cachedFlags count]);
-        return cachedFlags;
+    if (self.cachedFlags) {
+        return self.cachedFlags;
     }
     
     DLog(@"no cached flags, fetching them");
-    cachedFlags = [NSArray array];
+    self.cachedFlags = [NSArray array];
     DLog();
         
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -500,13 +501,13 @@ typedef enum {
             [_flags addObject:[[BRThemeInfo sharedTheme] ccBadge]];
 
         dispatch_sync(dispatch_get_main_queue(), ^{
-            cachedFlags = [NSArray arrayWithArray:_flags];
+            self.cachedFlags = [NSArray arrayWithArray:_flags];
             DLog(@"done fetching flags, reload");
             [self reload];
         });
     });
     
-    return cachedFlags;
+    return self.cachedFlags;
 }
 
 - (NSString*)rating {

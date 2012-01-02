@@ -42,6 +42,7 @@
 }
 @property (retain) PlexMediaContainer *relatedMediaContainer;
 @property (retain) PlexMediaObject *selectedMediaObject;
+@property (atomic, retain) NSArray *cachedFlags;
 
 - (id)initWithPlexMediaObject:(PlexMediaObject*)aMediaObject;
 - (void)changeMetadataViewToShowDataForIndex:(int)index;
