@@ -191,11 +191,14 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
 - (void)dealloc {
     DLog(@"!!!!!!! WAS DEALLOCED!");
-    [[ProxyMachineDelegate shared] removeDelegate:self];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     [[MachineManager sharedMachineManager] stopAutoDetection];
     [[MachineManager sharedMachineManager] stopMonitoringMachineState];
+
+    // TODO: on older AppleTV firmware the row below crashes. Something with threads?
+    // not sure if it matters that much since we run removeAllDelegates in the init
+    //[[ProxyMachineDelegate shared] removeDelegate:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     
     self.topShelfController = nil;
     self.currentApplianceCategories = nil;
