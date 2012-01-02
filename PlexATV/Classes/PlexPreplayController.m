@@ -72,6 +72,7 @@ typedef enum {
         listDropShadowControl = [[SMFListDropShadowControl alloc] init];
         [listDropShadowControl setCDelegate:self];
         [listDropShadowControl setCDatasource:self];
+        cachedFlags = nil;
         
         buttonIndex = 0;
     }
@@ -96,6 +97,7 @@ typedef enum {
     self.relatedMediaContainer = nil;
     self.datasource = nil;
     self.delegate = nil;
+    cachedFlags = nil;
 
     [listDropShadowControl release];
     DLog(@"********** PlexPrePlayController is dealloced");
@@ -110,6 +112,7 @@ typedef enum {
         lastFocusedIndex = newIndex;
         shelfCtrl.focusedIndexCompat = (id)newIndex;
         self.selectedMediaObject = [self.relatedMediaContainer.directories objectAtIndex:currentSelectedIndex];
+        cachedFlags = nil;
         //move the shelf if needed to show the new item
         [shelfCtrl _scrollIndexToVisible:currentSelectedIndex];
         //refresh metadata, but don't touch the shelf
@@ -131,6 +134,7 @@ typedef enum {
     self.delegate = nil;
     self.selectedMediaObject = nil;
     self.relatedMediaContainer = nil;
+    cachedFlags = nil;
 
     [listDropShadowControl setCDelegate:nil];
     [listDropShadowControl setCDatasource:nil];
@@ -457,29 +461,52 @@ typedef enum {
 }
 
 - (NSArray*)flags {
-    NSMutableArray *_flags = [NSMutableArray array];
-
-    if ([self.selectedMediaObject.previewAsset starRatingImage])
-        [_flags addObject:[self.selectedMediaObject.previewAsset starRatingImage]];
-
-    NSDictionary *mediaAttributes = self.selectedMediaObject.mediaResource.attributes;
-
-    NSArray *flagAttributes = [NSArray arrayWithObjects:PlexFlagTypeContentVideoResolution, PlexFlagTypeContentVideoCodec, PlexFlagTypeContentAudioCodec, PlexFlagTypeContentAudioChannels, nil];
-    for (PlexFlagTypes attribute in flagAttributes) {
-        if ([mediaAttributes valueForKey:attribute]) {
-            PlexImage *flagImage = [self.selectedMediaObject.mediaContainer flagForType:attribute named:[mediaAttributes valueForKey:attribute]];
-
-            BRImage *img = [self flagImageForUrl:flagImage.imageURL];
-            
-            if (img)
-                [_flags addObject:img];           
-        }
+    if (cachedFlags) {
+        DLog(@"Flags are cached %d", [cachedFlags count]);
+        return cachedFlags;
     }
+    
+    DLog(@"no cached flags, fetching them");
+    cachedFlags = [NSArray array];
+    DLog();
+        
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableArray *_flags = [NSMutableArray array];
+        
+        if ([self.selectedMediaObject.previewAsset starRatingImage])
+            [_flags addObject:[self.selectedMediaObject.previewAsset starRatingImage]];
+        
+        NSDictionary *mediaAttributes = self.selectedMediaObject.mediaResource.attributes;
+        
+        NSArray *flagAttributes = [NSArray arrayWithObjects:PlexFlagTypeContentVideoResolution,
+                                   PlexFlagTypeContentVideoCodec, PlexFlagTypeContentAudioCodec,
+                                   PlexFlagTypeContentAudioChannels, nil];
 
-    if ([self.selectedMediaObject.previewAsset hasClosedCaptioning])
-        [_flags addObject:[[BRThemeInfo sharedTheme] ccBadge]];
+        for (PlexFlagTypes attribute in flagAttributes) {
+            if ([mediaAttributes valueForKey:attribute]) {
+                PlexImage *image = [self.selectedMediaObject.mediaContainer flagForType:attribute named:[mediaAttributes valueForKey:attribute]];
+                if (![image loadImage]) {
+                    DLog(@"Failed to load image %@", [mediaAttributes valueForKey:attribute]);
+                    continue;
+                }
+                BRImage *img = [BRImage imageWithCGImageRef:[image.image CGImage]];
+                if (img) {
+                    [_flags addObject:img];
+                    DLog(@"adding %@", [mediaAttributes valueForKey:attribute]);
+                }
+            }
+        }
+        if ([self.selectedMediaObject.previewAsset hasClosedCaptioning])
+            [_flags addObject:[[BRThemeInfo sharedTheme] ccBadge]];
 
-    return _flags;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            cachedFlags = [NSArray arrayWithArray:_flags];
+            DLog(@"done fetching flags, reload");
+            [self reload];
+        });
+    });
+    
+    return cachedFlags;
 }
 
 - (NSString*)rating {

@@ -38,6 +38,7 @@
     SMFListDropShadowControl *listDropShadowControl; //popup
     PlexMediaShelfView *shelfCtrl;
     NSUInteger buttonIndex;
+    NSArray *cachedFlags;
 }
 @property (retain) PlexMediaContainer *relatedMediaContainer;
 @property (retain) PlexMediaObject *selectedMediaObject;

@@ -105,12 +105,6 @@
     //[_hideList addObject:cdiv2];
     [cdiv2 release];
 
-    /*
-     *  Flags
-     */
-    if (!self.flags) {
-        self.flags = [self.datasource flags];
-    }
 
     BRPanelControl *flagPanel = [[BRPanelControl alloc] init];
     flagPanel.panelMode = 0;
@@ -123,8 +117,10 @@
                                   CGRectGetMinY(cdiv2Frame) - CGRectGetMaxY(cdiv1Frame) );
 
     float maxHeight = 28.f;
-    for (BRImage*flagImage in self.flags) {
+    for (BRImage *flagImage in self.flags) {
         BRImage *image = nil;
+        if (![flagImage isKindOfClass:[BRImage class]])
+            continue;
         CGSize flagSize = [flagImage pixelBounds];
         if (flagSize.height > maxHeight) {
             //if too tall, reduce it so it will fit within the scaled width and maxHeight

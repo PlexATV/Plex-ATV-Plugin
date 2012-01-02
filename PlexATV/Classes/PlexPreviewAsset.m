@@ -198,7 +198,10 @@
 }
 
 - (NSString*)coverArtURL {
-    return [self.coverArtRealURL description];
+    if (self.coverArtRealURL) {
+        return [self.coverArtRealURL description];
+    }
+    return nil;
 }
 
 - (id)dateAcquired {
