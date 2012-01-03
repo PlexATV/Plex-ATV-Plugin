@@ -70,6 +70,11 @@
     self.listTitle = self.rootContainer.name;
     self.items = [self.rootContainer directories];
     self.tabBar = aTabBar;
+    
+    /* hack hacky */
+    [self.rootContainer.parentObject retain];
+    [self.rootContainer.parentObject.mediaContainer retain];
+
     if (self.tabBar) {
         [self.tabBar setAcceptsFocus:NO];
         [self.tabBar setTabControlDelegate:self];
@@ -88,6 +93,8 @@
 
 - (void)dealloc {
     DLog(@"Dealloc of HWPlexDir");
+    [rootContainer.parentObject.mediaContainer release];
+    [rootContainer.parentObject release];
     [playbackItem release];
     [rootContainer release];
     [tabBar release];
@@ -113,7 +120,9 @@
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:NO];
 
     //refresh tab bar in case any items have changed
-    [self reselectCurrentTabBarItem];
+    if (self.tabBar) {
+        [self reselectCurrentTabBarItem];
+    }
     [super wasExhumed];
 }
 
@@ -154,51 +163,53 @@
     int listItemCount = [[(BRListControl*)[self list] datasource] itemCount];
     switch (remoteAction)
     {
-    case kBREventRemoteActionSelectHold: {
-        if([event value] == 1) {
-            //get the index of currently selected row
-            long selected = [self getSelection];
-            [self showModifyViewedStatusViewForRow:selected];
+        case kBREventRemoteActionSelectHold: {
+            if([event value] == 1) {
+                //get the index of currently selected row
+                long selected = [self getSelection];
+                [self showModifyViewedStatusViewForRow:selected];
+            }
+            break;
         }
-        break;
-    }
-    case kBREventRemoteActionSwipeLeft:
-    case kBREventRemoteActionLeft:
-        if([event value] == 1) {
-            [self.tabBar selectPreviousTabItem];
+        case kBREventRemoteActionSwipeLeft:
+        case kBREventRemoteActionLeft:
+            if([event value] == 1) {
+                [self.tabBar selectPreviousTabItem];
+                return YES;
+            }
+            break;
+        case kBREventRemoteActionSwipeRight:
+        case kBREventRemoteActionRight:
+            if([event value] == 1) {
+                DLog();
+                [self.tabBar selectNextTabItem];
+                DLog();
+                return YES;
+            }
+            break;
+        case kBREventRemoteActionPlayPause:
+        case kBREventRemoteActionPlayPause2:
+            if([event value] == 1) {
+                [self playPauseActionForRow:[self getSelection]];
+            }
             return YES;
-        }
-        break;
-    case kBREventRemoteActionSwipeRight:
-    case kBREventRemoteActionRight:
-        if([event value] == 1) {
-            [self.tabBar selectNextTabItem];
-            return YES;
-        }
-        break;
-    case kBREventRemoteActionPlayPause:
-    case kBREventRemoteActionPlayPause2:
-        if([event value] == 1) {
-            [self playPauseActionForRow:[self getSelection]];
-        }
-        return YES;
-        break;
-    case kBREventRemoteActionUp:
-    case kBREventRemoteActionHoldUp:
-        if([self getSelection] == 0 && [event value] == 1)
-        {
-            [self setSelection:listItemCount - 1];
-            return YES;
-        }
-        break;
-    case kBREventRemoteActionDown:
-    case kBREventRemoteActionHoldDown:
-        if([self getSelection] == listItemCount - 1 && [event value] == 1)
-        {
-            [self setSelection:0];
-            return YES;
-        }
-        break;
+            break;
+        case kBREventRemoteActionUp:
+        case kBREventRemoteActionHoldUp:
+            if([self getSelection] == 0 && [event value] == 1)
+            {
+                [self setSelection:listItemCount - 1];
+                return YES;
+            }
+            break;
+        case kBREventRemoteActionDown:
+        case kBREventRemoteActionHoldDown:
+            if([self getSelection] == listItemCount - 1 && [event value] == 1)
+            {
+                [self setSelection:0];
+                return YES;
+            }
+            break;
     }
     return [super brEventAction:event];
 }
@@ -222,22 +233,22 @@
 
     NSArray *allItems = self.rootContainer.directories;
     switch (newTabSelection) {
-    case TabBarCurrentItemsIndex: {
-        [HWUserDefaults setLastTabBarSelection:TabBarCurrentItemsIndex forMachineID:machineID section:sectionKey viewGroup:viewGroup];
-        self.items = allItems;
-        break;
-    }
-    case TabBarUnwatchedItemsIndex: {
-        [HWUserDefaults setLastTabBarSelection:TabBarUnwatchedItemsIndex forMachineID:machineID section:sectionKey viewGroup:viewGroup];
-        NSPredicate *unwatchedItemsPredicate = [NSPredicate predicateWithFormat:@"seenState != %d", PlexMediaObjectSeenStateSeen];
-        self.items = [allItems filteredArrayUsingPredicate:unwatchedItemsPredicate];
-        break;
-    }
-    case TabBarOtherFiltersItemsIndex: {
-        PlexMediaContainer *filters = (PlexMediaContainer*)[item identifier];
-        self.items = filters.directories;
-        break;
-    }
+        case TabBarCurrentItemsIndex: {
+            [HWUserDefaults setLastTabBarSelection:TabBarCurrentItemsIndex forMachineID:machineID section:sectionKey viewGroup:viewGroup];
+            self.items = allItems;
+            break;
+        }
+        case TabBarUnwatchedItemsIndex: {
+            [HWUserDefaults setLastTabBarSelection:TabBarUnwatchedItemsIndex forMachineID:machineID section:sectionKey viewGroup:viewGroup];
+            NSPredicate *unwatchedItemsPredicate = [NSPredicate predicateWithFormat:@"seenState != %d", PlexMediaObjectSeenStateSeen];
+            self.items = [allItems filteredArrayUsingPredicate:unwatchedItemsPredicate];
+            break;
+        }
+        case TabBarOtherFiltersItemsIndex: {
+            PlexMediaContainer *filters = (PlexMediaContainer*)[item identifier];
+            self.items = filters.directories;
+            break;
+        }
     }
     [self.list reload];
 }

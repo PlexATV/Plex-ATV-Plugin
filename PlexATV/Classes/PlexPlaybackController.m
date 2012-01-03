@@ -137,6 +137,43 @@ PlexMediaProvider *__provider = nil;
     return currentPart.mediaURL;
 }
 
+- (BOOL)machineIsExcluded:(Machine *)m
+{
+    NSArray *machinesExcludedFromServerList = [[HWUserDefaults preferences] objectForKey:PreferencesMachinesExcludedFromServerList];
+    if (!m.owned) return YES;
+    if ([machinesExcludedFromServerList containsObject:m.machineID]) return YES;
+    return NO;
+}
+
+- (Machine*)findMachineForTranscoding
+{
+    NSArray *machines = [[MachineManager sharedMachineManager] threadSafeMachines];
+    NSArray *sortedMachines = [machines sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        Machine *m1 = obj1;
+        Machine *m2 = obj2;
+
+        if ((m1.bestConnection.inLocalNetwork == m2.bestConnection.inLocalNetwork) &&
+            ([self machineIsExcluded:m1] == [self machineIsExcluded:m2]))
+            return NSOrderedSame;
+        
+        else if ((m1.bestConnection.inLocalNetwork && ![self machineIsExcluded:m1]) ||
+                 (m1.bestConnection.inLocalNetwork && !m2.bestConnection.inLocalNetwork && 
+                  ![self machineIsExcluded:m1] && [self machineIsExcluded:m2]))
+            return NSOrderedAscending;
+        else
+            return NSOrderedDescending;
+        
+    }];
+    
+    for (Machine *m in sortedMachines) {
+        if (m.owned) {
+            DLog(@"Found machine %@", m);
+            return m;
+        }
+    }
+    
+    return nil;
+}
 
 #pragma mark -
 #pragma mark Playback Methods
@@ -181,9 +218,29 @@ PlexMediaProvider *__provider = nil;
                 [self startPlaying];
                 return;
             } else {
+                /* TODO: display error message */
                 DLog(@"Failed to redirect!");
+                [self popSelfFromStack];
                 return;
             }
+        }
+        
+        if (self.mediaObject.request.machine.isSharedMyPlexMetaMachine &&
+            !self.mediaObject.canPlayWithoutTranscoder) {
+            /* we need a transcoder, let' find one */
+            Machine *m = [self findMachineForTranscoding];
+            if (!m) {
+                /* TODO: display error message */
+                DLog(@"No machine found for transcoding!");
+                [self popSelfFromStack];
+                return;
+            }
+            
+            PlexRequest *request = [[PlexRequest alloc] initWithServer:m.ip onPort:m.port];
+            request.machine = m;
+            
+            [self.currentPart updateRequest:request];
+            [request release];
         }
 
         DLog(@"viewOffset: %@", [self.mediaObject.attributes valueForKey:@"viewOffset"]);
@@ -403,7 +460,8 @@ PlexMediaProvider *__provider = nil;
 }
 
 - (void)movieFinished:(NSNotification*)event {
-    [self.mediaObject markSeen]; //makes sure the item is marked as seen
+    if (self.mediaObject) 
+        [self.mediaObject markSeen]; //makes sure the item is marked as seen
 }
 
 - (void)playerStateChanged:(NSNotification*)event {

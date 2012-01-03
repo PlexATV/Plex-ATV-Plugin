@@ -227,7 +227,8 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
     switch (requestedViewType) {
         case kATVPlexViewTypeList: {
             //only filter and create tab bar if we are navigating plex's built in stuff
-            if ([contents.identifier isEqualToString:@"com.plexapp.plugins.library"]) {
+            if ([contents.identifier isEqualToString:@"com.plexapp.plugins.library"] ||
+                [contents.identifier isEqualToString:@"com.plexapp.plugins.myplex"]) {
                 contents = [self applySkipFilteringOnContainer:contents];
                 tabBar = [self newTabBarForContents:contents];
             }
@@ -325,7 +326,7 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
             //so we only give them the generic "All" and "Unwatched"
             currentlySelectedFilterName = @"All";
         }
-        [i setLabel:currentlySelectedFilterName];
+        [i setLabel:(BRTextControl*)currentlySelectedFilterName];
         [i setIdentifier:TabBarCurrentItemsIdentifier];
         [tabBar addTabItem:i];
         [i release];
@@ -404,7 +405,9 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexNavigationController);
 - (PlexMediaContainer*)applySkipFilteringOnContainer:(PlexMediaContainer*)container {
     PlexMediaContainer *pmc = container;
 
+    DLog();
     if (pmc.sectionRoot && !pmc.requestsMessage) {
+        DLog();
         //open "/library/section/x/all or the first item in the list"
         //bypass the first filter node
 

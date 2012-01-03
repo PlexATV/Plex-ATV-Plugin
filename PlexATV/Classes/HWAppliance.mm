@@ -9,6 +9,9 @@
 #import "PlexNavigationController.h"
 #import "PlexTopShelfController.h"
 #import "PlexTrackingUtil.h"
+#import <plex-oss/MyPlex.h>
+#import <plex-oss/Machine.h>
+#import <plex-oss/MachineMyPlex.h>
 
 #define SERVER_LIST_ID @"hwServerList"
 #define SETTINGS_ID @"hwSettings"
@@ -140,6 +143,9 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
             [navigationController navigateToChannelsForMachine:machineWhoCategoryBelongsTo];
 
         } else {
+            if ([categoryName isEqualToString:@"Queue"]) {
+                categoryName = @"All videos";
+            }
             NSPredicate *categoryPredicate = [NSPredicate predicateWithFormat:@"name == %@ AND key == %@", categoryName, categoryPath];
             NSArray *categories = [[machineWhoCategoryBelongsTo.request rootLevel] directories];
             NSArray *matchingCategories = [categories filteredArrayUsingPredicate:categoryPredicate];
@@ -246,7 +252,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 - (void)rebuildCategories {
     [self.currentApplianceCategories removeAllObjects];
 
-    NSArray *machines = [[MachineManager sharedMachineManager] threadSafeMachines];
+    NSMutableArray *machines = [NSMutableArray arrayWithArray:[[MachineManager sharedMachineManager] threadSafeMachines]];
 
 #if LOCAL_DEBUG_ENABLED
     DLog(@"Reloading categories with machines [%@]", machines);
@@ -290,6 +296,9 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
         //for (PlexMediaObject *pmo in allDirectories) {
         int totalItems = [allDirectories count] + 2; //search + channels
+        if (machine.isSharedMyPlexMetaMachine) {
+            totalItems = 1;
+        }
         for (int i = 0; i < totalItems; i++) {
             NSString *categoryPath = nil;
             NSString *categoryName = nil;
@@ -305,8 +314,17 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
             } else {
                 //add all others
                 PlexMediaObject *pmo = [allDirectories objectAtIndex:i];
-                categoryName = [pmo.name copy];
-                categoryPath = [pmo.key copy];
+                if (machine.isSharedMyPlexMetaMachine) {
+                    if ([pmo.name isEqualToString:@"All videos"]) {
+                        categoryName = @"Queue";
+                        categoryPath = [pmo.key copy];
+                    } else {
+                        continue;
+                    }
+                } else {
+                    categoryName = [pmo.name copy];
+                    categoryPath = [pmo.key copy];
+                }
                 //create topshelf with contents of this plex media container
                 //[self.topShelfController setContentToContainer:[pmo contents]];
                 //[self.topShelfController refresh];
