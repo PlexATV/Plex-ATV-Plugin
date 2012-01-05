@@ -253,6 +253,9 @@
         [machineID release];
         [[HWUserDefaults preferences] setObject:machinesExcludedFromServerList forKey:PreferencesMachinesExcludedFromServerList];
         [self.list reload];
+        
+        /* notify main list */
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"PlexDidChangeServerExcludeList" object:nil];
 
     } else if (selected == ServerRefreshSections) {
         //tell pms to refresh all sections, callback will start/stop spinner

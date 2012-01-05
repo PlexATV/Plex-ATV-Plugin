@@ -79,6 +79,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pauseMachineMonitoring:)name:@"BRStopBackgroundProcessing" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resumeMachineMonitoring:)name:@"BRResumeBackgroundProcessing" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rebuildCategories) name:@"PlexDidChangeServerExcludeList" object:nil];
 
     }
     [self reloadCategories];
@@ -384,10 +385,21 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
 }
 
+-(BOOL)machineInCategories:(Machine *)m {
+    for (BRApplianceCategory *cat in self.currentApplianceCategories) {
+        NSDictionary *identifier = (NSDictionary*)[cat identifier];
+        NSString *mid = [identifier objectForKey:MachineIDKey];
+        if (mid && [mid isEqualToString:[m machineID]]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 #pragma mark -
 #pragma mark Machine Delegate Methods
 - (void)machineWasRemoved:(Machine*)m {
-    if (![self machineIsExcluded:m]) {
+    if ([self machineInCategories:m]) {
         DLog(@"MachineManager: Removed machine [%@], so reload", m);
         [self rebuildCategories];
     }
@@ -405,7 +417,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 }
 
 - (void)machineWasChanged:(Machine*)m {
-    if (m.isOnline && m.canConnect && ![self machineIsExcluded:m]) {
+    if (m.isOnline && m.canConnect && [self machineInCategories:m]) {
         //machine is available
         DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m);
         [self rebuildCategories];
@@ -416,7 +428,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
 - (void)machine:(Machine*)m updatedInfo:(ConnectionInfoType)updateMask {
     
-    if ([self machineIsExcluded:m])
+    if (![self machineInCategories:m])
         return;
     
 #if LOCAL_DEBUG_ENABLED
