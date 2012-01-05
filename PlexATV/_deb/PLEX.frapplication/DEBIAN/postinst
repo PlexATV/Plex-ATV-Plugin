@@ -1,0 +1,2 @@
+#!/bin/bash
+test -f /var/mobile/Media/Photos/seas0nTV.png && rm /var/mobile/Media/Photos/seas0nTV.png
