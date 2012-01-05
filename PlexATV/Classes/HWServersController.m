@@ -56,7 +56,14 @@
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:YES];
     [[ProxyMachineDelegate shared] registerDelegate:self];
     [self.machines removeAllObjects];
-    [self.machines addObjectsFromArray:[[MachineManager sharedMachineManager] threadSafeMachines]];
+    NSArray *allMachines = [[MachineManager sharedMachineManager] threadSafeMachines];
+    /* did I ever tell you that I LOOOOVE blocks */
+    [self.machines addObjectsFromArray:[allMachines objectsAtIndexes:[allMachines indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        Machine *m = (Machine*)obj;
+        if ([m.machineID isEqualToString:@"myPlex"]) return NO;
+        if (m.owned) return YES;
+        return NO;
+    }]]];
     [self.machines sortUsingDescriptors:_machineSortDescriptors];
     [self.list reload];
     [super wasPushed];
@@ -185,15 +192,22 @@
 #if LOCAL_DEBUG_ENABLED
     DLog(@"MachineManager: Removed machine %@", m);
 #endif
-    [self.machines removeObject:m];
-    [self.machines sortUsingDescriptors:_machineSortDescriptors];
-    [self.list reload];
+    if ([self.machines containsObject:m]) {
+        [self.machines removeObject:m];
+        [self.machines sortUsingDescriptors:_machineSortDescriptors];
+        [self.list reload];
+    }
 }
 
 - (void)machineWasAdded:(Machine*)m {
 #if LOCAL_DEBUG_ENABLED
     DLog(@"MachineManager: Added machine %@", m);
 #endif
+    
+    /* skip to add myPlex or servers we don't own */
+    if ([m.machineID isEqualToString:@"myPlex"] || !m.owned)
+        return;
+    
     [self.machines addObject:m];
     [self.machines sortUsingDescriptors:_machineSortDescriptors];
     [self.list reload];
