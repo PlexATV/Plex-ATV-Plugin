@@ -55,7 +55,7 @@ PlexMediaProvider *__provider = nil;
 #define kEndTrackingProgressPercentageCompleted 0.95f
 
 @implementation PlexPlaybackController
-@synthesize mediaObject, playProgressTimer, currentPart, currentPartIndex;
+@synthesize mediaObject, playProgressTimer, currentPart, currentPartIndex, mediaObjectBeforeRedirection;
 
 
 #pragma mark -
@@ -67,6 +67,7 @@ PlexMediaProvider *__provider = nil;
         self.mediaObject = aMediaObject;
         self.currentPartIndex = 0;
         self.currentPart = nil;
+        self.mediaObjectBeforeRedirection = nil;
         userCancel = NO;
         useDirectPlay = YES; /* get this from prefs later */
     }
@@ -81,6 +82,7 @@ PlexMediaProvider *__provider = nil;
     self.currentPart = nil;
     [self.playProgressTimer invalidate];
     self.playProgressTimer = nil;
+    self.mediaObjectBeforeRedirection = nil;
     [super dealloc];
 }
 
@@ -211,6 +213,7 @@ PlexMediaProvider *__provider = nil;
                         obj.mediaResource.canPlayWithoutTranscoder = YES;
                     }
                 }
+                self.mediaObjectBeforeRedirection = self.mediaObject;
                 self.mediaObject = obj;
                 self.currentPart = nil;
                 
@@ -319,10 +322,16 @@ PlexMediaProvider *__provider = nil;
     }
 
     BRBaseMediaAsset *pma = nil;
+    
+    /* we want to create a asset on the mediaObject that actually contains any information */
+    PlexMediaObject *obj = self.mediaObject;
+    if (self.mediaObjectBeforeRedirection) {
+        obj = self.mediaObjectBeforeRedirection;
+    }
     if ([[[UIDevice currentDevice] systemVersion] isEqualToString:@"4.1"]) {
-        pma = [[PlexMediaAssetOld alloc] initWithURL:mediaURL mediaProvider:nil mediaObject:self.mediaObject];
+        pma = [[PlexMediaAssetOld alloc] initWithURL:mediaURL mediaProvider:nil mediaObject:obj];
     } else {
-        pma = [[PlexMediaAsset alloc] initWithURL:mediaURL mediaProvider:nil mediaObject:self.mediaObject];
+        pma = [[PlexMediaAsset alloc] initWithURL:mediaURL mediaProvider:nil mediaObject:obj];
     }
 
     BRMediaPlayerManager *mgm = [BRMediaPlayerManager singleton];
@@ -463,6 +472,8 @@ PlexMediaProvider *__provider = nil;
     DLog(@"Movie did finish!");
     if (self.mediaObject) 
         [self.mediaObject markSeen]; //makes sure the item is marked as seen
+    if (self.mediaObjectBeforeRedirection)
+        [self.mediaObjectBeforeRedirection markSeen];
 }
 
 - (void)playerStateChanged:(NSNotification*)event {

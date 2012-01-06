@@ -34,6 +34,7 @@
     BOOL didUseTranscoder;
 }
 @property (retain) PlexMediaObject *mediaObject;
+@property (retain) PlexMediaObject *mediaObjectBeforeRedirection;
 
 @property (retain) PlexMediaPart *currentPart;
 @property (assign) NSUInteger currentPartIndex;
