@@ -42,6 +42,7 @@
 #import "PlexNavigationController.h"
 #import "PlexThemeMusicPlayer.h"
 #import "PlexTrackingUtil.h"
+#import "PlexMachineUtils.h"
 
 #define LOCAL_DEBUG_ENABLED 1
 
@@ -139,43 +140,6 @@ PlexMediaProvider *__provider = nil;
     return currentPart.mediaURL;
 }
 
-- (BOOL)machineIsExcluded:(Machine *)m
-{
-    NSArray *machinesExcludedFromServerList = [[HWUserDefaults preferences] objectForKey:PreferencesMachinesExcludedFromServerList];
-    if (!m.owned) return YES;
-    if ([machinesExcludedFromServerList containsObject:m.machineID]) return YES;
-    return NO;
-}
-
-- (Machine*)findMachineForTranscoding
-{
-    NSArray *machines = [[MachineManager sharedMachineManager] threadSafeMachines];
-    NSArray *sortedMachines = [machines sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        Machine *m1 = obj1;
-        Machine *m2 = obj2;
-
-        if ((m1.bestConnection.inLocalNetwork == m2.bestConnection.inLocalNetwork) &&
-            ([self machineIsExcluded:m1] == [self machineIsExcluded:m2]))
-            return NSOrderedSame;
-        
-        else if ((m1.bestConnection.inLocalNetwork && ![self machineIsExcluded:m1]) ||
-                 (m1.bestConnection.inLocalNetwork && !m2.bestConnection.inLocalNetwork && 
-                  ![self machineIsExcluded:m1] && [self machineIsExcluded:m2]))
-            return NSOrderedAscending;
-        else
-            return NSOrderedDescending;
-        
-    }];
-    
-    for (Machine *m in sortedMachines) {
-        if (m.owned) {
-            DLog(@"Found machine %@", m);
-            return m;
-        }
-    }
-    
-    return nil;
-}
 
 #pragma mark -
 #pragma mark Playback Methods
@@ -231,7 +195,7 @@ PlexMediaProvider *__provider = nil;
         if (self.mediaObject.request.machine.isSharedMyPlexMetaMachine &&
             !self.mediaObject.canPlayWithoutTranscoder) {
             /* we need a transcoder, let' find one */
-            Machine *m = [self findMachineForTranscoding];
+            Machine *m = [PlexMachineUtils findHighPrioLocalMachine];
             if (!m) {
                 /* TODO: display error message */
                 DLog(@"No machine found for transcoding!");
