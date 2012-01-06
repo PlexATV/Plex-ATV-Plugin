@@ -31,6 +31,7 @@
 #import <plex-oss/PlexMediaObject.h>
 #import <plex-oss/PlexMediaContainer.h>
 #import <plex-oss/PlexRequest.h>
+#import <plex-oss/PlexMedia.h>
 #import <plex-oss/Machine.h>
 #import <plex-oss/PlexImage.h>
 #import <ambertation-plex/Ambertation.h>
@@ -147,8 +148,7 @@
 }
 
 - (BOOL)closedCaptioned {
-    //TODO: return correct value
-    return NO;
+    return [self.pmo.mediaResource haveSubtitles];
 }
 
 - (id)collections {
@@ -655,7 +655,7 @@
 }
 
 - (BOOL)hasClosedCaptioning {
-    return YES;
+    return [self.pmo.mediaResource haveSubtitles];
 }
 
 - (BOOL)hasDolbyDigitalAudioTrack {
