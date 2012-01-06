@@ -153,7 +153,6 @@
     NSString *name = [NSString stringWithFormat:@"%@", m.serverName, m];
     [result setText:name withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
     [result addAccessoryOfPlexType:m.hostName ? kPlexAccessoryTypeComputer : kPlexAccessoryTypeNone];
-    [result setDetailedText:m.owner withAttributes:nil];
 
 
     return [result autorelease];

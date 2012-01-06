@@ -52,5 +52,6 @@
 @property (readonly) BRImage *starRatingImage;
 @property (readonly) NSArray *writers;
 @property (readonly) NSString *year;
+@property (readonly) id seasonCoverImageProxy;
 
 @end

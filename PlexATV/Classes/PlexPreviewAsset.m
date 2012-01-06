@@ -287,6 +287,16 @@
     return aImageProxy;
 }
 
+- (id)seasonCoverImageProxy {
+    NSURLRequest *request = [pmo.request urlRequestWithAuthenticationHeadersForURL:self.seasonCoverArtRealURL];
+    
+    NSDictionary *headerFields = [request allHTTPHeaderFields];
+    BRURLImageProxy *aImageProxy = [BRURLImageProxy proxyWithURL:[request URL] headerFields:headerFields];
+    aImageProxy.writeToDisk = YES;
+    aImageProxy.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+    return aImageProxy;    
+}
+
 - (id)imageProxyWithBookMarkTimeInMS:(unsigned int)fp8 {
     return self.imageProxy;
 }
@@ -620,6 +630,8 @@
     PlexImage *image = nil;
     if (pmo.parentObject.thumb.hasImage) {
         image = pmo.parentObject.thumb;
+    } else if (pmo.parentThumb.hasImage) {
+        image = pmo.parentThumb;
     } else {
         image = pmo.thumb;
     }

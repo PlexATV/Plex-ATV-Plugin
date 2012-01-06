@@ -9,9 +9,10 @@
 #import <plex-oss/PlexClientCapabilities.h>
 #import <plex-oss/PlexStreamingQuality.h>
 #import <plex-oss/PlexRequest + Security.h>
+#import <plex-oss/PlexMediaObject.h>
+#import <plex-oss/PlexMediaContainer.h>
 #import "Constants.h"
 #import "gitversion.h"
-
 
 @implementation HWUserDefaults
 #pragma mark -
@@ -181,6 +182,9 @@
             [NSNumber numberWithInt:0], PreferencesSecurityPasscode,
             [NSDictionary dictionary], PersistedTabBarLastSelections,
             [NSNumber numberWithBool:YES], PreferencesAllowTracking,
+            [NSNumber numberWithInt:0], PreferencesViewTopShelfSourceFilter,
+            nil, PreferencesViewTopShelfSourceMachine,
+            nil, PreferencesViewTopShelfSourceSection,
             nil];
 }
 

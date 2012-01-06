@@ -13,14 +13,13 @@
     BRTopShelfView *topShelfView;
     BRMediaShelfView *shelfView;
     int shelfItemCount;
+    NSTimer *refreshTimer;
 }
 @property (copy) NSString *containerName;
-@property (retain) PlexMediaContainer *onDeckMediaContainer;
-@property (retain) PlexMediaContainer *recentlyAddedMediaContainer;
+@property (retain) PlexMediaContainer *mediaContainer;
 
 - (void)selectCategoryWithIdentifier:(id)identifier;
 - (id)topShelfView;
 - (void)refresh;
 
-- (void)setContentToContainer:(PlexMediaContainer*)aMediaContainer;
 @end

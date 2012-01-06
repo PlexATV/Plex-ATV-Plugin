@@ -131,9 +131,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
         // ====== find the category selected ======
         if ([categoryName isEqualToString:@"Refresh"]) {
-            self.topShelfController.onDeckMediaContainer = nil;
-            self.topShelfController.recentlyAddedMediaContainer = nil;
-            [self.topShelfController refresh];
             [self rebuildCategories];
 
         } else if ([categoryName isEqualToString:@"Search"]) {
@@ -285,9 +282,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         DLog(@"Adding categories for machine [%@]", machine);
 #endif
 
-        [self.topShelfController setContentToContainer:machine.recentlyAddedMedia];
-        [self.topShelfController refresh];
-
 
         //================== add all it's categories to our appliances list ==================
         //not using machine.request.rootLevel.directories because it might not work,
@@ -328,9 +322,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
                     categoryName = [pmo.name copy];
                     categoryPath = [pmo.key copy];
                 }
-                //create topshelf with contents of this plex media container
-                //[self.topShelfController setContentToContainer:[pmo contents]];
-                //[self.topShelfController refresh];
             }
 
 #if LOCAL_DEBUG_ENABLED
@@ -393,11 +384,9 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         NSDictionary *identifier = (NSDictionary*)[cat identifier];
         NSString *mid = [identifier objectForKey:MachineIDKey];
         if (mid && [mid isEqualToString:[m machineID]]) {
-            DLog(@"Found machine in categories: %@", m);
             return YES;
         }
     }
-    DLog(@"machine %@ was not found", m);
     return NO;
 }
 
@@ -405,17 +394,17 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 #pragma mark Machine Delegate Methods
 - (void)machineWasRemoved:(Machine*)m {
     if ([self machineInCategories:m]) {
-        DLog(@"MachineManager: Removed machine [%@], so reload", m);
+        //DLog(@"MachineManager: Removed machine [%@], so reload", m);
         [self rebuildCategories];
     }
 }
 
 - (void)machineWasAdded:(Machine*)m {
-    DLog(@"MachineManager: Added machine [%@]", m);
+    //DLog(@"MachineManager: Added machine [%@]", m);
     BOOL machineIsOnlineAndConnectable = m.isComplete;
 
     if (machineIsOnlineAndConnectable && ![self machineIsExcluded:m]) {
-        DLog(@"MachineManager: Reload machines as machine [%@] was added", m);
+//        DLog(@"MachineManager: Reload machines as machine [%@] was added", m);
         [self rebuildCategories];
 
     }
@@ -424,7 +413,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 - (void)machineWasChanged:(Machine*)m {
     if (m.isOnline && m.canConnect && [self machineInCategories:m]) {
         //machine is available
-        DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m);
+//        DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m);
         [self rebuildCategories];
     } else {
         //machine is not available

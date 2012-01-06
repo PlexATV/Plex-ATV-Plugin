@@ -8,8 +8,13 @@
 	#import <plex-oss/Preferences.h>
 	#import "ProxyMachineDelegate.h"
     #import "PlexCompatibility.h"
+    
+    /* categories */
     #import "BRMenuItem+PlexAccessory.h"
     #import "NSString+ZeroLength.h"
+    #import "NSArray+ObjectFilter.h"
+
+    /* global version number */
     #define kPlexPluginVersion @"0.10.0"
 #endif
 

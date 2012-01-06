@@ -16,9 +16,13 @@
 #import "PlexViewSettingsController.h"
 #import "HWUserDefaults.h"
 #import "Constants.h"
+#import "PlexCommonUtils.h"
+
+#import <plex-oss/Machine.h>
+#import <plex-oss/PlexMediaContainer.h>
 
 @implementation PlexViewSettingsController
-@synthesize viewTypesDescription;
+@synthesize viewTypesDescription, topShelfFilters;
 
 //----------- general -----------
 #define ViewTypeForMoviesIndex              0
@@ -30,6 +34,10 @@
 //----------- detailed metadata -----------
 #define ViewPreplayFanartEnabledIndex       5
 #define ViewHideSummaryOnUnseen             6
+//----------- top shelf ------------
+#define ViewTopShelfMachine                 7
+#define ViewTopShelfSection                 8
+#define ViewTopShelfFilter                  9
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
@@ -39,17 +47,21 @@
         [self setListTitle:@"Plex View Settings"];
 
         self.viewTypesDescription = [NSArray arrayWithObjects:@"List", @"Grid", @"Bookcase", nil];
+        self.topShelfFilters = [NSArray arrayWithObjects:@"Recently added", @"On deck", nil];
 
         [self setupList];
         [[self list] addDividerAtIndex:0 withLabel:@"General"];
         [[self list] addDividerAtIndex:4 withLabel:@"List"];
         [[self list] addDividerAtIndex:5 withLabel:@"Preplay"];
+        [[self list] addDividerAtIndex:7 withLabel:@"Top shelf"];
+        
     }
     return self;
 }
 
 - (void)dealloc {
     self.viewTypesDescription = nil;
+    self.topShelfFilters = nil;
     [super dealloc];
 }
 
@@ -143,76 +155,176 @@
     NSString *summary = [[HWUserDefaults preferences] boolForKey:PreferencesViewHiddenSummary] ? @"Enabled" : @"Disabled";
     [hiddenSummary setRightText:summary];
     [_items addObject:hiddenSummary];
+
+    // =========== Top Shelf ===========
+    // =========== Source Machine ===========
+    SMFMenuItem *sourceMachine = [SMFMenuItem menuItem];
+    [sourceMachine setTitle:@"Select Plex Media Server"];
+    NSString *sourceMachineID = [[HWUserDefaults preferences] stringForKey:PreferencesViewTopShelfSourceMachine];
+    
+    Machine *m = nil;
+    if (!sourceMachineID || sourceMachineID.isZeroLength) {
+        m = [PlexCommonUtils findHighPrioLocalMachineWithSections:YES];
+    } else {
+        m = [[MachineManager sharedMachineManager] machineForMachineID:sourceMachineID];
+    }
+
+    if (m) {
+        [[HWUserDefaults preferences] setObject:m.machineID forKey:PreferencesViewTopShelfSourceMachine];
+        [sourceMachine setRightText:m.serverName];
+    } else {
+        [sourceMachine setRightText:@"No nearby servers"];
+    }
+    
+    [_items addObject:sourceMachine];
+
+    // =========== Top Shelf ===========
+    // =========== Source Section ===========
+    SMFMenuItem *sourceSectionItem = [SMFMenuItem menuItem];
+    [sourceSectionItem setTitle:@"Select Section"];
+    NSString *sectionKey = [[HWUserDefaults preferences] stringForKey:PreferencesViewTopShelfSourceSection];
+    
+    PlexMediaObject *pmo = [m.librarySections findObjectWithKey:sectionKey];
+    if (!pmo) {
+        pmo = [m.librarySections.directories objectAtIndex:0];
+    }
+    
+    if (!sectionKey || sectionKey.isZeroLength) {
+        [[HWUserDefaults preferences] setObject:pmo.key forKey:PreferencesViewTopShelfSourceSection];
+    }
+        
+    [sourceSectionItem setRightText:pmo.name];
+    [_items addObject:sourceSectionItem];
+
+    // =========== Top Shelf ===========
+    // =========== Source Filter ===========
+    SMFMenuItem *sourceFilterItem = [SMFMenuItem menuItem];
+    [sourceFilterItem setTitle:@"Select Filter"];
+    NSInteger idx = [[HWUserDefaults preferences] integerForKey:PreferencesViewTopShelfSourceFilter];
+    DLog(@"filter index = %d", idx);
+    
+    NSString *filterName = [self.topShelfFilters objectAtIndex:idx];
+    DLog(@"filtername = %@", filterName);
+    [sourceFilterItem setRightText:filterName];
+    [_items addObject:sourceFilterItem];
+
 }
 
 #pragma mark -
 #pragma mark List Delegate Methods
 - (void)itemSelected:(long)selected {
+    BOOL refreshTopShelf = NO;
     switch (selected) {
-    case ViewTypeForMoviesIndex: {
-        NSInteger viewTypeNumber = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForMovies];
-        viewTypeNumber++;
-        if (viewTypeNumber >= 2) {
-            viewTypeNumber = 0;
+        case ViewTypeForMoviesIndex: {
+            NSInteger viewTypeNumber = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForMovies];
+            viewTypeNumber++;
+            if (viewTypeNumber >= 2) {
+                viewTypeNumber = 0;
+            }
+            [[HWUserDefaults preferences] setInteger:viewTypeNumber forKey:PreferencesViewTypeForMovies];
+            
+            [self setupList];
+            [self.list reload];
+            break;
         }
-        [[HWUserDefaults preferences] setInteger:viewTypeNumber forKey:PreferencesViewTypeForMovies];
-
-        [self setupList];
-        [self.list reload];
-        break;
-    }
-    case ViewTypeForTvShowsIndex: {
-        NSInteger viewTypeNumber = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForTvShows];
-        viewTypeNumber++;
-        if (viewTypeNumber >= FINAL_kATVPlexViewTypeBookcase_MAX) {
-            viewTypeNumber = 0;
+        case ViewTypeForTvShowsIndex: {
+            NSInteger viewTypeNumber = [[HWUserDefaults preferences] integerForKey:PreferencesViewTypeForTvShows];
+            viewTypeNumber++;
+            if (viewTypeNumber >= FINAL_kATVPlexViewTypeBookcase_MAX) {
+                viewTypeNumber = 0;
+            }
+            [[HWUserDefaults preferences] setInteger:viewTypeNumber forKey:PreferencesViewTypeForTvShows];
+            
+            [self setupList];
+            [self.list reload];
+            break;
         }
-        [[HWUserDefaults preferences] setInteger:viewTypeNumber forKey:PreferencesViewTypeForTvShows];
+        case ViewThemeMusicEnabledIndex: {
+            BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewThemeMusicEnabled];
+            [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewThemeMusicEnabled];
+            [self setupList];
+            [self.list reload];
+            break;
+        }
+        case ViewThemeMusicLoopEnabledIndex: {
+            BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewThemeMusicLoopEnabled];
+            [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewThemeMusicLoopEnabled];
+            [self setupList];
+            [self.list reload];
+            break;
+        }
+            //--------------------- seperator ---------------------
+        case ViewListPosterZoomingEnabledIndex: {
+            BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewListPosterZoomingEnabled];
+            [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewListPosterZoomingEnabled];
+            [self setupList];
+            [self.list reload];
+            break;
+        }
+            //--------------------- seperator ---------------------
+        case ViewPreplayFanartEnabledIndex: {
+            BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewPreplayFanartEnabled];
+            [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewPreplayFanartEnabled];
+            [self setupList];
+            [self.list reload];
+            break;
+        }
+            //--------------------- seperator ---------------------
+        case ViewHideSummaryOnUnseen: {
+            BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewHiddenSummary];
+            [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewHiddenSummary];
+            [self setupList];
+            [self.list reload];
+            break;
+        }
+            //--------------------- seperator ---------------------
+        case ViewTopShelfMachine: {
+            NSArray *allMachines = [PlexCommonUtils allMachinesIOwnWithSections];
+            NSString *machineID = [[HWUserDefaults preferences] stringForKey:PreferencesViewTopShelfSourceMachine];
+            NSInteger idx = [allMachines indexOfObject:[[MachineManager sharedMachineManager] machineForMachineID:machineID]];
+            idx ++;
+            if (idx >= [allMachines count])
+                idx = 0;
+            [[HWUserDefaults preferences] setObject:((Machine*)[allMachines objectAtIndex:idx]).machineID forKey:PreferencesViewTopShelfSourceMachine];
+            [self setupList];
+            [self.list reload];
+            refreshTopShelf = YES;
+            break;
+        }
+        case ViewTopShelfSection: {
+            Machine *m = [[MachineManager sharedMachineManager] machineForMachineID:[[HWUserDefaults preferences] stringForKey:PreferencesViewTopShelfSourceMachine]];
+            NSArray *allSections = [PlexCommonUtils allMovieAndTVSections:m.librarySections];
+            NSString *sectionKey = [[HWUserDefaults preferences] stringForKey:PreferencesViewTopShelfSourceSection];
+            PlexMediaObject *pmo = [m.librarySections findObjectWithKey:sectionKey];
+            NSInteger idx = [allSections indexOfObject:pmo];
+            idx ++;
+            if (idx >= [allSections count])
+                idx = 0;
+            [[HWUserDefaults preferences] setObject:((PlexMediaObject*)[allSections objectAtIndex:idx]).key forKey:PreferencesViewTopShelfSourceSection];
+            [self setupList];
+            [self.list reload];
+            refreshTopShelf = YES;
+            break;
+        }
+        case ViewTopShelfFilter: {
+            NSInteger idx = [[HWUserDefaults preferences] integerForKey:PreferencesViewTopShelfSourceFilter];
+            idx ++;
+            if (idx >= [self.topShelfFilters count])
+                idx = 0;
+            [[HWUserDefaults preferences] setInteger:idx forKey:PreferencesViewTopShelfSourceFilter];
+            [self setupList];
+            [self.list reload];
+            refreshTopShelf = YES;
+            break;
+        }
 
-        [self setupList];
-        [self.list reload];
-        break;
+            
+        default:
+            break;
     }
-    case ViewThemeMusicEnabledIndex: {
-        BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewThemeMusicEnabled];
-        [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewThemeMusicEnabled];
-        [self setupList];
-        [self.list reload];
-        break;
-    }
-    case ViewThemeMusicLoopEnabledIndex: {
-        BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewThemeMusicLoopEnabled];
-        [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewThemeMusicLoopEnabled];
-        [self setupList];
-        [self.list reload];
-        break;
-    }
-    //--------------------- seperator ---------------------
-    case ViewListPosterZoomingEnabledIndex: {
-        BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewListPosterZoomingEnabled];
-        [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewListPosterZoomingEnabled];
-        [self setupList];
-        [self.list reload];
-        break;
-    }
-    //--------------------- seperator ---------------------
-    case ViewPreplayFanartEnabledIndex: {
-        BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewPreplayFanartEnabled];
-        [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewPreplayFanartEnabled];
-        [self setupList];
-        [self.list reload];
-        break;
-    }
-    //--------------------- seperator ---------------------
-    case ViewHideSummaryOnUnseen: {
-        BOOL isTurnedOn = [[HWUserDefaults preferences] boolForKey:PreferencesViewHiddenSummary];
-        [[HWUserDefaults preferences] setBool:!isTurnedOn forKey:PreferencesViewHiddenSummary];
-        [self setupList];
-        [self.list reload];
-        break;
-    }
-    default:
-        break;
+    if (refreshTopShelf) {
+        DLog();
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"PlexTopShelfRefresh" object:nil];
     }
 }
 

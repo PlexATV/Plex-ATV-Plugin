@@ -16,6 +16,7 @@
 
 @interface PlexViewSettingsController : SMFMediaMenuController {}
 @property (retain) NSArray *viewTypesDescription;
+@property (retain) NSArray *topShelfFilters;
 - (void)setupList;
 
 @end

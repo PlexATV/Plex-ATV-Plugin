@@ -12,6 +12,10 @@
 #define PreferencesViewListPosterZoomingEnabled @"PreferencesViewListPosterZoomingEnabled"
 #define PreferencesViewPreplayFanartEnabled @"PreferencesViewPreplayFanartEnabled"
 #define PreferencesViewHiddenSummary @"PreferencesViewHiddenSummary"
+#define PreferencesViewTopShelfSourceMachine @"PreferencesViewTopShelfSourceMachine"
+#define PreferencesViewTopShelfSourceSection @"PreferencesViewTopShelfSourceSection"
+#define PreferencesViewTopShelfSourceFilter @"PreferencesViewTopShelfSourceFilter"
+
 
 #define PreferencesPlaybackAudioAC3Enabled @"PreferencesPlaybackAudioAC3Enabled"
 #define PreferencesPlaybackAudioDTSEnabled @"PreferencesPlaybackAudioDTSEnabled"
@@ -22,7 +26,6 @@
 #define PreferencesSecuritySettingsLockEnabled @"PreferencesSecuritySettingsLockEnabled"
 #define PreferencesSecurityPasscode @"PreferencesSecurityPasscode"
 #define PreferencesAllowTracking @"PreferencesAllowTracking"
-
 
 
 #define PersistedTabBarLastSelections @"PersistedTabBarLastSelections"

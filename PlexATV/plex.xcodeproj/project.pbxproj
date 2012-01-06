@@ -52,9 +52,10 @@
 		01A0F59D127228CC007A60B5 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A0F59C127228CC007A60B5 /* libz.dylib */; };
 		611021F21499023E0045B431 /* libPLEX-OSS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 611021EE149900FB0045B431 /* libPLEX-OSS.a */; };
 		6110222C149924C50045B431 /* PlexMyPlexSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6110222B149924C50045B431 /* PlexMyPlexSettingsController.m */; };
-		6132854514B7351300CABC86 /* PlexMachineUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 6132854414B7351300CABC86 /* PlexMachineUtils.m */; };
+		6132854514B7351300CABC86 /* PlexCommonUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 6132854414B7351300CABC86 /* PlexCommonUtils.m */; };
 		61861A771479255C0073958E /* PlexMediaShelfView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6124E32914018274001D5F8D /* PlexMediaShelfView.m */; };
 		61A01EDC14AA667B006DF829 /* BRMenuItem+PlexAccessory.m in Sources */ = {isa = PBXBuildFile; fileRef = 61A01EDB14AA667B006DF829 /* BRMenuItem+PlexAccessory.m */; };
+		61AD9E4B14B78B2F00C66486 /* NSArray+ObjectFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AD9E4A14B78B2F00C66486 /* NSArray+ObjectFilter.m */; };
 		61BA974014ACD6D200FB8E01 /* MyPlexLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 61BA973F14ACD6D200FB8E01 /* MyPlexLogo.png */; };
 		61BA974814ADC14600FB8E01 /* PlexTrackingUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 61BA974714ADC14500FB8E01 /* PlexTrackingUtil.m */; };
 		61E8420D14ABBB140000707A /* NSString+ZeroLength.m in Sources */ = {isa = PBXBuildFile; fileRef = 61E8420C14ABBB140000707A /* NSString+ZeroLength.m */; };
@@ -190,10 +191,12 @@
 		6110222B149924C50045B431 /* PlexMyPlexSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexMyPlexSettingsController.m; path = Classes/PlexMyPlexSettingsController.m; sourceTree = "<group>"; };
 		6124E32814018273001D5F8D /* PlexMediaShelfView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexMediaShelfView.h; path = Classes/PlexMediaShelfView.h; sourceTree = "<group>"; };
 		6124E32914018274001D5F8D /* PlexMediaShelfView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexMediaShelfView.m; path = Classes/PlexMediaShelfView.m; sourceTree = "<group>"; };
-		6132854314B7351300CABC86 /* PlexMachineUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexMachineUtils.h; path = Classes/PlexMachineUtils.h; sourceTree = "<group>"; };
-		6132854414B7351300CABC86 /* PlexMachineUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexMachineUtils.m; path = Classes/PlexMachineUtils.m; sourceTree = "<group>"; };
+		6132854314B7351300CABC86 /* PlexCommonUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexCommonUtils.h; path = Classes/PlexCommonUtils.h; sourceTree = "<group>"; };
+		6132854414B7351300CABC86 /* PlexCommonUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexCommonUtils.m; path = Classes/PlexCommonUtils.m; sourceTree = "<group>"; };
 		61A01EDA14AA667B006DF829 /* BRMenuItem+PlexAccessory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "BRMenuItem+PlexAccessory.h"; path = "Classes/BRMenuItem+PlexAccessory.h"; sourceTree = "<group>"; };
 		61A01EDB14AA667B006DF829 /* BRMenuItem+PlexAccessory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "BRMenuItem+PlexAccessory.m"; path = "Classes/BRMenuItem+PlexAccessory.m"; sourceTree = "<group>"; };
+		61AD9E4914B78B2F00C66486 /* NSArray+ObjectFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; name = "NSArray+ObjectFilter.h"; path = "Classes/NSArray+ObjectFilter.h"; sourceTree = "<group>"; };
+		61AD9E4A14B78B2F00C66486 /* NSArray+ObjectFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSArray+ObjectFilter.m"; path = "Classes/NSArray+ObjectFilter.m"; sourceTree = "<group>"; };
 		61BA973F14ACD6D200FB8E01 /* MyPlexLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MyPlexLogo.png; path = Resources/MyPlexLogo.png; sourceTree = "<group>"; };
 		61BA974614ADC14500FB8E01 /* PlexTrackingUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlexTrackingUtil.h; path = Classes/PlexTrackingUtil.h; sourceTree = "<group>"; };
 		61BA974714ADC14500FB8E01 /* PlexTrackingUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlexTrackingUtil.m; path = Classes/PlexTrackingUtil.m; sourceTree = "<group>"; };
@@ -462,8 +465,10 @@
 				61E8420C14ABBB140000707A /* NSString+ZeroLength.m */,
 				61BA974614ADC14500FB8E01 /* PlexTrackingUtil.h */,
 				61BA974714ADC14500FB8E01 /* PlexTrackingUtil.m */,
-				6132854314B7351300CABC86 /* PlexMachineUtils.h */,
-				6132854414B7351300CABC86 /* PlexMachineUtils.m */,
+				6132854314B7351300CABC86 /* PlexCommonUtils.h */,
+				6132854414B7351300CABC86 /* PlexCommonUtils.m */,
+				61AD9E4914B78B2F00C66486 /* NSArray+ObjectFilter.h */,
+				61AD9E4A14B78B2F00C66486 /* NSArray+ObjectFilter.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -783,7 +788,8 @@
 				61A01EDC14AA667B006DF829 /* BRMenuItem+PlexAccessory.m in Sources */,
 				61E8420D14ABBB140000707A /* NSString+ZeroLength.m in Sources */,
 				61BA974814ADC14600FB8E01 /* PlexTrackingUtil.m in Sources */,
-				6132854514B7351300CABC86 /* PlexMachineUtils.m in Sources */,
+				6132854514B7351300CABC86 /* PlexCommonUtils.m in Sources */,
+				61AD9E4B14B78B2F00C66486 /* NSArray+ObjectFilter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

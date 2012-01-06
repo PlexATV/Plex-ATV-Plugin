@@ -42,7 +42,7 @@
 #import "PlexNavigationController.h"
 #import "PlexThemeMusicPlayer.h"
 #import "PlexTrackingUtil.h"
-#import "PlexMachineUtils.h"
+#import "PlexCommonUtils.h"
 
 #define LOCAL_DEBUG_ENABLED 1
 
@@ -195,7 +195,7 @@ PlexMediaProvider *__provider = nil;
         if (self.mediaObject.request.machine.isSharedMyPlexMetaMachine &&
             !self.mediaObject.canPlayWithoutTranscoder) {
             /* we need a transcoder, let' find one */
-            Machine *m = [PlexMachineUtils findHighPrioLocalMachine];
+            Machine *m = [PlexCommonUtils findHighPrioLocalMachineWithSections:NO];
             if (!m) {
                 /* TODO: display error message */
                 DLog(@"No machine found for transcoding!");
