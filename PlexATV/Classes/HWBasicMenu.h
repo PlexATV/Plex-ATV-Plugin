@@ -2,7 +2,8 @@
 #import <plex-oss/MachineManager.h>
 @interface HWBasicMenu : BRMediaMenuController<MachineManagerDelegate> {
 
-    NSMutableArray          *_names;
+    NSMutableArray          *_ownServer;
+    NSMutableArray          *_sharedServers;
 
 }
 //list provider
@@ -13,4 +14,6 @@
 - (id)titleForRow:(long)row;
 - (void)setNeedsUpdate;
 
+
+@property (readonly) NSArray *combinedServers;
 @end

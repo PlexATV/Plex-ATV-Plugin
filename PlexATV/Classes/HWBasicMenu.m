@@ -23,7 +23,8 @@
 
         [self setListIcon:sp horizontalOffset:0.0 kerningFactor:0.15];
 
-        _names = [[NSMutableArray alloc] init];
+        _ownServer = [[NSMutableArray alloc] init];
+        _sharedServers = [[NSMutableArray alloc] init];
 
         //start the auto detection
         [[self list] setDatasource:self];
@@ -33,26 +34,53 @@
 
 - (void)dealloc {
     //DLog(@"--- %@ %s", self, _cmd);
-    [_names release];
+    [_ownServer release];
+    [_sharedServers release];
 
     [super dealloc];
 }
 
+- (void)updateDivider
+{
+    [self.list removeDividers];
+    [self.list addDividerAtIndex:0 withLabel:@"Your servers"];
+    if ([_sharedServers count] > 0) 
+        [self.list addDividerAtIndex:[_ownServer count] withLabel:@"Shared servers"];
+}
+
+- (NSArray*)combinedServers
+{
+    NSMutableArray *combo = [NSMutableArray arrayWithArray:_ownServer];
+    [combo addObjectsFromArray:_sharedServers];
+    return combo;
+}
+
+- (NSArray*)properlySortedMachineList:(NSArray*)unsortedList
+{
+    NSArray *sortedList = [unsortedList sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        Machine *m1 = (Machine*)obj1; Machine *m2 = (Machine*)obj2;
+        return [m1.serverName compare:m2.serverName];
+    }];
+    return sortedList;
+}
 
 #pragma mark -
 #pragma mark Controller Lifecycle behaviour
 - (void)wasPushed {
+    DLog();
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:YES];
     [[ProxyMachineDelegate shared] registerDelegate:self];
     [super wasPushed];
 }
 
 - (void)wasPopped {
+    DLog();
     [[ProxyMachineDelegate shared] removeDelegate:self];
     [super wasPopped];
 }
 
 - (void)wasExhumed {
+    DLog();
     [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:YES];
     [super wasExhumed];
 }
@@ -65,19 +93,21 @@
 - (id)previewControlForItem:(long)item {
     SMFBaseAsset *asset = [[SMFBaseAsset alloc] init];
 
-    Machine *m = [_names objectAtIndex:item];
+    Machine *m = [self.combinedServers objectAtIndex:item];
     
     NSString *logo = @"PmsLogo";
+#if 0
     if ([m.bestConnection.type isEqualToString:@"myPlex"])
         logo = @"MyPlexLogo";
+#endif
 
     [asset setCoverArt:[BRImage imageWithPath:[[NSBundle bundleForClass:[HWBasicMenu class]] pathForResource:logo ofType:@"png"]]];
     [asset setTitle:m.hostName];
     
     if (m.bestConnection) {
-        DLog();
-        NSString *detailedText = [NSString stringWithFormat:@"IP: %@\nServer version: %@\nConnection type: %@\nOn local network: %@", 
-                                  m.bestConnection.ip, m.bestConnection.versionStr, m.bestConnection.type, m.bestConnection.inLocalNetwork ? @"Yes": @"No"];
+        NSString *detailedText = [NSString stringWithFormat:@"%@ server at IP: %@, version: %@ via connection type: %@", 
+                                  m.bestConnection.inLocalNetwork ? @"Local": @"Remote", m.bestConnection.ip,
+                                  m.bestConnection.versionStr, m.bestConnection.type];
         [asset setSummary:detailedText];
     } else {
         [asset setSummary:@"No bestConnection here"];
@@ -96,8 +126,8 @@
 }
 
 - (void)itemSelected:(long)selected {
-    if (selected < 0 || selected >= _names.count) return;
-    Machine *m = [_names objectAtIndex:selected];
+    if (selected < 0 || selected >= self.combinedServers.count) return;
+    Machine *m = [self.combinedServers objectAtIndex:selected];
     DLog(@"machine selected: %@", m);
 
     HWPlexDir *menuController = [[HWPlexDir alloc] initWithRootContainer:[m.request rootLevel] andTabBar:nil];
@@ -111,18 +141,19 @@
 }
 
 - (long)itemCount {
-    return _names.count;
+    return self.combinedServers.count;
 }
 
 - (id)itemForRow:(long)row {
-    if (row >= [_names count] || row < 0)
+    if (row >= [self.combinedServers count] || row < 0)
         return nil;
 
     BRMenuItem *result = [[BRMenuItem alloc] init];
-    Machine *m = [_names objectAtIndex:row];
+    Machine *m = [self.combinedServers objectAtIndex:row];
     NSString *name = [NSString stringWithFormat:@"%@", m.serverName, m];
     [result setText:name withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
     [result addAccessoryOfPlexType:m.hostName ? kPlexAccessoryTypeComputer : kPlexAccessoryTypeNone];
+    [result setDetailedText:m.owner withAttributes:nil];
 
 
     return [result autorelease];
@@ -133,9 +164,9 @@
 }
 
 - (id)titleForRow:(long)row {
-    if (row >= [_names count] || row < 0)
+    if (row >= [self.combinedServers count] || row < 0)
         return @"";
-    Machine *m = [_names objectAtIndex:row];
+    Machine *m = [self.combinedServers objectAtIndex:row];
     return m.serverName;
 }
 
@@ -150,28 +181,54 @@
 #pragma mark Machine Manager Delegate
 - (void)machineWasRemoved:(Machine*)m {
     DLog(@"Removed %@", m);
-    [_names removeObject:m];
+    if ([_ownServer containsObject:m])
+        [_ownServer removeObject:m];
+    if ([_sharedServers containsObject:m])
+        [_sharedServers removeObject:m];
+    
+    [self updateDivider];
 }
 
 - (void)machineWasAdded:(Machine*)m {
-    if ( !runsServer(m.role) ) return;
-    if ([_names containsObject:m]) return;
+    DLog();
 
-    [_names addObject:m];
+    if ( !runsServer(m.role) ) return;
+    if ([self.combinedServers containsObject:m]) return;
+    
+    /* skip myPlex in server list */
+    if ([m.machineID isEqualToString:@"myPlex"]) return;
+    
+    DLog();
+
+    if (m.owned) {
+        NSMutableArray *unsorted = [_ownServer mutableCopy];
+        [unsorted addObject:m];
+        [_ownServer removeAllObjects];
+        [_ownServer addObjectsFromArray:[self properlySortedMachineList:unsorted]];
+        [unsorted release];
+    }
+    else {
+        NSMutableArray *unsorted = [_sharedServers mutableCopy];
+        [unsorted addObject:m];
+        [_sharedServers removeAllObjects];
+        [_sharedServers addObjectsFromArray:[self properlySortedMachineList:unsorted]];
+        [unsorted release];
+    }
     DLog(@"Added %@", m);
 
     //[m resolveAndNotify:self];
+    [self updateDivider];
     [self setNeedsUpdate];
 }
 
 - (void)machineWasChanged:(Machine*)m {
     if (m == nil) return;
 
-    if (runsServer(m.role) && ![_names containsObject:m]) {
+    if (runsServer(m.role) && ![self.combinedServers containsObject:m]) {
         [self machineWasAdded:m];
         return;
-    } else if (!runsServer(m.role) && [_names containsObject:m]) {
-        [_names removeObject:m];
+    } else if (!runsServer(m.role) && [self.combinedServers containsObject:m]) {
+        [self machineWasRemoved:m];
         DLog(@"Removed %@", m);
     } else {
         DLog(@"Changed %@", m);
