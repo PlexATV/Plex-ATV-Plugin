@@ -173,13 +173,10 @@
     NSDictionary *headerFields = [request allHTTPHeaderFields];
     BRURLImageProxy *aImageProxy = [BRURLImageProxy proxyWithURL:[request URL] headerFields:headerFields];
     aImageProxy.writeToDisk = YES;
+    aImageProxy.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
 
     BRImage *coverImg = [aImageProxy imageForImageSize:512];
-    if (coverImg) {
-        return coverImg;
-    }
-    else
-        return [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
+    return coverImg;
 }
 
 - (id)coverArt {
@@ -286,6 +283,7 @@
     NSDictionary *headerFields = [request allHTTPHeaderFields];
     BRURLImageProxy *aImageProxy = [BRURLImageProxy proxyWithURL:[request URL] headerFields:headerFields];
     aImageProxy.writeToDisk = YES;
+    aImageProxy.defaultImage = [[BRThemeInfo sharedTheme] storeRentalPlaceholderImage];
     return aImageProxy;
 }
 
