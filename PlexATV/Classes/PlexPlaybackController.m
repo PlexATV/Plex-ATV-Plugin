@@ -418,94 +418,97 @@ PlexMediaProvider *__provider = nil;
     //playa->_aggregateBufferedRange = [NSMakeRange(0, playa.elapsedTime+30);
 
     switch (playa.playerState) {
-    case kBRMediaPlayerStatePlaying: {
-        //report time back to PMS on a background thread so we can continue in the right spot
-        CGFloat current = playa.elapsedTime;
-        CGFloat total = [[[self.mediaObject mediaResource] attributes] integerForKey:@"duration"] / 1000.0f;
-
-        NSNumber *currentNumber = [NSNumber numberWithFloat:current];
-        NSNumber *totalNumber = [NSNumber numberWithFloat:total];
-
-        NSString *seenState;
-        if ([self.mediaObject seenState] == PlexMediaObjectSeenStateUnseen) {
-            seenState = @"unwatched";
-        } else if ([self.mediaObject seenState] == PlexMediaObjectSeenStateInProgress) {
-            seenState = @"partial";
-        } else if ([self.mediaObject seenState] == PlexMediaObjectSeenStateSeen) {
-            seenState = @"watched";
-        } else {
-            seenState = @"unknown";
+        case kBRMediaPlayerStatePlaying: {
+            //report time back to PMS on a background thread so we can continue in the right spot
+            CGFloat current = playa.elapsedTime;
+            CGFloat total = [[[self.mediaObject mediaResource] attributes] integerForKey:@"duration"] / 1000.0f;
+            
+            NSNumber *currentNumber = [NSNumber numberWithFloat:current];
+            NSNumber *totalNumber = [NSNumber numberWithFloat:total];
+            
+            NSString *seenState;
+            if ([self.mediaObject seenState] == PlexMediaObjectSeenStateUnseen) {
+                seenState = @"unwatched";
+            } else if ([self.mediaObject seenState] == PlexMediaObjectSeenStateInProgress) {
+                seenState = @"partial";
+            } else if ([self.mediaObject seenState] == PlexMediaObjectSeenStateSeen) {
+                seenState = @"watched";
+            } else {
+                seenState = @"unknown";
+            }
+            
+            NSDictionary *progressDictionary = [NSDictionary dictionaryWithObjectsAndKeys:totalNumber, kProgressTotalTime, currentNumber, kProgressCurrentTime, seenState, kProgressSeenState, nil];
+            [self postProgress:progressDictionary];
+            break;
         }
-
-        NSDictionary *progressDictionary = [NSDictionary dictionaryWithObjectsAndKeys:totalNumber, kProgressTotalTime, currentNumber, kProgressCurrentTime, seenState, kProgressSeenState, nil];
-        [self postProgress:progressDictionary];
-        break;
-    }
-    case kBRMediaPlayerStatePaused:
-        DLog(@"paused playback, pinging transcoder");
-        [self.mediaObject.request pingTranscoder];
-        break;
-
-    case kBRMediaPlayerStateSkipping:
-    case kBRMediaPlayerStateForwardSeeking:
-    case kBRMediaPlayerStateForwardSeekingFast:
-    case kBRMediaPlayerStateForwardSeekingFastest:
-    case kBRMediaPlayerStateBackSeeking:
-    case kBRMediaPlayerStateBackSeekingFast:
-    case kBRMediaPlayerStateBackSeekingFastest:
-        break;
-    default:
-        break;
+        case kBRMediaPlayerStatePaused:
+            DLog(@"paused playback, pinging transcoder");
+            [self.mediaObject.request pingTranscoder];
+            break;
+            
+        case kBRMediaPlayerStateSkipping:
+        case kBRMediaPlayerStateForwardSeeking:
+        case kBRMediaPlayerStateForwardSeekingFast:
+        case kBRMediaPlayerStateForwardSeekingFastest:
+        case kBRMediaPlayerStateBackSeeking:
+        case kBRMediaPlayerStateBackSeekingFast:
+        case kBRMediaPlayerStateBackSeekingFastest:
+            break;
+        default:
+            break;
     }
 }
 
 - (void)movieFinished:(NSNotification*)event {
+    DLog(@"Movie did finish!");
     if (self.mediaObject) 
         [self.mediaObject markSeen]; //makes sure the item is marked as seen
 }
 
 - (void)playerStateChanged:(NSNotification*)event {
+    if (!event) return;
     DLog(@"%@", event)
+    
     BRMediaPlayer *playa = [[BRMediaPlayerManager singleton] activePlayer];
 
     switch (playa.playerState) {
-    case kBRMediaPlayerStatePlaying:
-        //playback has (re)started
-        [self reportProgress:nil];
-
-        break;
-    case kBRMediaPlayerStateStopped:
-        if (didUseTranscoder) {
-            DLog(@"stopping the transcoder");
-
-            //stop the transcoding on PMS
-            [self.mediaObject.request stopTranscoder];
-            DLog(@"transcoder stopped");
-        }
-
-        if (self.playProgressTimer && [self.playProgressTimer isValid]) {
-            [self.playProgressTimer invalidate];
-            DLog(@"stopped progress timer");
-        }
-
-        DLog(@"Finished Playback, fire up MM");
-        //playback stopped, tell MM to fire up again
-        [[MachineManager sharedMachineManager] startAutoDetection];
-        [[MachineManager sharedMachineManager] startMonitoringMachineState];
-        [[[BRApplicationStackManager singleton] stack] popController];
-        break;
-
-    case kBRMediaPlayerStatePaused:
-    case kBRMediaPlayerStateSkipping:
-    case kBRMediaPlayerStateForwardSeeking:
-    case kBRMediaPlayerStateForwardSeekingFast:
-    case kBRMediaPlayerStateForwardSeekingFastest:
-    case kBRMediaPlayerStateBackSeeking:
-    case kBRMediaPlayerStateBackSeekingFast:
-    case kBRMediaPlayerStateBackSeekingFastest:
-        break;
-    default:
-        break;
+        case kBRMediaPlayerStatePlaying:
+            //playback has (re)started
+            [self reportProgress:nil];
+            
+            break;
+        case kBRMediaPlayerStateStopped:
+            if (didUseTranscoder) {
+                DLog(@"stopping the transcoder");
+                
+                //stop the transcoding on PMS
+                [self.mediaObject.request stopTranscoder];
+                DLog(@"transcoder stopped");
+            }
+            
+            if (self.playProgressTimer && [self.playProgressTimer isValid]) {
+                [self.playProgressTimer invalidate];
+                DLog(@"stopped progress timer");
+            }
+            
+            DLog(@"Finished Playback, fire up MM");
+            //playback stopped, tell MM to fire up again
+            [[MachineManager sharedMachineManager] startAutoDetection];
+            [[MachineManager sharedMachineManager] startMonitoringMachineState];
+            [[[BRApplicationStackManager singleton] stack] popController];
+            break;
+            
+        case kBRMediaPlayerStatePaused:
+        case kBRMediaPlayerStateSkipping:
+        case kBRMediaPlayerStateForwardSeeking:
+        case kBRMediaPlayerStateForwardSeekingFast:
+        case kBRMediaPlayerStateForwardSeekingFastest:
+        case kBRMediaPlayerStateBackSeeking:
+        case kBRMediaPlayerStateBackSeekingFast:
+        case kBRMediaPlayerStateBackSeekingFastest:
+            break;
+        default:
+            break;
     }
 
 }
