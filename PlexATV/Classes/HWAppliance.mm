@@ -198,8 +198,10 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
 - (void)dealloc {
     DLog(@"!!!!!!! WAS DEALLOCED!");
+#if 0
     [[MachineManager sharedMachineManager] stopAutoDetection];
     [[MachineManager sharedMachineManager] stopMonitoringMachineState];
+#endif
 
     // TODO: on older AppleTV firmware the row below crashes. Something with threads?
     // not sure if it matters that much since we run removeAllDelegates in the init
@@ -382,6 +384,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         [machineName release];
     }
 
+    [self reloadCategories];
 
 }
 
@@ -390,9 +393,11 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         NSDictionary *identifier = (NSDictionary*)[cat identifier];
         NSString *mid = [identifier objectForKey:MachineIDKey];
         if (mid && [mid isEqualToString:[m machineID]]) {
+            DLog(@"Found machine in categories: %@", m);
             return YES;
         }
     }
+    DLog(@"machine %@ was not found", m);
     return NO;
 }
 
