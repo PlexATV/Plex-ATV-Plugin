@@ -137,7 +137,7 @@
 }
 
 - (float)heightForRow:(long)row {
-    return 50.0f;
+    return 70.0f;
 }
 
 - (long)itemCount {
@@ -153,6 +153,10 @@
     NSString *name = [NSString stringWithFormat:@"%@", m.serverName, m];
     [result setText:name withAttributes:[[BRThemeInfo sharedTheme] menuItemTextAttributes]];
     [result addAccessoryOfPlexType:m.hostName ? kPlexAccessoryTypeComputer : kPlexAccessoryTypeNone];
+    if (!m.owned) {
+        NSString *detailedTxt = [NSString stringWithFormat:@"Shared by %@", m.sourceTitle];
+        [result setDetailedText:detailedTxt];    }
+
 
 
     return [result autorelease];
