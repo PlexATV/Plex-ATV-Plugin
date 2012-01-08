@@ -125,13 +125,47 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
     return pmc;
 }
 
+- (BOOL)containerIsEqual:(PlexMediaContainer*)container
+{
+    
+    if (![container.key isEqualToString:mediaContainer.key]) {
+        DLog(@"container key changed");
+        return NO;
+    }
+    
+    for (PlexMediaObject *pmo in container.directories) {
+        PlexMediaObject *pmm = [mediaContainer findEqualObject:pmo];
+        if (!pmm) {
+            DLog(@"couldn't find %@", pmm);
+            return NO;
+        }
+    }
+    
+    for (PlexMediaObject *pmo in mediaContainer.directories) {
+        PlexMediaObject *pmm = [container findEqualObject:pmo];
+        if (!pmm) {
+            DLog(@"couldn't find %@", pmm);
+            return NO;
+        }
+    }
+    return YES;
+}
+
 - (void)refresh {
     DLog(@"refresh in topshelf %@", self);
     if (!refreshTimer) {
         refreshTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(refresh) userInfo:nil repeats:YES];
     }
 
-    self.mediaContainer = [self containerForShelf];
+    PlexMediaContainer *newContainer = [self containerForShelf];
+    if ([self containerIsEqual:newContainer]) {
+        DLog(@"no change in container");
+        return;
+    }
+    
+    DLog(@"significant change, let's refresh");
+    
+    self.mediaContainer = newContainer;
     
     //if ([self.onDeckMediaContainer.directories count] > 0 || [self.recentlyAddedMediaContainer.directories count] > 0) {
     if ([self.mediaContainer.directories count] > 0) {  
