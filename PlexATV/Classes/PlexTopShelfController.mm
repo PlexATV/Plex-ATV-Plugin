@@ -67,12 +67,8 @@
         shelfView.delegate = self;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:@"PlexTopShelfRefresh" object:nil];
+        refreshTimer = nil;
 
-        refreshTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(refresh) userInfo:nil repeats:YES];
-        
-        /* onetime */
-        [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(refresh) userInfo:nil repeats:NO];
-        
     }
     return topShelfView;
 }
@@ -115,6 +111,10 @@
 
 - (void)refresh {
     DLog(@"refresh in topshelf");
+    if (!refreshTimer) {
+        refreshTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(refresh) userInfo:nil repeats:YES];
+    }
+
     self.mediaContainer = [self containerForShelf];
     
     //if ([self.onDeckMediaContainer.directories count] > 0 || [self.recentlyAddedMediaContainer.directories count] > 0) {

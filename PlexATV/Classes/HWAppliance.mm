@@ -30,7 +30,7 @@ NSString*const MachineNameKey = @"PlexMachineName";
 
 
 @implementation PlexAppliance
-@synthesize topShelfController, currentApplianceCategories, otherServersApplianceCategory, settingsApplianceCategory;
+@synthesize topShelfController, currentApplianceCategories, otherServersApplianceCategory, settingsApplianceCategory, throttleReloadTimer;
 
 NSString*const CompoundIdentifierDelimiter = @"|||";
 
@@ -62,28 +62,36 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
            Make sure to do as little as possible in the init function AND cleanup in -dealloc */
         
         DLog(@"==================== plex client starting up - init [%@] ====================", self);
-        if (![[MachineManager sharedMachineManager] autoDetectionActive]) {
-            [[MachineManager sharedMachineManager] startAutoDetection];
-            [[MachineManager sharedMachineManager] startMonitoringMachineState];
-            [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:YES];
-        }
-
         self.topShelfController = [[PlexTopShelfController alloc] init];
         self.currentApplianceCategories = [[NSMutableArray alloc] init];
 
         self.otherServersApplianceCategory = [SERVER_LIST_CAT retain];
         self.settingsApplianceCategory = [SETTINGS_CAT retain];
-
-        [[ProxyMachineDelegate shared] removeAllDelegates];
-        [[ProxyMachineDelegate shared] registerDelegate:self];
+        
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pauseMachineMonitoring:)name:@"BRStopBackgroundProcessing" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resumeMachineMonitoring:)name:@"BRResumeBackgroundProcessing" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rebuildCategories) name:@"PlexDidChangeServerExcludeList" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(rebuildCategoriesReal) name:@"PlexDidChangeServerExcludeList" object:nil];
 
+        //startTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(startMachineManager) userInfo:nil repeats:NO];
+        [self startMachineManager];
     }
     [self reloadCategories];
     return self;
+}
+
+- (void)startMachineManager
+{
+
+    DLog(@"Starting up MachineManager");
+    [[ProxyMachineDelegate shared] removeAllDelegates];
+    [[ProxyMachineDelegate shared] registerDelegate:self];
+
+    if (![[MachineManager sharedMachineManager] autoDetectionActive]) {
+        [[MachineManager sharedMachineManager] startAutoDetection];
+        [[MachineManager sharedMachineManager] startMonitoringMachineState];
+        [[MachineManager sharedMachineManager] setMachineStateMonitorPriority:YES];
+    }
 }
 
 - (void)logNotifications:(NSNotification*)notification {
@@ -131,7 +139,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 
         // ====== find the category selected ======
         if ([categoryName isEqualToString:@"Refresh"]) {
-            [self rebuildCategories];
+            [self rebuildCategoriesReal];
 
         } else if ([categoryName isEqualToString:@"Search"]) {
             DLog(@"machine_to_search: %@", machineWhoCategoryBelongsTo);
@@ -194,17 +202,21 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 }
 
 - (void)dealloc {
-    DLog(@"!!!!!!! WAS DEALLOCED!");
+    DLog(@" ================= %@ WAS DEALLOCED ==================", self);
 #if 0
     [[MachineManager sharedMachineManager] stopAutoDetection];
     [[MachineManager sharedMachineManager] stopMonitoringMachineState];
 #endif
-
+    
+    if (self.throttleReloadTimer) 
+        [self.throttleReloadTimer invalidate];
+    
+    self.throttleReloadTimer = nil;
+    
     // TODO: on older AppleTV firmware the row below crashes. Something with threads?
     // not sure if it matters that much since we run removeAllDelegates in the init
     //[[ProxyMachineDelegate shared] removeDelegate:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     
     self.topShelfController = nil;
     self.currentApplianceCategories = nil;
@@ -250,13 +262,25 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 }
 
 - (void)rebuildCategories {
+    if (self.throttleReloadTimer) {
+        DLog(@"resetting timer");
+        [self.throttleReloadTimer invalidate];
+        self.throttleReloadTimer = nil;
+    }
+    DLog(@"countdown 1sec");
+    self.throttleReloadTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(rebuildCategoriesReal) userInfo:nil repeats:NO];
+}
+    
+- (void)rebuildCategoriesReal {
+    if (self.throttleReloadTimer) {
+        [self.throttleReloadTimer invalidate];
+        self.throttleReloadTimer = nil;
+    }
     [self.currentApplianceCategories removeAllObjects];
 
     NSMutableArray *machines = [NSMutableArray arrayWithArray:[[MachineManager sharedMachineManager] threadSafeMachines]];
 
-#if LOCAL_DEBUG_ENABLED
     DLog(@"Reloading categories with machines [%@]", machines);
-#endif
     for (Machine*machine in machines) {
         NSString *machineID = [machine.machineID copy];
         NSString *machineName = [machine.serverName copy];
@@ -394,17 +418,17 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 #pragma mark Machine Delegate Methods
 - (void)machineWasRemoved:(Machine*)m {
     if ([self machineInCategories:m]) {
-        //DLog(@"MachineManager: Removed machine [%@], so reload", m);
+        DLog(@"MachineManager: Removed machine [%@], so reload", m.serverName);
         [self rebuildCategories];
     }
 }
 
 - (void)machineWasAdded:(Machine*)m {
-    //DLog(@"MachineManager: Added machine [%@]", m);
+    DLog(@"MachineManager: Added machine [%@]", m.serverName);
     BOOL machineIsOnlineAndConnectable = m.isComplete;
 
     if (machineIsOnlineAndConnectable && ![self machineIsExcluded:m]) {
-//        DLog(@"MachineManager: Reload machines as machine [%@] was added", m);
+        DLog(@"MachineManager: Reload machines as machine [%@] was added", m.serverName);
         [self rebuildCategories];
 
     }
@@ -413,37 +437,35 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 - (void)machineWasChanged:(Machine*)m {
     if (m.isOnline && m.canConnect && [self machineInCategories:m]) {
         //machine is available
-//        DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m);
+        DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m.serverName);
         [self rebuildCategories];
     } else {
+        
+        DLog(@"Machine %@ changed but not available", m.serverName);
         //machine is not available
     }
 }
 
 - (void)machine:(Machine*)m updatedInfo:(ConnectionInfoType)updateMask {
-    
+
+    DLog(@"updatedInfo %@", m.serverName);
     if (![self machineInCategories:m])
         return;
     
-#if LOCAL_DEBUG_ENABLED
-    DLog(@"MachineManager: Updated Info with update mask [%d] from machine [%@]", updateMask, m);
-#endif
+
+    DLog(@"MachineManager: Updated Info with update mask [%d] from machine [%@]", updateMask, m.serverName);
     BOOL machinesLibrarySectionsWasUpdated = (updateMask & ConnectionInfoTypeLibrarySections) != 0;
     BOOL machinesRecentlyAddedWasUpdated = (updateMask & ConnectionInfoTypeRecentlyAddedMedia) != 0;
     BOOL machineHasEitherGoneOnlineOrOffline = (updateMask & ConnectionInfoTypeCanConnect) != 0;
 
     if ( machinesLibrarySectionsWasUpdated || machineHasEitherGoneOnlineOrOffline ) {
-#if LOCAL_DEBUG_ENABLED
-        DLog(@"MachineManager: Reload machines as machine [%@] list was updated [%@] or came online/offline [%@]", m, machinesLibrarySectionsWasUpdated ? @"YES" : @"NO", machineHasEitherGoneOnlineOrOffline ? @"YES" : @"NO");
-#endif
+        DLog(@"MachineManager: Reload machines as machine [%@] list was updated [%@] or came online/offline [%@]", m.serverName, machinesLibrarySectionsWasUpdated ? @"YES" : @"NO", machineHasEitherGoneOnlineOrOffline ? @"YES" : @"NO");
         [self rebuildCategories];
 
     }
 
     if (machinesRecentlyAddedWasUpdated) {
-#if LOCAL_DEBUG_ENABLED
-        DLog(@"MachineManager: Machine [%@] recentlyAdded was updated", m);
-#endif
+        DLog(@"MachineManager: Machine [%@] recentlyAdded was updated", m.serverName);
     }
 }
 
