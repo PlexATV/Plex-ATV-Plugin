@@ -62,7 +62,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
            Make sure to do as little as possible in the init function AND cleanup in -dealloc */
         
         DLog(@"==================== plex client starting up - init [%@] ====================", self);
-        self.topShelfController = [[PlexTopShelfController alloc] init];
+        self.topShelfController = [PlexTopShelfController sharedPlexTopShelfController];
         self.currentApplianceCategories = [[NSMutableArray alloc] init];
 
         self.otherServersApplianceCategory = [SERVER_LIST_CAT retain];
@@ -106,12 +106,16 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
     DLog(@"little black thingy going to sleep, tell MM to chill");
     [[MachineManager sharedMachineManager] stopAutoDetection];
     [[MachineManager sharedMachineManager] stopMonitoringMachineState];
+    
+    /* also stop the topshelf from refreshing while sleeping */
+    [self.topShelfController stopRefresh];
 }
 
 - (void)resumeMachineMonitoring:(NSNotification*)notification {
     DLog(@"little black thingy IS ALIVE AGAIN, tell MM to get on with it's business");
     [[MachineManager sharedMachineManager] startAutoDetection];
     [[MachineManager sharedMachineManager] startMonitoringMachineState];
+    [self.topShelfController refresh];
 }
 
 - (id)controllerForIdentifier:(id)identifier args:(id)args {

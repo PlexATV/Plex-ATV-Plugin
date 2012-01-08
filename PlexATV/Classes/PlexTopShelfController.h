@@ -17,9 +17,12 @@
 }
 @property (copy) NSString *containerName;
 @property (retain) PlexMediaContainer *mediaContainer;
+@property (readonly) id topShelfView;
 
 - (void)selectCategoryWithIdentifier:(id)identifier;
-- (id)topShelfView;
 - (void)refresh;
+- (void)stopRefresh;
+
++ (PlexTopShelfController*)sharedPlexTopShelfController;
 
 @end

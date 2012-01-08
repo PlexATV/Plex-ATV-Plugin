@@ -20,6 +20,7 @@
 #import "HWUserDefaults.h"
 #import "Constants.h"
 #import "PlexCommonUtils.h"
+#import "Plex_SynthesizeSingleton.h"
 
 #pragma mark -
 #pragma mark BRTopShelfView Category
@@ -40,25 +41,32 @@
 @implementation PlexTopShelfController
 @synthesize containerName;
 @synthesize mediaContainer;
-
+@synthesize topShelfView;
 
 #pragma mark -
 #pragma mark Object/Class Lifecycle
+
+PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
+
 - (void)dealloc {
+    DLog(@"------- DEALLOC %@ ------", self);
     [topShelfView release];
     [refreshTimer invalidate];
     [refreshTimer release];
+    
     self.mediaContainer = nil;
     
     [super dealloc];
 }
 
-- (BRTopShelfView*)topShelfView {
-    if (!topShelfView) {
+- (id)init {
+    self = [super init];
+    if (self) {
+        DLog(@"----- INIT %@ ------", self);
         topShelfView = [[BRTopShelfView alloc] init];
         
         BRImageControl *imageControl = [topShelfView productImage];
-        BRImage *theImage = [BRImage imageWithPath:[[NSBundle bundleForClass:[PlexTopShelfController class ]] pathForResource:@"PmsMainMenuLogo" ofType:@"png"]];
+        BRImage *theImage = [BRImage imageWithPath:[[NSBundle bundleForClass:[PlexTopShelfController class]] pathForResource:@"PmsMainMenuLogo" ofType:@"png"]];
         [imageControl setImage:theImage];
         
         shelfView = MSHookIvar<BRMediaShelfView*>(topShelfView, "_shelf");
@@ -68,9 +76,17 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refresh) name:@"PlexTopShelfRefresh" object:nil];
         refreshTimer = nil;
-
     }
-    return topShelfView;
+    return self;
+}
+
+- (void)stopRefresh
+{
+    DLog(@"stopRefresh %@", self);
+    if (refreshTimer) {
+        [refreshTimer invalidate];
+        refreshTimer = nil;
+    }
 }
 
 - (PlexMediaContainer*)containerForShelf
@@ -110,9 +126,9 @@
 }
 
 - (void)refresh {
-    DLog(@"refresh in topshelf");
+    DLog(@"refresh in topshelf %@", self);
     if (!refreshTimer) {
-        refreshTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(refresh) userInfo:nil repeats:YES];
+        refreshTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(refresh) userInfo:nil repeats:YES];
     }
 
     self.mediaContainer = [self containerForShelf];
