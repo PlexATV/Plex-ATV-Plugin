@@ -99,8 +99,6 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
         m = [PlexCommonUtils findHighPrioLocalMachineWithSections:YES];
     }
     
-    DLog(@"using machine: %@", m);
-
     /* couldn't find any machine, no need to create the topshelf */
     if (!m) return nil;
     
@@ -109,7 +107,6 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
         sectionKey = [PlexCommonUtils findHighPrioMovieSection:m.librarySections].key;
     }
     
-    DLog(@"using sectionKey %@", sectionKey);
     /* still no sectionKey, damn */
     if (!sectionKey) return nil;
     
@@ -121,7 +118,6 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
     NSString *queryURL = [NSString stringWithFormat:@"%@/%@", sectionKey, filterKey];
     
     PlexMediaContainer *pmc = [m.request query:queryURL callingObject:nil ignorePresets:YES timeout:20 cachePolicy:NSURLRequestUseProtocolCachePolicy];
-    DLog(@"Got container: %@", pmc);
     return pmc;
 }
 
@@ -129,14 +125,12 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
 {
     
     if (![container.key isEqualToString:mediaContainer.key]) {
-        DLog(@"container key changed");
         return NO;
     }
     
     for (PlexMediaObject *pmo in container.directories) {
         PlexMediaObject *pmm = [mediaContainer findEqualObject:pmo];
         if (!pmm) {
-            DLog(@"couldn't find %@", pmm);
             return NO;
         }
     }
@@ -144,7 +138,6 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
     for (PlexMediaObject *pmo in mediaContainer.directories) {
         PlexMediaObject *pmm = [container findEqualObject:pmo];
         if (!pmm) {
-            DLog(@"couldn't find %@", pmm);
             return NO;
         }
     }
@@ -152,14 +145,12 @@ PLEX_SYNTHESIZE_SINGLETON_FOR_CLASS(PlexTopShelfController);
 }
 
 - (void)refresh {
-    DLog(@"refresh in topshelf %@", self);
     if (!refreshTimer) {
         refreshTimer = [NSTimer scheduledTimerWithTimeInterval:10 target:self selector:@selector(refresh) userInfo:nil repeats:YES];
     }
 
     PlexMediaContainer *newContainer = [self containerForShelf];
     if ([self containerIsEqual:newContainer]) {
-        DLog(@"no change in container");
         return;
     }
     
