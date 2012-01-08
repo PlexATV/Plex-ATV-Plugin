@@ -11,6 +11,7 @@
 #import "PlexTrackingUtil.h"
 #import <plex-oss/MyPlex.h>
 #import <plex-oss/Machine.h>
+#import <plex-oss/MachineConnectionBase.h>
 #import <plex-oss/MachineMyPlex.h>
 
 #define SERVER_LIST_ID @"hwServerList"
@@ -280,9 +281,10 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         [self.throttleReloadTimer invalidate];
         self.throttleReloadTimer = nil;
     }
-    [self.currentApplianceCategories removeAllObjects];
 
     NSMutableArray *machines = [NSMutableArray arrayWithArray:[[MachineManager sharedMachineManager] threadSafeMachines]];
+    [self.currentApplianceCategories removeAllObjects];
+
 
     DLog(@"Reloading categories with machines [%@]", machines);
     for (Machine*machine in machines) {
@@ -316,7 +318,6 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
         //instead get the two arrays seperately and merge
         NSMutableArray *allDirectories = [NSMutableArray arrayWithArray:machine.librarySections.directories];
         //[allDirectories addObjectsFromArray:machine.rootLevel.directories];
-
 
 
         //for (PlexMediaObject *pmo in allDirectories) {
@@ -439,7 +440,7 @@ NSString*const CompoundIdentifierDelimiter = @"|||";
 }
 
 - (void)machineWasChanged:(Machine*)m {
-    if (m.isOnline && m.canConnect && [self machineInCategories:m]) {
+    if (m.isOnline && m.canConnect && ![self machineIsExcluded:m]) {
         //machine is available
         DLog(@"MachineManager: Reload machine sections as machine [%@] was changed", m.serverName);
         [self rebuildCategories];
